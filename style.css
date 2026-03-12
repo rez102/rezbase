@@ -1,0 +1,63 @@
+body {
+    margin: 0;
+    font-family: var(--font-primary);
+    background: radial-gradient(circle at center, #001a1a 0%, #000810 100%);
+    background-attachment: fixed;
+    color: #e0fbfc;
+    text-align: center;
+    overflow-x: hidden;
+}
+.home-header {
+    padding: 60px 20px 40px;
+}
+.home-logo {
+    width: 420px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.3));
+}
+.home-header h1 {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #ffffff 0%, #88aaaa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.9;
+}
+.link-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+.game-card {
+    background: rgba(0, 30, 30, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    border-radius: 24px;
+    overflow: hidden;
+    text-decoration: none;
+    color: white;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+.game-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: rgba(0, 255, 255, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+}
+.game-card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+.game-card:hover img {
+    transform: scale(1.05);
+}
