@@ -48,11 +48,14 @@ body {
     align-items: center;
     gap: 12px;
     text-decoration: none;
+    padding-left: 20px;
 }
 
 .logo img {
-    width: 40px;
     height: 40px;
+    width: auto;
+    flex-shrink: 0;
+    object-fit: contain;
     filter: drop-shadow(0 0 8px var(--accent-glow));
 }
 
@@ -200,7 +203,7 @@ body {
 .equipment-top {
     display: flex;
     gap: 40px;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 40px;
 }
 
@@ -232,8 +235,15 @@ body {
     max-width: 700px;
 }
 
+/* Highlight variable numbers in abilities */
+.highlight {
+    color: #ff9900;
+    font-weight: bold;
+}
+
 .section-material-tier {
     display: flex;
+    flex-wrap: wrap;
     gap: 40px;
     margin-bottom: 40px;
     padding: 30px;
@@ -242,15 +252,16 @@ body {
     border-radius: 24px;
     border: 1px solid var(--glass-border);
     justify-content: flex-start;
-    width: fit-content;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .material-box-wrapper {
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     display: flex;
-    flex-direction: column;
-    gap: 30px;
-    min-width: 380px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 40px;
 }
 
 .material-container h3 {

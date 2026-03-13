@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maneater マップ</title>
+    <link rel="stylesheet" href="../fonts.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="map.css">
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <a href="../index.html" class="logo">
+                <span>Maneater Wiki</span>
+            </a>
+            <nav class="menu">
+                <a href="../maneater.html" class="menu-item">
+                    <img src="../images/進化1.png" alt="装備">
+                    <span>装備</span>
+                </a>
+                <a href="map.html" class="menu-item active">
+                    <img src="../images/map1.png" alt="マップ">
+                    <span>マップ</span>
+                </a>
+                <a href="../history/history.html" class="menu-item">
+                    <span>更新履歴</span>
+                </a>
+            </nav>
+        </aside>
+        <main class="main">
+            <!-- タイプフィルター -->
+            <div class="map-filters">
+                <button class="filter-type-btn active" data-type="landmark">ランドマーク</button>
+                <button class="filter-type-btn active" data-type="nutrient">栄養箱</button>
+                <button class="filter-type-btn active" data-type="plate">ナンバープレート</button>
+                <button id="reset-filters-btn" class="filter-reset-btn">全表示</button>
+            </div>
+
+            <!-- エリアフィルター -->
+            <div class="map-filters">
+                <button class="filter-area-btn" data-area="フォーティック・バイユー">フォーティック・バイユー</button>
+                <button class="filter-area-btn" data-area="デッド・ホース・レイク">デッド・ホース・レイク</button>
+                <button class="filter-area-btn" data-area="ゴールデン・ショア">ゴールデン・ショア</button>
+                <button class="filter-area-btn" data-area="サファリア・ベイ">サファリア・ベイ</button>
+                <button class="filter-area-btn" data-area="プロスピリティーサンド">プロスピリティーサンド</button>
+                <button class="filter-area-btn" data-area="キャビアキー">キャビアキー</button>
+                <button class="filter-area-btn" data-area="湾岸">湾岸</button>
+                <button class="filter-area-btn" data-area="クローフィッシュ・ベイ">クローフィッシュ・ベイ</button>
+            </div>
+            
+            <div id="map"></div>
+        </main>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="map.js"></script>
+</body>
+
+</html>

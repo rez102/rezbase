@@ -1,0 +1,358 @@
+const map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -2,
+    maxZoom: 2,
+});
+
+const w = 1120;
+const h = 1120;
+const bounds = [[0, 0], [h, w]];
+L.imageOverlay('../images/maneater_map.png', bounds).addTo(map);
+map.fitBounds(bounds);
+
+// デバッグ用（座標確認）
+map.on('click', (e) => {
+    console.log(e.latlng.lat, e.latlng.lng);
+});
+
+// アイコン定義
+const icons = {
+    landmark: L.icon({ iconUrl: '../images/map/ランドマーク.png', iconSize: [32, 32], iconAnchor: [16, 26] }),
+    nutrient: L.icon({ iconUrl: '../images/map/栄養箱.png', iconSize: [32, 32], iconAnchor: [16, 16] }),
+    plate: L.icon({ iconUrl: '../images/map/ナンバープレート.png', iconSize: [38, 38], iconAnchor: [19, 19] }),
+};
+
+// 収集物データ
+const collectibles = [
+    { type: "landmark", area: "フォーティック・バイユー", lat: 677.25, lng: 922.3 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 682.26, lng: 898.26 },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 728.99, lng: 900.01 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 754.23, lng: 909.25 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 759.48, lng: 855.28 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 777.47, lng: 852.03 },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 788.22, lng: 868.77 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 791.47, lng: 788.31 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 779.72, lng: 771.32 },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 789.72, lng: 762.32 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 802.71, lng: 733.08 },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 815.21, lng: 734.33 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 820.7, lng: 749.83 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 810.21, lng: 752.08 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 818.45, lng: 781.81 },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 851.69, lng: 803.8 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 835.95, lng: 831.54 },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 840.94, lng: 840.79 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 837.95, lng: 864.52 },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 855.44, lng: 865.02 },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 880.68, lng: 889.26 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 895.92, lng: 903.01 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 706.31, lng: 877.72 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 686.32, lng: 829.74 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 733.05, lng: 850.98 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 721.06, lng: 784.51 },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 703.32, lng: 764.52 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 812.02, lng: 886.96 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 827.26, lng: 928.69 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 844, lng: 916.95 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 879.99, lng: 754.52 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 880.49, lng: 743.78 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 851.75, lng: 733.03 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 861.25, lng: 750.28 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 755.54, lng: 745.28 },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 762.04, lng: 793.01 },
+    { type: "plate", area: "フォーティック・バイユー", lat: 730.55, lng: 746.28 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 749.52, lng: 658.21 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 738.78, lng: 642.97 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 717.54, lng: 656.46 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 738.53, lng: 615.98 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 780.76, lng: 615.48 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 784.26, lng: 617.23 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 823.49, lng: 614.97 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 830.74, lng: 646.72 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 706.01, lng: 483.28 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 792.54, lng: 560.73 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 813.53, lng: 563.48 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 820.28, lng: 569.97 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 806.54, lng: 516.25 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 830.53, lng: 526.49 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 842.52, lng: 500.51 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 872.01, lng: 482.51 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 900.25, lng: 496.76 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 918.24, lng: 486.51 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 898.25, lng: 455.78 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 883, lng: 437.29 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 839.77, lng: 637.03 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 823.28, lng: 388.56 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 806.8, lng: 362.47 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 821.29, lng: 344.73 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 777.56, lng: 355.23 },
+    { type: "plate", area: "デッド・ホース・レイク", lat: 792.25, lng: 419.97 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 707.79, lng: 376.97 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 699.05, lng: 371.72 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 657.81, lng: 451.69 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 691.05, lng: 490.17 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 733.29, lng: 481.22 },
+    { type: "landmark", area: "デッド・ホース・レイク", lat: 759.03, lng: 490.96 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 769.28, lng: 474.97 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 721.79, lng: 282.47 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 696.55, lng: 221.47 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 680.8, lng: 196.23 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 677.8, lng: 212.97 },
+    { type: "landmark", area: "ゴールデン・ショア", lat: 669.81, lng: 242.21 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 665.56, lng: 227.96 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 671.56, lng: 254.2 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 656.06, lng: 212.47 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 656.06, lng: 297.18 },
+    { type: "landmark", area: "ゴールデン・ショア", lat: 644.32, lng: 294.43 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 637.32, lng: 236.71 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 644.57, lng: 323.92 },
+    { type: "landmark", area: "ゴールデン・ショア", lat: 629.57, lng: 221.22 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 633.07, lng: 214.22 },
+    { type: "landmark", area: "ゴールデン・ショア", lat: 616.58, lng: 217.47 },
+    { type: "landmark", area: "ゴールデン・ショア", lat: 623.58, lng: 192.98 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 609.58, lng: 240.21 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 616.58, lng: 280.94 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 614.58, lng: 312.68 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 624.08, lng: 342.41 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 638.79, lng: 367.46 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 610.55, lng: 358.46 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 603.05, lng: 287 },
+    { type: "landmark", area: "ゴールデン・ショア", lat: 590.06, lng: 271.5 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 598.06, lng: 253.76 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 575.31, lng: 170.31 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 574.56, lng: 159.31 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 589.3, lng: 377.71 },
+    { type: "landmark", area: "ゴールデン・ショア", lat: 585.31, lng: 409.45 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 569.55, lng: 315.7 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 556.3, lng: 340.19 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 543.50, lng: 305.55 },
+    { type: "plate", area: "ゴールデン・ショア", lat: 540.56, lng: 274.72 },
+    { type: "nutrient", area: "ゴールデン・ショア", lat: 547.55, lng: 260.48 },
+    { type: "landmark", area: "ゴールデン・ショア", lat: 497.08, lng: 237.49 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 486.29, lng: 262.21 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 468.8, lng: 263.21 },
+    { type: "landmark", area: "サファリア・ベイ", lat: 458.81, lng: 269.95 },
+    { type: "plate", area: "サファリア・ベイ", lat: 448.56, lng: 244.46 },
+    { type: "plate", area: "サファリア・ベイ", lat: 413.56, lng: 261.46 },
+    { type: "landmark", area: "サファリア・ベイ", lat: 385.3, lng: 280.72 },
+    { type: "landmark", area: "サファリア・ベイ", lat: 400.3, lng: 326.69 },
+    { type: "plate", area: "サファリア・ベイ", lat: 365.56, lng: 321.2 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 352.82, lng: 288.71 },
+    { type: "plate", area: "サファリア・ベイ", lat: 347.82, lng: 286.71 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 375.81, lng: 362.18 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 402.00, lng: 242.27 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 404.04, lng: 138.22 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 420.03, lng: 141.97 },
+    { type: "plate", area: "サファリア・ベイ", lat: 400.79, lng: 169.96 },
+    { type: "landmark", area: "サファリア・ベイ", lat: 336.32, lng: 157.46 },
+    { type: "plate", area: "サファリア・ベイ", lat: 327.07, lng: 148.47 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 326.82, lng: 134.72 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 335.32, lng: 148.97 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 330.57, lng: 162.71 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 341.06, lng: 205.2 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 360.05, lng: 225.94 },
+    { type: "landmark", area: "サファリア・ベイ", lat: 322.07, lng: 232.68 },
+    { type: "plate", area: "サファリア・ベイ", lat: 303.83, lng: 248.68 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 293.83, lng: 244.93 },
+    { type: "plate", area: "サファリア・ベイ", lat: 274.34, lng: 222.44 },
+    { type: "landmark", area: "サファリア・ベイ", lat: 260.85, lng: 231.18 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 263.54, lng: 254.30 },
+    { type: "plate", area: "サファリア・ベイ", lat: 238.8, lng: 182 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 213.32, lng: 153.01 },
+    { type: "landmark", area: "サファリア・ベイ", lat: 204.82, lng: 205.74 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 198.57, lng: 248.72 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 174.55, lng: 237.51 },
+    { type: "landmark", area: "サファリア・ベイ", lat: 211.03, lng: 292.73 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 241.02, lng: 313.21 },
+    { type: "plate", area: "サファリア・ベイ", lat: 291.26, lng: 355.94 },
+    { type: "nutrient", area: "サファリア・ベイ", lat: 297, lng: 313.71 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 489.01, lng: 526.21 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 484.26, lng: 512.96 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 527.24, lng: 471.73 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 507, lng: 445.24 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 484.76, lng: 480.48 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 535.99, lng: 562.94 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 558.23, lng: 476.23 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 573.22, lng: 501.22 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 573.97, lng: 522.46 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 606.96, lng: 536.95 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 602.21, lng: 563.69 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 595.96, lng: 564.69 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 622.7, lng: 576.93 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 562.23, lng: 561.94 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 574.22, lng: 587.18 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 538.72, lng: 609.46 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 514.71, lng: 610.21 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 464.95, lng: 639.7 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 452.19, lng: 571.23 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 435.94, lng: 622.95 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 429.19, lng: 495.51 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 375.42, lng: 522 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 377.42, lng: 553.49 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 349.42, lng: 540.99 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 328.91, lng: 514.25 },
+    { type: "landmark", area: "プロスピリティーサンド", lat: 320.41, lng: 489.51 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 306.65, lng: 471.52 },
+    { type: "plate", area: "プロスピリティーサンド", lat: 323.91, lng: 432.04 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 352.7, lng: 591.45 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 355.45, lng: 582.46 },
+    { type: "nutrient", area: "プロスピリティーサンド", lat: 383.96, lng: 584.46 },
+    { type: "landmark", area: "キャビアキー", lat: 703.75, lng: 614.71 },
+    { type: "plate", area: "キャビアキー", lat: 660.74, lng: 635.2 },
+    { type: "nutrient", area: "キャビアキー", lat: 668.24, lng: 665.44 },
+    { type: "nutrient", area: "キャビアキー", lat: 651.49, lng: 703.92 },
+    { type: "plate", area: "キャビアキー", lat: 636.98, lng: 681.18 },
+    { type: "nutrient", area: "キャビアキー", lat: 624.73, lng: 659.19 },
+    { type: "nutrient", area: "キャビアキー", lat: 637.71, lng: 612.22 },
+    { type: "landmark", area: "キャビアキー", lat: 603.45, lng: 642.45 },
+    { type: "plate", area: "キャビアキー", lat: 586.21, lng: 661.21 },
+    { type: "landmark", area: "キャビアキー", lat: 628.72, lng: 756.17 },
+    { type: "plate", area: "キャビアキー", lat: 595.46, lng: 705.44 },
+    { type: "nutrient", area: "キャビアキー", lat: 601.21, lng: 738.93 },
+    { type: "plate", area: "キャビアキー", lat: 576.2, lng: 762.91 },
+    { type: "nutrient", area: "キャビアキー", lat: 557.45, lng: 794.9 },
+    { type: "landmark", area: "キャビアキー", lat: 523.94, lng: 725.93 },
+    { type: "nutrient", area: "キャビアキー", lat: 525.44, lng: 695.7 },
+    { type: "plate", area: "キャビアキー", lat: 517.44, lng: 695.45 },
+    { type: "plate", area: "キャビアキー", lat: 524.69, lng: 650.97 },
+    { type: "nutrient", area: "キャビアキー", lat: 486.97, lng: 695.96 },
+    { type: "landmark", area: "キャビアキー", lat: 474.22, lng: 700.2 },
+    { type: "nutrient", area: "キャビアキー", lat: 470.22, lng: 745.18 },
+    { type: "plate", area: "キャビアキー", lat: 440.46, lng: 721.94 },
+    { type: "nutrient", area: "キャビアキー", lat: 427.7, lng: 656.72 },
+    { type: "landmark", area: "キャビアキー", lat: 464.72, lng: 780.18 },
+    { type: "nutrient", area: "キャビアキー", lat: 515.22, lng: 839.96 },
+    { type: "plate", area: "キャビアキー", lat: 507.97, lng: 901.68 },
+    { type: "landmark", area: "キャビアキー", lat: 517.72, lng: 936.42 },
+    { type: "nutrient", area: "湾岸", lat: 371.43, lng: 751.52 },
+    { type: "landmark", area: "湾岸", lat: 385.46, lng: 681.25 },
+    { type: "nutrient", area: "湾岸", lat: 376.96, lng: 665.25 },
+    { type: "plate", area: "湾岸", lat: 367.71, lng: 681.259 },
+    { type: "plate", area: "湾岸", lat: 346.45, lng: 665.5 },
+    { type: "nutrient", area: "湾岸", lat: 250.44, lng: 422.99 },
+    { type: "nutrient", area: "湾岸", lat: 266.7, lng: 424.74 },
+    { type: "nutrient", area: "湾岸", lat: 263.7, lng: 457.25 },
+    { type: "nutrient", area: "湾岸", lat: 219.89, lng: 379.99 },
+    { type: "plate", area: "湾岸", lat: 191.38, lng: 371.99 },
+    { type: "nutrient", area: "湾岸", lat: 163.37, lng: 384.99 },
+    { type: "nutrient", area: "湾岸", lat: 183.38, lng: 406.49 },
+    { type: "plate", area: "湾岸", lat: 199.38, lng: 455 },
+    { type: "nutrient", area: "湾岸", lat: 221.39, lng: 475.5 },
+    { type: "nutrient", area: "湾岸", lat: 168.88, lng: 471.5 },
+    { type: "landmark", area: "湾岸", lat: 192.38, lng: 483.5 },
+    { type: "nutrient", area: "湾岸", lat: 207.89, lng: 500.5 },
+    { type: "nutrient", area: "湾岸", lat: 266.4, lng: 515 },
+    { type: "nutrient", area: "湾岸", lat: 252.9, lng: 531.01 },
+    { type: "landmark", area: "湾岸", lat: 227.39, lng: 517 },
+    { type: "plate", area: "湾岸", lat: 272.41, lng: 537.01 },
+    { type: "plate", area: "湾岸", lat: 267.9, lng: 575.51 },
+    { type: "plate", area: "湾岸", lat: 213.89, lng: 560.51 },
+    { type: "landmark", area: "湾岸", lat: 311.92, lng: 582.51 },
+    { type: "nutrient", area: "湾岸", lat: 305.9, lng: 611.51 },
+    { type: "nutrient", area: "湾岸", lat: 256.89, lng: 605.01 },
+    { type: "landmark", area: "湾岸", lat: 432.22, lng: 840.75 },
+    { type: "nutrient", area: "湾岸", lat: 434.72, lng: 824.5 },
+    { type: "nutrient", area: "湾岸", lat: 473.98, lng: 912.5 },
+    { type: "landmark", area: "湾岸", lat: 469.48, lng: 918.51 },
+    { type: "landmark", area: "湾岸", lat: 424.50, lng: 902.51 },
+    { type: "nutrient", area: "湾岸", lat: 416.28, lng: 878.29 },
+    { type: "plate", area: "湾岸", lat: 378.95, lng: 857.01 },
+    { type: "nutrient", area: "湾岸", lat: 460.45, lng: 945.51 },
+    { type: "landmark", area: "湾岸", lat: 382.43, lng: 949.51 },
+    { type: "plate", area: "湾岸", lat: 437.445, lng: 963.01 },
+    { type: "nutrient", area: "湾岸", lat: 437.44, lng: 977.51 },
+    { type: "landmark", area: "湾岸", lat: 502.46, lng: 1055.02 },
+    { type: "nutrient", area: "湾岸", lat: 490.96, lng: 1044.02 },
+    { type: "plate", area: "湾岸", lat: 471.95, lng: 1086.52 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 707.73, lng: 963.25 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 768.49, lng: 969 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 755.74, lng: 993 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 738.73, lng: 1010.25 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 728.73, lng: 993.75 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 718.48, lng: 987.5 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 694.22, lng: 983.25 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 686.97, lng: 994 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 677.47, lng: 1029.26 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 653.96, lng: 985.75 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 654.71, lng: 1005 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 644.96, lng: 1026.76 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 681.97, lng: 1051.26 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 620.21, lng: 1037 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 643.46, lng: 1063.01 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 611.45, lng: 1060.76 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 591.45, lng: 1016.25 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 592.95, lng: 986.75 },
+    { type: "plate", area: "クローフィッシュ・ベイ", lat: 575.94, lng: 971.75 },
+    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 667.26, lng: 980.04 },
+];
+
+// フィルター状態
+let activeTypes = new Set(['landmark', 'nutrient', 'plate']);
+let activeAreas = new Set(); // 空の場合は全エリア表示
+
+// マーカーを保持
+const markers = [];
+
+// ピンを全部追加
+collectibles.forEach(item => {
+    const marker = L.marker([item.lat, item.lng], { icon: icons[item.type] })
+        .addTo(map)
+        .bindPopup(`${item.area}　${item.type === 'landmark' ? 'ランドマーク' : item.type === 'nutrient' ? '栄養箱' : 'ナンバープレート'}`);
+    markers.push({ marker, item });
+});
+
+// フィルター適用
+function applyFilter() {
+    markers.forEach(({ marker, item }) => {
+        const typeOk = activeTypes.has(item.type);
+        const areaOk = activeAreas.size === 0 || activeAreas.has(item.area);
+        if (typeOk && areaOk) {
+            marker.addTo(map);
+        } else {
+            marker.remove();
+        }
+    });
+}
+
+// タイプボタンのクリック処理
+document.querySelectorAll('.filter-type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const t = btn.dataset.type;
+        if (activeTypes.has(t)) {
+            activeTypes.delete(t);
+            btn.classList.remove('active');
+        } else {
+            activeTypes.add(t);
+            btn.classList.add('active');
+        }
+        applyFilter();
+    });
+});
+
+// エリアボタンのクリック処理
+document.querySelectorAll('.filter-area-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const a = btn.dataset.area;
+        if (activeAreas.has(a)) {
+            activeAreas.delete(a);
+            btn.classList.remove('active');
+        } else {
+            activeAreas.add(a);
+            btn.classList.add('active');
+        }
+        applyFilter();
+    });
+});
+
+// リセットボタン（全表示）の処理
+document.getElementById('reset-filters-btn').addEventListener('click', () => {
+    // タイプを全て有効に
+    activeTypes = new Set(['landmark', 'nutrient', 'plate']);
+    document.querySelectorAll('.filter-type-btn').forEach(btn => btn.classList.add('active'));
+
+    // エリアを全て解除（全表示）
+    activeAreas.clear();
+    document.querySelectorAll('.filter-area-btn').forEach(btn => btn.classList.remove('active'));
+
+    applyFilter();
+});

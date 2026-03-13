@@ -1,0 +1,75 @@
+@import url('../equipment/equipment.css');
+
+.main {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+#map {
+    flex: 1;
+    width: 100%;
+    background: #05040A;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    z-index: 1;
+}
+
+.map-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: var(--glass-bg);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+}
+
+.filter-type-btn, .filter-area-btn {
+    padding: 8px 16px;
+    background: rgba(0, 40, 50, 0.4);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-primary);
+}
+
+.filter-type-btn:hover, .filter-area-btn:hover {
+    background: rgba(0, 255, 255, 0.05);
+    border-color: rgba(0, 255, 255, 0.3);
+}
+
+.filter-type-btn.active, .filter-area-btn.active {
+    background: rgba(0, 255, 255, 0.15);
+    border-color: var(--accent-glow);
+    color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.filter-reset-btn {
+    margin-left: auto;
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.filter-reset-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #fff;
+}
+
+.leaflet-marker-icon {
+    width: 32px !important;
+    height: 32px !important;
+    object-fit: contain;
+}

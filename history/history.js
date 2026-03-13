@@ -1,7 +1,11 @@
 const historyData = [
     {
+        date: "2026年3月13日",
+        content: "マップ機能を追加しました。"
+    },
+    {
         date: "2026年3月11日",
-        content: "サイトを公開しました。"
+        content: "装備機能を追加しました。"
     }
 ];
 

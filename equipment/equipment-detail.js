@@ -8,11 +8,25 @@ const data = equipmentData[id];
 if (data) {
   document.getElementById('detail-name').textContent = data.name;
   document.getElementById('detail-slot').textContent = '部位：' + data.slot;
-  document.getElementById('detail-element').textContent = '属性：' + data.element;
-  document.getElementById('detail-obtain').textContent = data.obtain;
+  const elementEl = document.getElementById('detail-element');
+  if (data.element) {
+    elementEl.textContent = '属性：' + data.element;
+    elementEl.style.display = 'block';
+  } else {
+    elementEl.style.display = 'none';
+  }
+  const obtainEl = document.getElementById('detail-obtain');
+  if (data.obtain && data.obtain !== "入手条件：") {
+    obtainEl.textContent = data.obtain;
+    obtainEl.style.display = 'block';
+  } else {
+    obtainEl.style.display = 'none';
+  }
+
   const ageEl = document.getElementById('detail-age');
   if (data.age) {
     ageEl.textContent = '必要年齢：' + data.age;
+    ageEl.style.display = 'block';
   } else {
     ageEl.style.display = 'none';
   }
@@ -60,16 +74,23 @@ if (data) {
     document.getElementById('total-mat-fat').style.display = totalFat > 0 ? 'flex' : 'none';
     document.getElementById('total-mat-mutagen').style.display = totalMutagen > 0 ? 'flex' : 'none';
 
+    // テキスト内の数値をハイライトする関数（例: "+10%", "20ダメージ" の数値をオレンジにする）
+    function formatText(text) {
+      if (!text) return '';
+      // +数値、-数値、数値のみなどをマッチしてspanで囲む
+      return text.replace(/([+-]?\d+(?:\.\d+)?%?)/g, '<span class="highlight">$1</span>');
+    }
+
     // パッシブと特殊能力
     if (data.passive) {
-      document.getElementById('detail-passive').innerHTML = t.passive.join('<br>');
+      document.getElementById('detail-passive').innerHTML = t.passive.map(formatText).join('<br>');
       document.getElementById('section-passive').style.display = 'block';
     } else {
       document.getElementById('section-passive').style.display = 'none';
     }
 
     if (data.special) {
-      document.getElementById('detail-special').innerHTML = t.special.join('<br>');
+      document.getElementById('detail-special').innerHTML = t.special.map(formatText).join('<br>');
       document.getElementById('section-special').style.display = 'block';
     } else {
       document.getElementById('section-special').style.display = 'none';
@@ -77,7 +98,7 @@ if (data) {
 
     if (data.ability) {
       document.getElementById('detail-ability-desc').innerHTML = data.abilityDesc.join('<br>');
-      document.getElementById('detail-ability-effect').innerHTML = t.abilityEffect.join('<br>');
+      document.getElementById('detail-ability-effect').innerHTML = t.abilityEffect.map(formatText).join('<br>');
       document.getElementById('section-ability').style.display = 'block';
     } else {
       document.getElementById('section-ability').style.display = 'none';
