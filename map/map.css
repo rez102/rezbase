@@ -1,15 +1,20 @@
 @import url('../equipment/equipment.css');
 
+.layout {
+    height: auto;
+    min-height: 100vh;
+}
+
 .main {
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+    display: block; /* fix for flexbox height compression */
+    min-height: 100vh;
     box-sizing: border-box;
 }
 
 #map {
-    flex: 1;
+    height: calc(100vh - 160px); /* フィルターと余白を除いた画面いっぱい */
+    min-height: 600px; /* 最低でもこのサイズは保つ */
     width: 100%;
     background: #05040A;
     border-radius: 16px;

@@ -4,3 +4,21 @@
     --font-primary: 'Inter', sans-serif;
     --font-heading: 'Outfit', sans-serif;
 }
+
+.site-footer {
+    margin-top: 80px;
+    padding: 40px 20px;
+    background: rgba(0, 5, 10, 0.4);
+    border-top: 1px solid rgba(0, 255, 255, 0.05);
+    color: #94d2bd;
+    font-size: 13px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.site-footer p {
+    margin: 5px 0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}

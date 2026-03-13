@@ -6,6 +6,13 @@ body {
     color: #e0fbfc;
     text-align: center;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.site-footer {
+    margin-top: auto;
 }
 .home-header {
     padding: 60px 20px 40px;
