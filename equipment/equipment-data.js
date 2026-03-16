@@ -137,10 +137,10 @@ const equipmentData = {
     special: false,
     tiers: [
       { protein: 0, mineral: 0, fat: 0, mutagen: 0, passive: ["+8% 体当たりのダメージ", "+30% 乗員ノックバック耐性", "+20% 乗員ダメージ耐性", "+10% 体当たりの力ボーナス", "+3% ダメージ耐性"], special: null },
-      { protein: 0, mineral: 8000, fat: 0, mutagen: 0, passive: ["+16% 体当たりのダメージ", "+35% 乗員ノックバック耐性", "+25% 乗員ダメージ耐性", "+10% 体当たりの力ボーナス", "+3% ダメージ耐性"], special: null },
-      { protein: 0, mineral: 10000, fat: 0, mutagen: 0, passive: ["+24% 体当たりのダメージ", "+40% 乗員ノックバック耐性", "+30% 乗員ダメージ耐性", "+10% 体当たりの力ボーナス", "+3% ダメージ耐性"], special: null },
-      { protein: 0, mineral: 12000, fat: 0, mutagen: 175, passive: ["+32% 体当たりのダメージ", "+45% 乗員ノックバック耐性", "+35% 乗員ダメージ耐性", "+10% 体当たりの力ボーナス", "+3% ダメージ耐性"], special: null },
-      { protein: 0, mineral: 14000, fat: 0, mutagen: 350, passive: ["+40% 体当たりのダメージ", "+50% 乗員ノックバック耐性", "+40% 乗員ダメージ耐性", "+10% 体当たりの力ボーナス", "+3% ダメージ耐性"], special: null },
+      { protein: 0, mineral: 8000, fat: 0, mutagen: 0, passive: ["+16% 体当たりのダメージ", "+35% 乗員ノックバック耐性", "+25% 乗員ダメージ耐性", "+20% 体当たりの力ボーナス", "+6% ダメージ耐性"], special: null },
+      { protein: 0, mineral: 10000, fat: 0, mutagen: 0, passive: ["+24% 体当たりのダメージ", "+40% 乗員ノックバック耐性", "+30% 乗員ダメージ耐性", "+30% 体当たりの力ボーナス", "+9% ダメージ耐性"], special: null },
+      { protein: 0, mineral: 12000, fat: 0, mutagen: 175, passive: ["+32% 体当たりのダメージ", "+45% 乗員ノックバック耐性", "+35% 乗員ダメージ耐性", "+40% 体当たりの力ボーナス", "+12% ダメージ耐性"], special: null },
+      { protein: 0, mineral: 14000, fat: 0, mutagen: 350, passive: ["+40% 体当たりのダメージ", "+50% 乗員ノックバック耐性", "+40% 乗員ダメージ耐性", "+50% 体当たりの力ボーナス", "+15% ダメージ耐性"], special: null },
     ]
   },
   "atomic-body": {
