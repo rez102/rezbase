@@ -583,10 +583,10 @@ const equipmentData = {
     special: false,
     tiers: [
       { protein: 0, mineral: 0, fat: 0, mutagen: 0, passive: ["+3% ダメージ耐性"], special: null },
-      { protein: 0, mineral: 0, fat: 0, mutagen: 0, passive: ["+6% ダメージ耐性"], special: null },
-      { protein: 0, mineral: 0, fat: 0, mutagen: 0, passive: ["+9% ダメージ耐性"], special: null },
-      { protein: 0, mineral: 0, fat: 0, mutagen: 0, passive: ["+12% ダメージ耐性"], special: null },
-      { protein: 0, mineral: 0, fat: 0, mutagen: 0, passive: ["+15% ダメージ耐性"], special: null },
+      { protein: 0, mineral: 6000, fat: 0, mutagen: 0, passive: ["+6% ダメージ耐性"], special: null },
+      { protein: 0, mineral: 8000, fat: 0, mutagen: 0, passive: ["+9% ダメージ耐性"], special: null },
+      { protein: 0, mineral: 10000, fat: 0, mutagen: 175, passive: ["+12% ダメージ耐性"], special: null },
+      { protein: 0, mineral: 12000, fat: 0, mutagen: 350, passive: ["+15% ダメージ耐性"], special: null },
     ]
   },
   "mutagen-digesion": {
