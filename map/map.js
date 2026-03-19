@@ -2,7 +2,8 @@ const map = L.map('map', {
     crs: L.CRS.Simple,
     minZoom: -2,
     maxZoom: 2,
-    zoomControl: false // 手動で右側に配置するなど調整可能
+    zoomControl: false,
+    doubleClickZoom: false // 連打時のズーム/移動を防止
 });
 
 // ズームコントロールを右上に配置
@@ -12,7 +13,12 @@ const w = 1120;
 const h = 1120;
 const bounds = [[0, 0], [h, w]];
 L.imageOverlay('../images/maneater_map.png', bounds).addTo(map);
-map.fitBounds(bounds);
+map.fitBounds(bounds, { paddingTopLeft: [320, 0] });
+
+// デバッグ用：クリックした座標をコンソールに表示
+map.on('click', function(e) {
+    console.log(`lat: ${e.latlng.lat.toFixed(2)}, lng: ${e.latlng.lng.toFixed(2)}`);
+});
 
 // アイコン定義
 const icons = {
@@ -21,21 +27,12 @@ const icons = {
     plate: L.icon({ iconUrl: '../images/map/ナンバープレート.png', iconSize: [38, 38], iconAnchor: [19, 19], popupAnchor: [0, -10] }),
     'main-quest': L.icon({ iconUrl: '../images/map/メインクエスト.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
     'sub-quest': L.icon({ iconUrl: '../images/map/手配.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    grate: L.icon({ iconUrl: '../images/map/人間狩り.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
+    manhunt: L.icon({ iconUrl: '../images/map/人間狩り.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
+    grate: L.icon({ iconUrl: '../images/map/鉄格子.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
+    floodgate: L.icon({ iconUrl: '../images/map/水門.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
 };
 
-// 収集物データ（ID付与とサンプルデータ追加）
-const collectiblesData = [
-    { type: "landmark", area: "フォーティック・バイユー", lat: 677.25, lng: 922.3, name: "バイユーの看板" },
-    { type: "nutrient", area: "フォーティック・バイユー", lat: 682.26, lng: 898.26, name: "栄養箱" },
-    { type: "landmark", area: "フォーティック・バイユー", lat: 728.99, lng: 900.01, name: "沈没船" },
-    { type: "main-quest", area: "フォーティック・バイユー", lat: 710, lng: 880, name: "チュートリアル" },
-    { type: "sub-quest", area: "フォーティック・バイユー", lat: 740, lng: 860, name: "ワニの討伐" },
-    { type: "grate", area: "フォーティック・バイユー", lat: 780, lng: 800, name: "鉄格子の扉" },
-    // ... 既存のデータも ID つきで管理されるように以下で処理 ...
-];
-
-// 既存の collectibles データを流用しつつ ID を付与
+// 収集物データ
 const rawCollectibles = [
     { type: "landmark", area: "フォーティック・バイユー", lat: 677.25, lng: 922.3 },
     { type: "nutrient", area: "フォーティック・バイユー", lat: 682.26, lng: 898.26 },
@@ -107,6 +104,8 @@ const rawCollectibles = [
     { type: "nutrient", area: "デッド・ホース・レイク", lat: 733.29, lng: 481.22 },
     { type: "landmark", area: "デッド・ホース・レイク", lat: 759.03, lng: 490.96 },
     { type: "nutrient", area: "デッド・ホース・レイク", lat: 769.28, lng: 474.97 },
+    { type: "nutrient", area: "デッド・ホース・レイク", lat: 844.77, lng: 408.53 },
+    { type: "floodgate", area: "デッド・ホース・レイク", lat: 714.75, lng: 582.79 },
     { type: "plate", area: "ゴールデン・ショア", lat: 721.79, lng: 282.47 },
     { type: "nutrient", area: "ゴールデン・ショア", lat: 696.55, lng: 221.47 },
     { type: "nutrient", area: "ゴールデン・ショア", lat: 680.8, lng: 196.23 },
@@ -179,37 +178,39 @@ const rawCollectibles = [
     { type: "nutrient", area: "サファリア・ベイ", lat: 241.02, lng: 313.21 },
     { type: "plate", area: "サファリア・ベイ", lat: 291.26, lng: 355.94 },
     { type: "nutrient", area: "サファリア・ベイ", lat: 297, lng: 313.71 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 489.01, lng: 526.21 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 484.26, lng: 512.96 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 527.24, lng: 471.73 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 507, lng: 445.24 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 484.76, lng: 480.48 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 535.99, lng: 562.94 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 558.23, lng: 476.23 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 573.22, lng: 501.22 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 573.97, lng: 522.46 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 606.96, lng: 536.95 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 602.21, lng: 563.69 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 595.96, lng: 564.69 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 622.7, lng: 576.93 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 562.23, lng: 561.94 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 574.22, lng: 587.18 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 538.72, lng: 609.46 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 514.71, lng: 610.21 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 464.95, lng: 639.7 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 452.19, lng: 571.23 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 435.94, lng: 622.95 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 429.19, lng: 495.51 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 375.42, lng: 522 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 377.42, lng: 553.49 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 349.42, lng: 540.99 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 328.91, lng: 514.25 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 320.41, lng: 489.51 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 306.65, lng: 471.52 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 323.91, lng: 432.04 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 352.7, lng: 591.45 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 355.45, lng: 582.46 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 383.96, lng: 584.46 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 489.01, lng: 526.21 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 484.26, lng: 512.96 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 527.24, lng: 471.73 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 507, lng: 445.24 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 484.76, lng: 480.48 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 535.99, lng: 562.94 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 552.01, lng: 475.78 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 573.22, lng: 501.22 },
+    { type: "floodgate", area: "プロスピリティー・サンド", lat: 548.27, lng: 423.54 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 573.97, lng: 522.46 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 606.96, lng: 536.95 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 602.21, lng: 563.69 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 595.96, lng: 564.69 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 622.7, lng: 576.93 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 562.23, lng: 561.94 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 574.22, lng: 587.18 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 538.72, lng: 609.46 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 514.71, lng: 610.21 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 464.95, lng: 639.7 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 452.19, lng: 571.23 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 435.94, lng: 622.95 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 564.52, lng: 488.28 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 429.19, lng: 495.51 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 375.42, lng: 522 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 377.42, lng: 553.49 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 349.42, lng: 540.99 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 328.91, lng: 514.25 },
+    { type: "landmark", area: "プロスピリティー・サンド", lat: 320.41, lng: 489.51 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 306.65, lng: 471.52 },
+    { type: "plate", area: "プロスピリティー・サンド", lat: 323.91, lng: 432.04 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 352.7, lng: 591.45 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 355.45, lng: 582.46 },
+    { type: "nutrient", area: "プロスピリティー・サンド", lat: 383.96, lng: 584.46 },
     { type: "landmark", area: "キャビアキー", lat: 703.75, lng: 614.71 },
     { type: "plate", area: "キャビアキー", lat: 660.74, lng: 635.2 },
     { type: "nutrient", area: "キャビアキー", lat: 668.24, lng: 665.44 },
@@ -237,6 +238,11 @@ const rawCollectibles = [
     { type: "nutrient", area: "キャビアキー", lat: 515.22, lng: 839.96 },
     { type: "plate", area: "キャビアキー", lat: 507.97, lng: 901.68 },
     { type: "landmark", area: "キャビアキー", lat: 517.72, lng: 936.42 },
+    { type: "landmark", area: "キャビアキー", lat: 563.50, lng: 738.54 },
+    { type: "nutrient", area: "キャビアキー", lat: 588.01, lng: 738.56 },
+    { type: "nutrient", area: "キャビアキー", lat: 548.77, lng: 693.55 },
+    { type: "plate", area: "キャビアキー", lat: 670.51, lng: 686.28 },
+    { type: "floodgate", area: "キャビアキー", lat: 670.76, lng: 736.81 },
     { type: "nutrient", area: "湾岸", lat: 371.43, lng: 751.52 },
     { type: "landmark", area: "湾岸", lat: 385.46, lng: 681.25 },
     { type: "nutrient", area: "湾岸", lat: 376.96, lng: 665.25 },
@@ -297,36 +303,224 @@ const rawCollectibles = [
     { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 592.95, lng: 986.75 },
     { type: "plate", area: "クローフィッシュ・ベイ", lat: 575.94, lng: 971.75 },
     { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 667.26, lng: 980.04 },
+
+    // === Quests & Grates ===
+    // Fortick Bayou
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 703.02, lng: 932.13 },
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 694.52, lng: 919.88 },
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 688.27, lng: 839.12 },
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 744.12, lng: 888.13 },
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 782.02, lng: 789.5 },
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 821.4, lng: 924.25 },
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 820.89, lng: 870.88 },
+    { type: "sub-quest", area: "フォーティック・バイユー", lat: 723.55, lng: 760.25 },
+    { type: "sub-quest", area: "フォーティック・バイユー", lat: 823.75, lng: 736.75 },
+    { type: "sub-quest", area: "フォーティック・バイユー", lat: 779.79, lng: 836.01 },
+    { type: "sub-quest", area: "フォーティック・バイユー", lat: 830.02, lng: 852.76 },
+    { type: "grate", area: "フォーティック・バイユー", lat: 849.78, lng: 909.26 },
+    { type: "grate", area: "フォーティック・バイユー", lat: 846.98, lng: 763.98 },
+    { type: "grate", area: "フォーティック・バイユー", lat: 838.48, lng: 733.73 },
+    { type: "grate", area: "フォーティック・バイユー", lat: 819.49, lng: 763.48 },
+    { type: "grate", area: "フォーティック・バイユー", lat: 788.5, lng: 719.72 },
+    { type: "grate", area: "フォーティック・バイユー", lat: 759.76, lng: 784.73 },
+
+    // Dead Horse Lake
+    { type: "main-quest", area: "デッド・ホース・レイク", lat: 788.79, lng: 610.75 },
+    { type: "main-quest", area: "デッド・ホース・レイク", lat: 769.54, lng: 660.75 },
+    { type: "main-quest", area: "デッド・ホース・レイク", lat: 821.52, lng: 654 },
+    { type: "main-quest", area: "デッド・ホース・レイク", lat: 805.78, lng: 531.76 },
+    { type: "main-quest", area: "デッド・ホース・レイク", lat: 895.01, lng: 460.51 },
+    { type: "main-quest", area: "デッド・ホース・レイク", lat: 831.54, lng: 385 },
+    { type: "main-quest", area: "デッド・ホース・レイク", lat: 731.33, lng: 452.26 },
+    { type: "main-quest", area: "デッド・ホース・レイク", lat: 730.08, lng: 465.51 },
+    { type: "sub-quest", area: "デッド・ホース・レイク", lat: 760.05, lng: 613.01 },
+    { type: "sub-quest", area: "デッド・ホース・レイク", lat: 858.28, lng: 507.51 },
+    { type: "sub-quest", area: "デッド・ホース・レイク", lat: 817.29, lng: 434.51 },
+    { type: "sub-quest", area: "デッド・ホース・レイク", lat: 733.54, lng: 423.76 },
+    { type: "manhunt", area: "デッド・ホース・レイク", lat: 830, lng: 478.51 },
+    { type: "manhunt", area: "デッド・ホース・レイク", lat: 815.51, lng: 352.5 },
+    { type: "manhunt", area: "デッド・ホース・レイク", lat: 708.28, lng: 371.25 },
+    { type: "manhunt", area: "デッド・ホース・レイク", lat: 656.02, lng: 450 },
+    { type: "grate", area: "デッド・ホース・レイク", lat: 800.03, lng: 666.26 },
+    { type: "grate", area: "デッド・ホース・レイク", lat: 795.54, lng: 661.01 },
+    { type: "grate", area: "デッド・ホース・レイク", lat: 732.79, lng: 656.01 },
+    { type: "grate", area: "デッド・ホース・レイク", lat: 720.3, lng: 646.26 },
+    { type: "grate", area: "デッド・ホース・レイク", lat: 753.03, lng: 612.51 },
+    { type: "grate", area: "デッド・ホース・レイク", lat: 900.47, lng: 480.5 },
+    { type: "grate", area: "デッド・ホース・レイク", lat: 815.79, lng: 425.26 },
+    { type: "grate", area: "デッド・ホース・レイク", lat: 812.54, lng: 370.75 },
+    { type: "grate", area: "デッド・ホース・レイク", lat: 832.78, lng: 382.75 },
+
+    // Golden Shore
+    { type: "main-quest", area: "ゴールデン・ショア", lat: 606.06, lng: 393.26 },
+    { type: "main-quest", area: "ゴールデン・ショア", lat: 604.29, lng: 327.01 },
+    { type: "main-quest", area: "ゴールデン・ショア", lat: 687.5, lng: 311.51 },
+    { type: "main-quest", area: "ゴールデン・ショア", lat: 669.51, lng: 264.25 },
+    { type: "main-quest", area: "ゴールデン・ショア", lat: 650.02, lng: 269 },
+    { type: "main-quest", area: "ゴールデン・ショア", lat: 651.39, lng: 213.5 },
+    { type: "main-quest", area: "ゴールデン・ショア", lat: 575.67, lng: 214.25 },
+    { type: "main-quest", area: "ゴールデン・ショア", lat: 647.54, lng: 260.76 },
+    { type: "sub-quest", area: "ゴールデン・ショア", lat: 688.52, lng: 214.26 },
+    { type: "sub-quest", area: "ゴールデン・ショア", lat: 600.79, lng: 257.51 },
+    { type: "sub-quest", area: "ゴールデン・ショア", lat: 545.84, lng: 233.76 },
+    { type: "sub-quest", area: "ゴールデン・ショア", lat: 611.56, lng: 347.01 },
+    { type: "manhunt", area: "ゴールデン・ショア", lat: 702.01, lng: 262.26 },
+    { type: "manhunt", area: "ゴールデン・ショア", lat: 644.53, lng: 341.26 },
+    { type: "manhunt", area: "ゴールデン・ショア", lat: 579.56, lng: 264.5 },
+    { type: "manhunt", area: "ゴールデン・ショア", lat: 559.82, lng: 313.25 },
+    { type: "grate", area: "ゴールデン・ショア", lat: 641.05, lng: 218.01 },
+    { type: "grate", area: "ゴールデン・ショア", lat: 682.28, lng: 222.26 },
+    { type: "grate", area: "ゴールデン・ショア", lat: 598.04, lng: 198.26 },
+    { type: "grate", area: "ゴールデン・ショア", lat: 604.79, lng: 164.26 },
+    { type: "grate", area: "ゴールデン・ショア", lat: 627.03, lng: 249.01 },
+    { type: "grate", area: "ゴールデン・ショア", lat: 616.04, lng: 271.76 },
+    { type: "grate", area: "ゴールデン・ショア", lat: 617.79, lng: 293.01 },
+    { type: "grate", area: "ゴールデン・ショア", lat: 637.28, lng: 350.76 },
+    { type: "grate", area: "ゴールデン・ショア", lat: 616.04, lng: 368.26 },
+
+    // Safaria Bay
+    { type: "main-quest", area: "サファリア・ベイ", lat: 345.79, lng: 281.01 },
+    { type: "main-quest", area: "サファリア・ベイ", lat: 410.52, lng: 88.01 },
+    { type: "main-quest", area: "サファリア・ベイ", lat: 327.54, lng: 113.26 },
+    { type: "main-quest", area: "サファリア・ベイ", lat: 357.07, lng: 180.51 },
+    { type: "main-quest", area: "サファリア・ベイ", lat: 318.09, lng: 193.01 },
+    { type: "main-quest", area: "サファリア・ベイ", lat: 272.61, lng: 156.51 },
+    { type: "main-quest", area: "サファリア・ベイ", lat: 337.58, lng: 250.52 },
+    { type: "main-quest", area: "サファリア・ベイ", lat: 179.1, lng: 208.51 },
+    { type: "main-quest", area: "サファリア・ベイ", lat: 276.56, lng: 364.02 },
+    { type: "sub-quest", area: "サファリア・ベイ", lat: 380.01, lng: 116.51 },
+    { type: "sub-quest", area: "サファリア・ベイ", lat: 382.01, lng: 226.02 },
+    { type: "sub-quest", area: "サファリア・ベイ", lat: 225.58, lng: 322.52 },
+    { type: "sub-quest", area: "サファリア・ベイ", lat: 123.12, lng: 274.52 },
+    { type: "manhunt", area: "サファリア・ベイ", lat: 289.08, lng: 246.01 },
+    { type: "manhunt", area: "サファリア・ベイ", lat: 233.6, lng: 219.51 },
+    { type: "manhunt", area: "サファリア・ベイ", lat: 398.07, lng: 155.51 },
+    { type: "manhunt", area: "サファリア・ベイ", lat: 432.56, lng: 274.52 },
+    { type: "grate", area: "サファリア・ベイ", lat: 405.57, lng: 178 },
+    { type: "grate", area: "サファリア・ベイ", lat: 390.29, lng: 109.51 },
+    { type: "grate", area: "サファリア・ベイ", lat: 356.8, lng: 155.26 },
+    { type: "grate", area: "サファリア・ベイ", lat: 324.07, lng: 257.76 },
+    { type: "grate", area: "サファリア・ベイ", lat: 362.38, lng: 342.75 },
+
+    // Prosperity Sands
+    { type: "main-quest", area: "プロスピリティー・サンド", lat: 524.5, lng: 447.26 },
+    { type: "main-quest", area: "プロスピリティー・サンド", lat: 476.53, lng: 477.26 },
+    { type: "main-quest", area: "プロスピリティー・サンド", lat: 504.01, lng: 520.26 },
+    { type: "main-quest", area: "プロスピリティー・サンド", lat: 522.53, lng: 631.26 },
+    { type: "main-quest", area: "プロスピリティー・サンド", lat: 351.22, lng: 533.04 },
+    { type: "main-quest", area: "プロスピリティー・サンド", lat: 338.22, lng: 473.08 },
+    { type: "main-quest", area: "プロスピリティー・サンド", lat: 417.52, lng: 587.76 },
+    { type: "main-quest", area: "プロスピリティー・サンド", lat: 418.77, lng: 572.01 },
+    { type: "sub-quest", area: "プロスピリティー・サンド", lat: 592.78, lng: 527.01 },
+    { type: "sub-quest", area: "プロスピリティー・サンド", lat: 565.52, lng: 607.51 },
+    { type: "sub-quest", area: "プロスピリティー・サンド", lat: 441.83, lng: 629.01 },
+    { type: "sub-quest", area: "プロスピリティー・サンド", lat: 407.59, lng: 528 },
+    { type: "manhunt", area: "プロスピリティー・サンド", lat: 524.51, lng: 509.01 },
+    { type: "manhunt", area: "プロスピリティー・サンド", lat: 444.05, lng: 571.02 },
+    { type: "manhunt", area: "プロスピリティー・サンド", lat: 532.5, lng: 614.01 },
+    { type: "manhunt", area: "プロスピリティー・サンド", lat: 597.77, lng: 562.76 },
+    { type: "grate", area: "プロスピリティー・サンド", lat: 530.54, lng: 466.01 },
+    { type: "grate", area: "プロスピリティー・サンド", lat: 551.53, lng: 534.01 },
+    { type: "grate", area: "プロスピリティー・サンド", lat: 569.28, lng: 560.01 },
+    { type: "grate", area: "プロスピリティー・サンド", lat: 514.3, lng: 616.26 },
+    { type: "grate", area: "プロスピリティー・サンド", lat: 378.29, lng: 564.76 },
+
+    // Caviar Key
+    { type: "main-quest", area: "キャビアキー", lat: 667.52, lng: 644.01 },
+    { type: "main-quest", area: "キャビアキー", lat: 620.29, lng: 733.26 },
+    { type: "main-quest", area: "キャビアキー", lat: 586.06, lng: 706.26 },
+    { type: "main-quest", area: "キャビアキー", lat: 552.53, lng: 782.76 },
+    { type: "main-quest", area: "キャビアキー", lat: 478.29, lng: 703.26 },
+    { type: "main-quest", area: "キャビアキー", lat: 467.55, lng: 710.01 },
+    { type: "main-quest", area: "キャビアキー", lat: 453.78, lng: 797.01 },
+    { type: "sub-quest", area: "キャビアキー", lat: 641.03, lng: 671.01 },
+    { type: "sub-quest", area: "キャビアキー", lat: 686.28, lng: 621.26 },
+    { type: "sub-quest", area: "キャビアキー", lat: 633.26, lng: 737.01 },
+    { type: "sub-quest", area: "キャビアキー", lat: 509.09, lng: 823.12 },
+    { type: "manhunt", area: "キャビアキー", lat: 642.53, lng: 613.5 },
+    { type: "manhunt", area: "キャビアキー", lat: 679.02, lng: 672.01 },
+    { type: "manhunt", area: "キャビアキー", lat: 603.53, lng: 743.76 },
+    { type: "manhunt", area: "キャビアキー", lat: 514.31, lng: 901.26 },
+    { type: "grate", area: "キャビアキー", lat: 642.78, lng: 596.26 },
+    { type: "grate", area: "キャビアキー", lat: 634.53, lng: 623.51 },
+    { type: "grate", area: "キャビアキー", lat: 633.03, lng: 665.26 },
+    { type: "grate", area: "キャビアキー", lat: 579.81, lng: 703.76 },
+    { type: "grate", area: "キャビアキー", lat: 528.33, lng: 668.51 },
+    { type: "grate", area: "キャビアキー", lat: 593.8, lng: 743.76 },
+    { type: "grate", area: "キャビアキー", lat: 538.07, lng: 770.51 },
+    { type: "grate", area: "キャビアキー", lat: 478.79, lng: 723.76 },
+    { type: "grate", area: "キャビアキー", lat: 463.05, lng: 689.25 },
+    { type: "grate", area: "キャビアキー", lat: 472.04, lng: 898.51 },
+
+    // Gulf
+    { type: "main-quest", area: "湾岸", lat: 389.04, lng: 735.5 },
+    { type: "main-quest", area: "湾岸", lat: 379.07, lng: 764.01 },
+    { type: "main-quest", area: "湾岸", lat: 356.08, lng: 783.51 },
+    { type: "main-quest", area: "湾岸", lat: 390.57, lng: 880.52 },
+    { type: "main-quest", area: "湾岸", lat: 427.55, lng: 1071.53 },
+    { type: "main-quest", area: "湾岸", lat: 258.57, lng: 570.02 },
+    { type: "main-quest", area: "湾岸", lat: 228.09, lng: 632.02 },
+    { type: "main-quest", area: "湾岸", lat: 235.59, lng: 637.02 },
+    { type: "main-quest", area: "湾岸", lat: 342.04, lng: 657.52 },
+    { type: "sub-quest", area: "湾岸", lat: 371.03, lng: 729.03 },
+    { type: "sub-quest", area: "湾岸", lat: 149.48, lng: 405.42 },
+    { type: "sub-quest", area: "湾岸", lat: 215.95, lng: 528.92 },
+    { type: "sub-quest", area: "湾岸", lat: 454.54, lng: 967.4 },
+    { type: "manhunt", area: "湾岸", lat: 472.53, lng: 920.39 },
+    { type: "manhunt", area: "湾岸", lat: 369.59, lng: 691.01 },
+    { type: "manhunt", area: "湾岸", lat: 297.12, lng: 558.5 },
+    { type: "manhunt", area: "湾岸", lat: 186.67, lng: 548.5 },
+    { type: "grate", area: "湾岸", lat: 319.50, lng: 582.07 },
+    { type: "grate", area: "湾岸", lat: 339.53, lng: 616.01 },
+    { type: "grate", area: "湾岸", lat: 247.09, lng: 538.51 },
+    { type: "grate", area: "湾岸", lat: 207.1, lng: 514.51 },
+    { type: "grate", area: "湾岸", lat: 255.08, lng: 471.51 },
+    { type: "grate", area: "湾岸", lat: 210.05, lng: 371.51 },
+    { type: "grate", area: "湾岸", lat: 224.04, lng: 393.01 },
+    { type: "grate", area: "湾岸", lat: 181.56, lng: 460.02 },
+    { type: "grate", area: "湾岸", lat: 476.56, lng: 962.51 },
+    { type: "grate", area: "湾岸", lat: 487.06, lng: 1013.01 },
+    { type: "grate", area: "湾岸", lat: 443.08, lng: 989.01 },
+    { type: "grate", area: "湾岸", lat: 444.77, lng: 1013.07 },
+    { type: "grate", area: "湾岸", lat: 433.58, lng: 1045.01 },
+
+    // Crawfish Bay
+    { type: "grate", area: "クローフィッシュ・ベイ", lat: 720.03, lng: 946.76 },
+    { type: "grate", area: "クローフィッシュ・ベイ", lat: 688.3, lng: 1019.51 },
+    { type: "grate", area: "クローフィッシュ・ベイ", lat: 638.07, lng: 1046.01 },
+    { type: "grate", area: "クローフィッシュ・ベイ", lat: 585.81, lng: 1018.01 },
+    { type: "main-quest", area: "クローフィッシュ・ベイ", lat: 721.04, lng: 959.51 },
+    { type: "main-quest", area: "クローフィッシュ・ベイ", lat: 732.03, lng: 979.51 },
 ];
 
 // ID 割り当てと統合
 const collectibles = [];
-let idCounter = 0;
-
-// サンプルの新しいタイプを追加
-[
-    { type: "main-quest", area: "フォーティック・バイユー", lat: 710, lng: 880, name: "チュートリアル" },
-    { type: "sub-quest", area: "デッド・ホース・レイク", lat: 740, lng: 600, name: "ワニの討伐" },
-    { type: "grate", area: "ゴールデン・ショア", lat: 600, lng: 300, name: "封鎖された運河" },
-].forEach(d => {
-    collectibles.push({ ...d, id: `extra-${idCounter++}` });
-});
 
 rawCollectibles.forEach((d, index) => {
+    let name = d.type;
+    if (d.type === 'landmark') name = 'ランドマーク';
+    else if (d.type === 'nutrient') name = '栄養箱';
+    else if (d.type === 'plate') name = 'ナンバープレート';
+    else if (d.type === 'main-quest') name = 'メインクエスト';
+    else if (d.type === 'sub-quest') name = '狩猟クエスト';
+    else if (d.type === 'manhunt') name = '復讐クエスト';
+    else if (d.type === 'grate') name = '鉄格子';
+    else if (d.type === 'floodgate') name = '水門';
+
     collectibles.push({ 
         ...d, 
         id: `${d.type}-${index}`,
-        name: d.type === 'landmark' ? 'ランドマーク' : d.type === 'nutrient' ? '栄養箱' : 'ナンバープレート'
+        name: name
     });
 });
 
 // 状態管理
-let activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'grate']);
+let activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate']);
 let activeAreas = new Set();
 let obtainedPins = new Set(JSON.parse(localStorage.getItem('maneater_obtained_pins') || '[]'));
 let showObtained = true;
 let batchMode = false;
-let selectedPinsBatch = new Set();
+let batchObtainedPins = new Set();
 let routeMode = false;
 let currentRoutePoints = [];
 let routes = JSON.parse(localStorage.getItem('maneater_routes') || '[]');
@@ -357,10 +551,10 @@ function renderMarkers() {
         marker.on('click', (e) => {
             if (batchMode) {
                 toggleBatchSelection(item.id, marker);
-                L.DomEvent.stopPropagation(e);
+                L.DomEvent.stop(e);
             } else if (routeMode) {
                 addToRoute(item.id, marker);
-                L.DomEvent.stopPropagation(e);
+                L.DomEvent.stop(e);
             }
         });
 
@@ -377,7 +571,7 @@ function renderMarkers() {
                 <button class="popup-btn" onclick="startBatchFromPopup()">一括表記</button>
             </div>
         `;
-        marker.bindPopup(popupContent);
+        marker.bindPopup(popupContent, { autoPan: false });
 
         markers.push({ marker, item });
         updateMarkerAppearance(marker, item.id);
@@ -393,16 +587,13 @@ function updateMarkerAppearance(marker, id) {
         return;
     }
 
-    if (obtainedPins.has(id)) {
+    // バッチモード中は一時的な状態を使用
+    const isObtained = batchMode ? batchObtainedPins.has(id) : obtainedPins.has(id);
+
+    if (isObtained) {
         el.classList.add('marker-obtained');
     } else {
         el.classList.remove('marker-obtained');
-    }
-
-    if (selectedPinsBatch.has(id)) {
-        el.classList.add('marker-selected');
-    } else {
-        el.classList.remove('marker-selected');
     }
 }
 
@@ -424,10 +615,9 @@ function applyFilter() {
             }
         }
     });
-    console.log(`Apply Filter: showObtained=${showObtained}, visibleCount=${visibleCount}`);
 }
 
-// 取得済み切り替え（ポップアップから呼ばれる用）
+// 取得済み切り替え
 window.toggleObtainedFromPopup = function(id) {
     if (obtainedPins.has(id)) {
         obtainedPins.delete(id);
@@ -438,7 +628,6 @@ window.toggleObtainedFromPopup = function(id) {
     const target = markers.find(m => m.item.id === id);
     if (target) {
         updateMarkerAppearance(target.marker, id);
-        // ポップアップ内のボタン表示も更新
         const btn = target.marker.getPopup().getElement().querySelector('.obtained-toggle');
         if (btn) {
             btn.classList.toggle('active');
@@ -452,7 +641,6 @@ function saveObtained() {
     localStorage.setItem('maneater_obtained_pins', JSON.stringify([...obtainedPins]));
 }
 
-// バッチモード
 window.startBatchFromPopup = function() {
     map.closePopup();
     setBatchMode(true);
@@ -460,36 +648,72 @@ window.startBatchFromPopup = function() {
 
 function setBatchMode(active) {
     batchMode = active;
-    selectedPinsBatch.clear();
+    if (active) {
+        batchObtainedPins = new Set(obtainedPins);
+    } else {
+        batchObtainedPins.clear();
+    }
+    
     document.getElementById('batch-controls').classList.toggle('hidden', !active);
     document.getElementById('map-sidebar').classList.toggle('hidden', active);
     document.querySelector('.map-actions').classList.toggle('hidden', active);
-    updateBatchCount();
     
-    // 全マーカーの外見更新
+    markers.forEach(({ marker }) => {
+        if (active) {
+            if (marker.getPopup()) {
+                marker._tempPopup = marker.getPopup();
+                marker.unbindPopup();
+            }
+        } else {
+            if (marker._tempPopup) {
+                marker.bindPopup(marker._tempPopup, { autoPan: false });
+            }
+        }
+    });
+
+    updateBatchCount();
     markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
 }
 
 function toggleBatchSelection(id, marker) {
-    if (selectedPinsBatch.has(id)) {
-        selectedPinsBatch.delete(id);
+    if (batchObtainedPins.has(id)) {
+        batchObtainedPins.delete(id);
     } else {
-        selectedPinsBatch.add(id);
+        batchObtainedPins.add(id);
     }
     updateMarkerAppearance(marker, id);
     updateBatchCount();
 }
 
 function updateBatchCount() {
-    document.getElementById('selected-count').innerText = selectedPinsBatch.size;
+    let changed = 0;
+    batchObtainedPins.forEach(id => {
+        if (!obtainedPins.has(id)) changed++;
+    });
+    obtainedPins.forEach(id => {
+        if (!batchObtainedPins.has(id)) changed++;
+    });
+    document.getElementById('selected-count').innerText = changed;
 }
 
-// ルート作成
 function toggleRouteMode() {
     routeMode = !routeMode;
     document.getElementById('route-mode-btn').classList.toggle('active', routeMode);
     document.getElementById('route-panel').classList.toggle('active', routeMode);
     
+    markers.forEach(({ marker }) => {
+        if (routeMode) {
+            if (marker.getPopup()) {
+                marker._tempPopup = marker.getPopup();
+                marker.unbindPopup();
+            }
+        } else if (!batchMode) {
+            if (marker._tempPopup) {
+                marker.bindPopup(marker._tempPopup, { autoPan: false });
+            }
+        }
+    });
+
     if (!routeMode) {
         if (currentPolyline) {
             currentPolyline.remove();
@@ -502,21 +726,16 @@ function toggleRouteMode() {
 function addToRoute(id, marker) {
     const latlng = marker.getLatLng();
     currentRoutePoints.push(latlng);
-    
     if (currentPolyline) {
         currentPolyline.setLatLngs(currentRoutePoints);
     } else {
         currentPolyline = L.polyline(currentRoutePoints, { color: '#00ffff', weight: 4, dashArray: '10, 10' }).addTo(map);
     }
-
-    // 簡易的に最後の地点で保存ダイアログ（本来はサイドバーでやるべき）
-    if (currentRoutePoints.length >= 2) {
-        // 保存の案内などを出しても良い
-    }
 }
 
 function renderRoutes() {
     const list = document.getElementById('route-list');
+    if (!list) return;
     if (routes.length === 0) {
         list.innerHTML = '<div class="empty-msg">保存されたルートはありません</div>';
         return;
@@ -542,9 +761,7 @@ function showRoute(r) {
     map.fitBounds(currentPolyline.getBounds());
 }
 
-// イベントリスナー
 function setupEventListeners() {
-    // フィルター（タイプ）
     document.querySelectorAll('.filter-type-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const t = btn.dataset.type;
@@ -559,78 +776,175 @@ function setupEventListeners() {
         });
     });
 
-    // フィルター（エリア）
-    document.querySelectorAll('.filter-area-btn').forEach(btn => {
+    const areaHeaderBtn = document.getElementById('area-header-btn');
+    const areaOverlay = document.getElementById('area-overlay');
+    const closeAreaBtn = document.getElementById('close-area-overlay');
+
+    if (areaHeaderBtn) {
+        areaHeaderBtn.addEventListener('click', () => {
+            updateAreaProgress();
+            areaOverlay.classList.remove('hidden');
+        });
+    }
+
+    if (closeAreaBtn) {
+        closeAreaBtn.addEventListener('click', () => {
+            areaOverlay.classList.add('hidden');
+        });
+    }
+
+    document.querySelectorAll('.area-card').forEach(btn => {
         btn.addEventListener('click', () => {
-            const a = btn.dataset.area;
-            if (activeAreas.has(a)) {
-                activeAreas.delete(a);
-                btn.classList.remove('active');
-            } else {
-                activeAreas.add(a);
+            const area = btn.dataset.area;
+            selectArea(area);
+            areaOverlay.classList.add('hidden');
+        });
+    });
+
+    const resetBtn = document.getElementById('reset-filters-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate']);
+            selectArea('all');
+            document.querySelectorAll('.filter-type-btn').forEach(btn => {
                 btn.classList.add('active');
-            }
+            });
             applyFilter();
         });
-    });
+    }
 
-    // リセット
-    document.getElementById('reset-filters-btn').addEventListener('click', () => {
-        activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'grate']);
-        activeAreas.clear();
-        document.querySelectorAll('.filter-type-btn, .filter-area-btn').forEach(btn => {
-            if (btn.classList.contains('filter-type-btn')) btn.classList.add('active');
-            else btn.classList.remove('active');
+    // 全てのピン状況をリセット
+    const resetAllPinsBtn = document.getElementById('reset-all-pins-btn');
+    if (resetAllPinsBtn) {
+        resetAllPinsBtn.addEventListener('click', () => {
+            if (confirm('全てのピンを未取得の状態に戻しますか？\nこの操作は取り消せません。')) {
+                obtainedPins.clear();
+                saveObtained();
+                
+                // 表示を更新
+                markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
+                applyFilter();
+                updateAreaProgress();
+                updatePinCounts();
+                alert('全てのピンをリセットしました。');
+            }
         });
-        applyFilter();
-    });
+    }
 
-    // 表示トグル
-    document.getElementById('toggle-obtained-btn').addEventListener('click', (e) => {
-        showObtained = !showObtained;
-        e.currentTarget.classList.toggle('active', !showObtained);
-        applyFilter();
-    });
+    const settingsBtn = document.getElementById('toggle-settings-btn');
+    const settingsPopover = document.getElementById('settings-popover');
+    const showObtainedCheck = document.getElementById('show-obtained-check');
 
-    // ルートモード
-    document.getElementById('route-mode-btn').addEventListener('click', toggleRouteMode);
-
-    // ルート保存
-    document.getElementById('save-route-btn').addEventListener('click', () => {
-        const name = document.getElementById('route-name-input').value.trim();
-        if (!name) {
-            alert('ルート名を入力してください');
-            return;
-        }
-        if (currentRoutePoints.length < 2) {
-            alert('ピンを2つ以上選択してください');
-            return;
-        }
-        
-        routes.push({
-            name: name,
-            points: [...currentRoutePoints]
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', (e) => {
+            settingsPopover.classList.toggle('hidden');
+            settingsBtn.classList.toggle('active');
+            e.stopPropagation();
         });
-        localStorage.setItem('maneater_routes', JSON.stringify(routes));
-        
-        document.getElementById('route-name-input').value = '';
-        currentRoutePoints = [];
-        if (currentPolyline) currentPolyline.remove();
-        currentPolyline = null;
-        
-        renderRoutes();
-        alert('ルートを保存しました');
+    }
+
+    document.addEventListener('click', (e) => {
+        if (settingsPopover && !settingsPopover.contains(e.target) && e.target !== settingsBtn) {
+            settingsPopover.classList.add('hidden');
+            if (settingsBtn) settingsBtn.classList.remove('active');
+        }
     });
 
-    // バッチ OK/キャンセル
-    document.getElementById('batch-cancel-btn').addEventListener('click', () => setBatchMode(false));
-    document.getElementById('batch-ok-btn').addEventListener('click', () => {
-        selectedPinsBatch.forEach(id => obtainedPins.add(id));
-        saveObtained();
-        setBatchMode(false);
-        applyFilter();
+    if (showObtainedCheck) {
+        showObtainedCheck.checked = showObtained;
+        showObtainedCheck.addEventListener('change', () => {
+            showObtained = showObtainedCheck.checked;
+            applyFilter();
+        });
+    }
+
+    const routeModeBtn = document.getElementById('route-mode-btn');
+    if (routeModeBtn) routeModeBtn.addEventListener('click', toggleRouteMode);
+
+    const saveRouteBtn = document.getElementById('save-route-btn');
+    if (saveRouteBtn) {
+        saveRouteBtn.addEventListener('click', () => {
+            const name = document.getElementById('route-name-input').value.trim();
+            if (!name) { alert('ルート名を入力してください'); return; }
+            if (currentRoutePoints.length < 2) { alert('ピンを2つ以上選択してください'); return; }
+            routes.push({ name: name, points: [...currentRoutePoints] });
+            localStorage.setItem('maneater_routes', JSON.stringify(routes));
+            document.getElementById('route-name-input').value = '';
+            currentRoutePoints = [];
+            if (currentPolyline) currentPolyline.remove();
+            currentPolyline = null;
+            renderRoutes();
+            alert('ルートを保存しました');
+        });
+    }
+
+    const batchCancelBtn = document.getElementById('batch-cancel-btn');
+    if (batchCancelBtn) batchCancelBtn.addEventListener('click', () => setBatchMode(false));
+    
+    const batchOkBtn = document.getElementById('batch-ok-btn');
+    if (batchOkBtn) {
+        batchOkBtn.addEventListener('click', () => {
+            obtainedPins = new Set(batchObtainedPins);
+            saveObtained();
+            setBatchMode(false);
+            applyFilter();
+        });
+    }
+}
+
+function selectArea(area) {
+    activeAreas.clear();
+    const nameEl = document.getElementById('current-area-name');
+    document.querySelectorAll('.area-card').forEach(card => card.classList.remove('active'));
+
+    if (area === 'all') {
+        nameEl.innerText = "全エリアを表示";
+        map.fitBounds(bounds, { paddingTopLeft: [320, 0], paddingBottomRight: [0, 0], animate: true, duration: 0.8 });
+    } else {
+        activeAreas.add(area);
+        nameEl.innerText = area;
+        const selectedCard = document.querySelector(`.area-card[data-area="${area}"]`);
+        if (selectedCard) selectedCard.classList.add('active');
+
+        const areaPins = markers.filter(m => m.item.area === area);
+        if (areaPins.length > 0) {
+            const latlngs = areaPins.map(m => m.marker.getLatLng());
+            const areaBounds = L.latLngBounds(latlngs);
+            const deepZoomAreas = ['デッド・ホース・レイク', 'サファリア・ベイ', 'プロスピリティー・サンド', 'キャビアキー'];
+            const targetMaxZoom = deepZoomAreas.includes(area) ? 2.0 : 1.5;
+            map.fitBounds(areaBounds.pad(0.2), { paddingTopLeft: [320, 0], paddingBottomRight: [100, 100], maxZoom: targetMaxZoom, animate: true, duration: 0.8 });
+        }
+    }
+    updateAreaProgress();
+    updatePinCounts();
+    applyFilter();
+}
+
+function updatePinCounts() {
+    const counts = {};
+    const currentArea = [...activeAreas][0] || 'all';
+    collectibles.forEach(item => {
+        if (currentArea === 'all' || item.area === currentArea) {
+            counts[item.type] = (counts[item.type] || 0) + 1;
+        }
+    });
+    document.querySelectorAll('.filter-type-btn').forEach(btn => {
+        const type = btn.dataset.type;
+        const countSpan = btn.querySelector('.pin-count');
+        if (countSpan) countSpan.innerText = counts[type] || 0;
     });
 }
 
-// 実行
+function updateAreaProgress() {
+    document.querySelectorAll('.area-sub').forEach(sub => sub.innerText = `探索度: -%`);
+    const percentEl = document.getElementById('area-progress-percent');
+    const fillEl = document.getElementById('area-progress-fill');
+    if (percentEl) percentEl.innerText = '-';
+    if (fillEl) fillEl.style.width = `0%`;
+}
+
+setTimeout(() => {
+    updateAreaProgress();
+    updatePinCounts();
+}, 500);
 init();
