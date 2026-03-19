@@ -2,7 +2,11 @@ const map = L.map('map', {
     crs: L.CRS.Simple,
     minZoom: -2,
     maxZoom: 2,
+    zoomControl: false // 手動で右側に配置するなど調整可能
 });
+
+// ズームコントロールを右上に配置
+L.control.zoom({ position: 'topright' }).addTo(map);
 
 const w = 1120;
 const h = 1120;
@@ -10,20 +14,29 @@ const bounds = [[0, 0], [h, w]];
 L.imageOverlay('../images/maneater_map.png', bounds).addTo(map);
 map.fitBounds(bounds);
 
-// デバッグ用（座標確認）
-map.on('click', (e) => {
-    console.log(e.latlng.lat, e.latlng.lng);
-});
-
 // アイコン定義
 const icons = {
-    landmark: L.icon({ iconUrl: '../images/map/ランドマーク.png', iconSize: [32, 32], iconAnchor: [16, 26] }),
-    nutrient: L.icon({ iconUrl: '../images/map/栄養箱.png', iconSize: [32, 32], iconAnchor: [16, 16] }),
-    plate: L.icon({ iconUrl: '../images/map/ナンバープレート.png', iconSize: [38, 38], iconAnchor: [19, 19] }),
+    landmark: L.icon({ iconUrl: '../images/map/ランドマーク.png', iconSize: [32, 32], iconAnchor: [16, 26], popupAnchor: [0, -20] }),
+    nutrient: L.icon({ iconUrl: '../images/map/栄養箱.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
+    plate: L.icon({ iconUrl: '../images/map/ナンバープレート.png', iconSize: [38, 38], iconAnchor: [19, 19], popupAnchor: [0, -10] }),
+    'main-quest': L.icon({ iconUrl: '../images/map/メインクエスト.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
+    'sub-quest': L.icon({ iconUrl: '../images/map/手配.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
+    grate: L.icon({ iconUrl: '../images/map/人間狩り.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
 };
 
-// 収集物データ
-const collectibles = [
+// 収集物データ（ID付与とサンプルデータ追加）
+const collectiblesData = [
+    { type: "landmark", area: "フォーティック・バイユー", lat: 677.25, lng: 922.3, name: "バイユーの看板" },
+    { type: "nutrient", area: "フォーティック・バイユー", lat: 682.26, lng: 898.26, name: "栄養箱" },
+    { type: "landmark", area: "フォーティック・バイユー", lat: 728.99, lng: 900.01, name: "沈没船" },
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 710, lng: 880, name: "チュートリアル" },
+    { type: "sub-quest", area: "フォーティック・バイユー", lat: 740, lng: 860, name: "ワニの討伐" },
+    { type: "grate", area: "フォーティック・バイユー", lat: 780, lng: 800, name: "鉄格子の扉" },
+    // ... 既存のデータも ID つきで管理されるように以下で処理 ...
+];
+
+// 既存の collectibles データを流用しつつ ID を付与
+const rawCollectibles = [
     { type: "landmark", area: "フォーティック・バイユー", lat: 677.25, lng: 922.3 },
     { type: "nutrient", area: "フォーティック・バイユー", lat: 682.26, lng: 898.26 },
     { type: "landmark", area: "フォーティック・バイユー", lat: 728.99, lng: 900.01 },
@@ -166,193 +179,340 @@ const collectibles = [
     { type: "nutrient", area: "サファリア・ベイ", lat: 241.02, lng: 313.21 },
     { type: "plate", area: "サファリア・ベイ", lat: 291.26, lng: 355.94 },
     { type: "nutrient", area: "サファリア・ベイ", lat: 297, lng: 313.71 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 489.01, lng: 526.21 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 484.26, lng: 512.96 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 527.24, lng: 471.73 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 507, lng: 445.24 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 484.76, lng: 480.48 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 535.99, lng: 562.94 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 558.23, lng: 476.23 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 573.22, lng: 501.22 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 573.97, lng: 522.46 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 606.96, lng: 536.95 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 602.21, lng: 563.69 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 595.96, lng: 564.69 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 622.7, lng: 576.93 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 562.23, lng: 561.94 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 574.22, lng: 587.18 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 538.72, lng: 609.46 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 514.71, lng: 610.21 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 464.95, lng: 639.7 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 452.19, lng: 571.23 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 435.94, lng: 622.95 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 429.19, lng: 495.51 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 375.42, lng: 522 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 377.42, lng: 553.49 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 349.42, lng: 540.99 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 328.91, lng: 514.25 },
-    { type: "landmark", area: "プロスピリティーサンド", lat: 320.41, lng: 489.51 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 306.65, lng: 471.52 },
-    { type: "plate", area: "プロスピリティーサンド", lat: 323.91, lng: 432.04 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 352.7, lng: 591.45 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 355.45, lng: 582.46 },
-    { type: "nutrient", area: "プロスピリティーサンド", lat: 383.96, lng: 584.46 },
-    { type: "landmark", area: "キャビアキー", lat: 703.75, lng: 614.71 },
-    { type: "plate", area: "キャビアキー", lat: 660.74, lng: 635.2 },
-    { type: "nutrient", area: "キャビアキー", lat: 668.24, lng: 665.44 },
-    { type: "nutrient", area: "キャビアキー", lat: 651.49, lng: 703.92 },
-    { type: "plate", area: "キャビアキー", lat: 636.98, lng: 681.18 },
-    { type: "nutrient", area: "キャビアキー", lat: 624.73, lng: 659.19 },
-    { type: "nutrient", area: "キャビアキー", lat: 637.71, lng: 612.22 },
-    { type: "landmark", area: "キャビアキー", lat: 603.45, lng: 642.45 },
-    { type: "plate", area: "キャビアキー", lat: 586.21, lng: 661.21 },
-    { type: "landmark", area: "キャビアキー", lat: 628.72, lng: 756.17 },
-    { type: "plate", area: "キャビアキー", lat: 595.46, lng: 705.44 },
-    { type: "nutrient", area: "キャビアキー", lat: 601.21, lng: 738.93 },
-    { type: "plate", area: "キャビアキー", lat: 576.2, lng: 762.91 },
-    { type: "nutrient", area: "キャビアキー", lat: 557.45, lng: 794.9 },
-    { type: "landmark", area: "キャビアキー", lat: 523.94, lng: 725.93 },
-    { type: "nutrient", area: "キャビアキー", lat: 525.44, lng: 695.7 },
-    { type: "plate", area: "キャビアキー", lat: 517.44, lng: 695.45 },
-    { type: "plate", area: "キャビアキー", lat: 524.69, lng: 650.97 },
-    { type: "nutrient", area: "キャビアキー", lat: 486.97, lng: 695.96 },
-    { type: "landmark", area: "キャビアキー", lat: 474.22, lng: 700.2 },
-    { type: "nutrient", area: "キャビアキー", lat: 470.22, lng: 745.18 },
-    { type: "plate", area: "キャビアキー", lat: 440.46, lng: 721.94 },
-    { type: "nutrient", area: "キャビアキー", lat: 427.7, lng: 656.72 },
-    { type: "landmark", area: "キャビアキー", lat: 464.72, lng: 780.18 },
-    { type: "nutrient", area: "キャビアキー", lat: 515.22, lng: 839.96 },
-    { type: "plate", area: "キャビアキー", lat: 507.97, lng: 901.68 },
-    { type: "landmark", area: "キャビアキー", lat: 517.72, lng: 936.42 },
-    { type: "nutrient", area: "湾岸", lat: 371.43, lng: 751.52 },
-    { type: "landmark", area: "湾岸", lat: 385.46, lng: 681.25 },
-    { type: "nutrient", area: "湾岸", lat: 376.96, lng: 665.25 },
-    { type: "plate", area: "湾岸", lat: 367.71, lng: 681.259 },
-    { type: "plate", area: "湾岸", lat: 346.45, lng: 665.5 },
-    { type: "nutrient", area: "湾岸", lat: 250.44, lng: 422.99 },
-    { type: "nutrient", area: "湾岸", lat: 266.7, lng: 424.74 },
-    { type: "nutrient", area: "湾岸", lat: 263.7, lng: 457.25 },
-    { type: "nutrient", area: "湾岸", lat: 219.89, lng: 379.99 },
-    { type: "plate", area: "湾岸", lat: 191.38, lng: 371.99 },
-    { type: "nutrient", area: "湾岸", lat: 163.37, lng: 384.99 },
-    { type: "nutrient", area: "湾岸", lat: 183.38, lng: 406.49 },
-    { type: "plate", area: "湾岸", lat: 199.38, lng: 455 },
-    { type: "nutrient", area: "湾岸", lat: 221.39, lng: 475.5 },
-    { type: "nutrient", area: "湾岸", lat: 168.88, lng: 471.5 },
-    { type: "landmark", area: "湾岸", lat: 192.38, lng: 483.5 },
-    { type: "nutrient", area: "湾岸", lat: 207.89, lng: 500.5 },
-    { type: "nutrient", area: "湾岸", lat: 266.4, lng: 515 },
-    { type: "nutrient", area: "湾岸", lat: 252.9, lng: 531.01 },
-    { type: "landmark", area: "湾岸", lat: 227.39, lng: 517 },
-    { type: "plate", area: "湾岸", lat: 272.41, lng: 537.01 },
-    { type: "plate", area: "湾岸", lat: 267.9, lng: 575.51 },
-    { type: "plate", area: "湾岸", lat: 213.89, lng: 560.51 },
-    { type: "landmark", area: "湾岸", lat: 311.92, lng: 582.51 },
-    { type: "nutrient", area: "湾岸", lat: 305.9, lng: 611.51 },
-    { type: "nutrient", area: "湾岸", lat: 256.89, lng: 605.01 },
-    { type: "landmark", area: "湾岸", lat: 432.22, lng: 840.75 },
-    { type: "nutrient", area: "湾岸", lat: 434.72, lng: 824.5 },
-    { type: "nutrient", area: "湾岸", lat: 473.98, lng: 912.5 },
-    { type: "landmark", area: "湾岸", lat: 469.48, lng: 918.51 },
-    { type: "landmark", area: "湾岸", lat: 424.50, lng: 902.51 },
-    { type: "nutrient", area: "湾岸", lat: 416.28, lng: 878.29 },
-    { type: "plate", area: "湾岸", lat: 378.95, lng: 857.01 },
-    { type: "nutrient", area: "湾岸", lat: 460.45, lng: 945.51 },
-    { type: "landmark", area: "湾岸", lat: 382.43, lng: 949.51 },
-    { type: "plate", area: "湾岸", lat: 437.445, lng: 963.01 },
-    { type: "nutrient", area: "湾岸", lat: 437.44, lng: 977.51 },
-    { type: "landmark", area: "湾岸", lat: 502.46, lng: 1055.02 },
-    { type: "nutrient", area: "湾岸", lat: 490.96, lng: 1044.02 },
-    { type: "plate", area: "湾岸", lat: 471.95, lng: 1086.52 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 707.73, lng: 963.25 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 768.49, lng: 969 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 755.74, lng: 993 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 738.73, lng: 1010.25 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 728.73, lng: 993.75 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 718.48, lng: 987.5 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 694.22, lng: 983.25 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 686.97, lng: 994 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 677.47, lng: 1029.26 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 653.96, lng: 985.75 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 654.71, lng: 1005 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 644.96, lng: 1026.76 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 681.97, lng: 1051.26 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 620.21, lng: 1037 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 643.46, lng: 1063.01 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 611.45, lng: 1060.76 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 591.45, lng: 1016.25 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 592.95, lng: 986.75 },
-    { type: "plate", area: "クローフィッシュ・ベイ", lat: 575.94, lng: 971.75 },
-    { type: "nutrient", area: "クローフィッシュ・ベイ", lat: 667.26, lng: 980.04 },
 ];
 
-// フィルター状態
-let activeTypes = new Set(['landmark', 'nutrient', 'plate']);
-let activeAreas = new Set(); // 空の場合は全エリア表示
+// ID 割り当てと統合
+const collectibles = [];
+let idCounter = 0;
 
-// マーカーを保持
-const markers = [];
-
-// ピンを全部追加
-collectibles.forEach(item => {
-    const marker = L.marker([item.lat, item.lng], { icon: icons[item.type] })
-        .addTo(map)
-        .bindPopup(`${item.area}　${item.type === 'landmark' ? 'ランドマーク' : item.type === 'nutrient' ? '栄養箱' : 'ナンバープレート'}`);
-    markers.push({ marker, item });
+// サンプルの新しいタイプを追加
+[
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 710, lng: 880, name: "チュートリアル" },
+    { type: "sub-quest", area: "デッド・ホース・レイク", lat: 740, lng: 600, name: "ワニの討伐" },
+    { type: "grate", area: "ゴールデン・ショア", lat: 600, lng: 300, name: "封鎖された運河" },
+].forEach(d => {
+    collectibles.push({ ...d, id: `extra-${idCounter++}` });
 });
 
-// フィルター適用
+rawCollectibles.forEach((d, index) => {
+    collectibles.push({ 
+        ...d, 
+        id: `${d.type}-${index}`,
+        name: d.type === 'landmark' ? 'ランドマーク' : d.type === 'nutrient' ? '栄養箱' : 'ナンバープレート'
+    });
+});
+
+// 状態管理
+let activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'grate']);
+let activeAreas = new Set();
+let obtainedPins = new Set(JSON.parse(localStorage.getItem('maneater_obtained_pins') || '[]'));
+let showObtained = true;
+let batchMode = false;
+let selectedPinsBatch = new Set();
+let routeMode = false;
+let currentRoutePoints = [];
+let routes = JSON.parse(localStorage.getItem('maneater_routes') || '[]');
+let currentPolyline = null;
+
+const markers = [];
+
+// 初期化
+function init() {
+    renderMarkers();
+    renderRoutes();
+    setupEventListeners();
+}
+
+function renderMarkers() {
+    // 既存のマーカーを削除
+    markers.forEach(m => m.marker.remove());
+    markers.length = 0;
+
+    collectibles.forEach(item => {
+        const isObtained = obtainedPins.has(item.id);
+        
+        const marker = L.marker([item.lat, item.lng], { 
+            icon: icons[item.type],
+            id: item.id // カスタムプロパティ
+        });
+
+        marker.on('click', (e) => {
+            if (batchMode) {
+                toggleBatchSelection(item.id, marker);
+                L.DomEvent.stopPropagation(e);
+            } else if (routeMode) {
+                addToRoute(item.id, marker);
+                L.DomEvent.stopPropagation(e);
+            }
+        });
+
+        // ポップアップ内容
+        const popupContent = document.createElement('div');
+        popupContent.className = 'custom-popup';
+        popupContent.innerHTML = `
+            <div style="font-weight:bold; margin-bottom:5px;">${item.name}</div>
+            <div style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">${item.area}</div>
+            <div class="popup-buttons">
+                <button class="popup-btn obtained-toggle ${isObtained ? 'active' : ''}" onclick="toggleObtainedFromPopup('${item.id}')">
+                    ${isObtained ? '✓ 取得済み' : '取得済みにする'}
+                </button>
+                <button class="popup-btn" onclick="startBatchFromPopup()">一括表記</button>
+            </div>
+        `;
+        marker.bindPopup(popupContent);
+
+        markers.push({ marker, item });
+        updateMarkerAppearance(marker, item.id);
+    });
+
+    applyFilter();
+}
+
+function updateMarkerAppearance(marker, id) {
+    const el = marker.getElement();
+    if (!el) {
+        marker.on('add', () => updateMarkerAppearance(marker, id));
+        return;
+    }
+
+    if (obtainedPins.has(id)) {
+        el.classList.add('marker-obtained');
+    } else {
+        el.classList.remove('marker-obtained');
+    }
+
+    if (selectedPinsBatch.has(id)) {
+        el.classList.add('marker-selected');
+    } else {
+        el.classList.remove('marker-selected');
+    }
+}
+
 function applyFilter() {
+    let visibleCount = 0;
     markers.forEach(({ marker, item }) => {
         const typeOk = activeTypes.has(item.type);
         const areaOk = activeAreas.size === 0 || activeAreas.has(item.area);
-        if (typeOk && areaOk) {
-            marker.addTo(map);
+        const obtainedOk = showObtained || !obtainedPins.has(item.id);
+
+        if (typeOk && areaOk && obtainedOk) {
+            if (!map.hasLayer(marker)) {
+                marker.addTo(map);
+            }
+            visibleCount++;
         } else {
-            marker.remove();
+            if (map.hasLayer(marker)) {
+                marker.remove();
+            }
         }
+    });
+    console.log(`Apply Filter: showObtained=${showObtained}, visibleCount=${visibleCount}`);
+}
+
+// 取得済み切り替え（ポップアップから呼ばれる用）
+window.toggleObtainedFromPopup = function(id) {
+    if (obtainedPins.has(id)) {
+        obtainedPins.delete(id);
+    } else {
+        obtainedPins.add(id);
+    }
+    saveObtained();
+    const target = markers.find(m => m.item.id === id);
+    if (target) {
+        updateMarkerAppearance(target.marker, id);
+        // ポップアップ内のボタン表示も更新
+        const btn = target.marker.getPopup().getElement().querySelector('.obtained-toggle');
+        if (btn) {
+            btn.classList.toggle('active');
+            btn.innerText = obtainedPins.has(id) ? '✓ 取得済み' : '取得済みにする';
+        }
+    }
+    applyFilter();
+};
+
+function saveObtained() {
+    localStorage.setItem('maneater_obtained_pins', JSON.stringify([...obtainedPins]));
+}
+
+// バッチモード
+window.startBatchFromPopup = function() {
+    map.closePopup();
+    setBatchMode(true);
+};
+
+function setBatchMode(active) {
+    batchMode = active;
+    selectedPinsBatch.clear();
+    document.getElementById('batch-controls').classList.toggle('hidden', !active);
+    document.getElementById('map-sidebar').classList.toggle('hidden', active);
+    document.querySelector('.map-actions').classList.toggle('hidden', active);
+    updateBatchCount();
+    
+    // 全マーカーの外見更新
+    markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
+}
+
+function toggleBatchSelection(id, marker) {
+    if (selectedPinsBatch.has(id)) {
+        selectedPinsBatch.delete(id);
+    } else {
+        selectedPinsBatch.add(id);
+    }
+    updateMarkerAppearance(marker, id);
+    updateBatchCount();
+}
+
+function updateBatchCount() {
+    document.getElementById('selected-count').innerText = selectedPinsBatch.size;
+}
+
+// ルート作成
+function toggleRouteMode() {
+    routeMode = !routeMode;
+    document.getElementById('route-mode-btn').classList.toggle('active', routeMode);
+    document.getElementById('route-panel').classList.toggle('active', routeMode);
+    
+    if (!routeMode) {
+        if (currentPolyline) {
+            currentPolyline.remove();
+            currentPolyline = null;
+        }
+        currentRoutePoints = [];
+    }
+}
+
+function addToRoute(id, marker) {
+    const latlng = marker.getLatLng();
+    currentRoutePoints.push(latlng);
+    
+    if (currentPolyline) {
+        currentPolyline.setLatLngs(currentRoutePoints);
+    } else {
+        currentPolyline = L.polyline(currentRoutePoints, { color: '#00ffff', weight: 4, dashArray: '10, 10' }).addTo(map);
+    }
+
+    // 簡易的に最後の地点で保存ダイアログ（本来はサイドバーでやるべき）
+    if (currentRoutePoints.length >= 2) {
+        // 保存の案内などを出しても良い
+    }
+}
+
+function renderRoutes() {
+    const list = document.getElementById('route-list');
+    if (routes.length === 0) {
+        list.innerHTML = '<div class="empty-msg">保存されたルートはありません</div>';
+        return;
+    }
+    list.innerHTML = '';
+    routes.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'route-card';
+        div.innerHTML = `
+            <div class="route-info">
+                <strong>${r.name}</strong>
+                <span>${r.points.length} ピン</span>
+            </div>
+        `;
+        div.onclick = () => showRoute(r);
+        list.appendChild(div);
     });
 }
 
-// タイプボタンのクリック処理
-document.querySelectorAll('.filter-type-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const t = btn.dataset.type;
-        if (activeTypes.has(t)) {
-            activeTypes.delete(t);
-            btn.classList.remove('active');
-        } else {
-            activeTypes.add(t);
-            btn.classList.add('active');
-        }
+function showRoute(r) {
+    if (currentPolyline) currentPolyline.remove();
+    currentPolyline = L.polyline(r.points, { color: '#00ffff', weight: 4 }).addTo(map);
+    map.fitBounds(currentPolyline.getBounds());
+}
+
+// イベントリスナー
+function setupEventListeners() {
+    // フィルター（タイプ）
+    document.querySelectorAll('.filter-type-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const t = btn.dataset.type;
+            if (activeTypes.has(t)) {
+                activeTypes.delete(t);
+                btn.classList.remove('active');
+            } else {
+                activeTypes.add(t);
+                btn.classList.add('active');
+            }
+            applyFilter();
+        });
+    });
+
+    // フィルター（エリア）
+    document.querySelectorAll('.filter-area-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const a = btn.dataset.area;
+            if (activeAreas.has(a)) {
+                activeAreas.delete(a);
+                btn.classList.remove('active');
+            } else {
+                activeAreas.add(a);
+                btn.classList.add('active');
+            }
+            applyFilter();
+        });
+    });
+
+    // リセット
+    document.getElementById('reset-filters-btn').addEventListener('click', () => {
+        activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'grate']);
+        activeAreas.clear();
+        document.querySelectorAll('.filter-type-btn, .filter-area-btn').forEach(btn => {
+            if (btn.classList.contains('filter-type-btn')) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
         applyFilter();
     });
-});
 
-// エリアボタンのクリック処理
-document.querySelectorAll('.filter-area-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const a = btn.dataset.area;
-        if (activeAreas.has(a)) {
-            activeAreas.delete(a);
-            btn.classList.remove('active');
-        } else {
-            activeAreas.add(a);
-            btn.classList.add('active');
-        }
+    // 表示トグル
+    document.getElementById('toggle-obtained-btn').addEventListener('click', (e) => {
+        showObtained = !showObtained;
+        e.currentTarget.classList.toggle('active', !showObtained);
         applyFilter();
     });
-});
 
-// リセットボタン（全表示）の処理
-document.getElementById('reset-filters-btn').addEventListener('click', () => {
-    // タイプを全て有効に
-    activeTypes = new Set(['landmark', 'nutrient', 'plate']);
-    document.querySelectorAll('.filter-type-btn').forEach(btn => btn.classList.add('active'));
+    // ルートモード
+    document.getElementById('route-mode-btn').addEventListener('click', toggleRouteMode);
 
-    // エリアを全て解除（全表示）
-    activeAreas.clear();
-    document.querySelectorAll('.filter-area-btn').forEach(btn => btn.classList.remove('active'));
+    // ルート保存
+    document.getElementById('save-route-btn').addEventListener('click', () => {
+        const name = document.getElementById('route-name-input').value.trim();
+        if (!name) {
+            alert('ルート名を入力してください');
+            return;
+        }
+        if (currentRoutePoints.length < 2) {
+            alert('ピンを2つ以上選択してください');
+            return;
+        }
+        
+        routes.push({
+            name: name,
+            points: [...currentRoutePoints]
+        });
+        localStorage.setItem('maneater_routes', JSON.stringify(routes));
+        
+        document.getElementById('route-name-input').value = '';
+        currentRoutePoints = [];
+        if (currentPolyline) currentPolyline.remove();
+        currentPolyline = null;
+        
+        renderRoutes();
+        alert('ルートを保存しました');
+    });
 
-    applyFilter();
-});
+    // バッチ OK/キャンセル
+    document.getElementById('batch-cancel-btn').addEventListener('click', () => setBatchMode(false));
+    document.getElementById('batch-ok-btn').addEventListener('click', () => {
+        selectedPinsBatch.forEach(id => obtainedPins.add(id));
+        saveObtained();
+        setBatchMode(false);
+        applyFilter();
+    });
+}
+
+// 実行
+init();

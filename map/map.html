@@ -31,27 +31,93 @@
             </nav>
         </aside>
         <main class="main">
-            <!-- タイプフィルター -->
-            <div class="map-filters">
-                <button class="filter-type-btn active" data-type="landmark">ランドマーク</button>
-                <button class="filter-type-btn active" data-type="nutrient">栄養箱</button>
-                <button class="filter-type-btn active" data-type="plate">ナンバープレート</button>
-                <button id="reset-filters-btn" class="filter-reset-btn">全表示</button>
-            </div>
+        <main class="main">
+            <div class="map-container">
+                <!-- 左サイドバー（マップ内オーバーレイ） -->
+                <aside class="map-sidebar" id="map-sidebar">
+                    <div class="sidebar-section">
+                        <h3>マップ切り替え</h3>
+                        <div class="map-switcher">
+                            <button class="switcher-btn active" data-map="main">メインマップ</button>
+                            <button class="switcher-btn" data-map="dlc" disabled title="Coming Soon">DLCマップ</button>
+                        </div>
+                    </div>
 
-            <!-- エリアフィルター -->
-            <div class="map-filters">
-                <button class="filter-area-btn" data-area="フォーティック・バイユー">フォーティック・バイユー</button>
-                <button class="filter-area-btn" data-area="デッド・ホース・レイク">デッド・ホース・レイク</button>
-                <button class="filter-area-btn" data-area="ゴールデン・ショア">ゴールデン・ショア</button>
-                <button class="filter-area-btn" data-area="サファリア・ベイ">サファリア・ベイ</button>
-                <button class="filter-area-btn" data-area="プロスピリティーサンド">プロスピリティーサンド</button>
-                <button class="filter-area-btn" data-area="キャビアキー">キャビアキー</button>
-                <button class="filter-area-btn" data-area="湾岸">湾岸</button>
-                <button class="filter-area-btn" data-area="クローフィッシュ・ベイ">クローフィッシュ・ベイ</button>
+                    <div class="sidebar-section">
+                        <h3>ピン表示</h3>
+                        <div id="type-filters" class="filter-group">
+                            <button class="filter-type-btn active" data-type="landmark">
+                                <img src="../images/map/ランドマーク.png" alt=""> ランドマーク
+                            </button>
+                            <button class="filter-type-btn active" data-type="nutrient">
+                                <img src="../images/map/栄養箱.png" alt=""> 栄養箱
+                            </button>
+                            <button class="filter-type-btn active" data-type="plate">
+                                <img src="../images/map/ナンバープレート.png" alt=""> ナンバープレート
+                            </button>
+                            <button class="filter-type-btn active" data-type="main-quest">
+                                <img src="../images/map/メインクエスト.png" alt=""> メインクエスト
+                            </button>
+                            <button class="filter-type-btn active" data-type="sub-quest">
+                                <img src="../images/map/手配.png" alt=""> サブクエスト
+                            </button>
+                            <button class="filter-type-btn active" data-type="grate">
+                                <img src="../images/map/人間狩り.png" alt=""> 鉄格子
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>エリア絞り込み</h3>
+                        <div id="area-filters" class="filter-group area-grid">
+                            <button class="filter-area-btn" data-area="フォーティック・バイユー">フォーティック・バイユー</button>
+                            <button class="filter-area-btn" data-area="デッド・ホース・レイク">デッド・ホース・レイク</button>
+                            <button class="filter-area-btn" data-area="ゴールデン・ショア">ゴールデン・ショア</button>
+                            <button class="filter-area-btn" data-area="サファリア・ベイ">サファリア・ベイ</button>
+                            <button class="filter-area-btn" data-area="プロスピリティーサンド">プロスピリティーサンド</button>
+                            <button class="filter-area-btn" data-area="キャビアキー">キャビアキー</button>
+                            <button class="filter-area-btn" data-area="湾岸">湾岸</button>
+                            <button class="filter-area-btn" data-area="クローフィッシュ・ベイ">クローフィッシュ・ベイ</button>
+                        </div>
+                        <button id="reset-filters-btn" class="filter-reset-btn">フィルター解除</button>
+                    </div>
+                </aside>
+
+                <!-- 右上アクション -->
+                <div class="map-actions">
+                    <button id="toggle-obtained-btn" class="action-btn" title="取得済みピンの表示切替">
+                        <span class="icon">👁️</span>
+                    </button>
+                    <button id="route-mode-btn" class="action-btn" title="ルート作成モード">
+                        <span class="icon">🛣️</span>
+                    </button>
+                </div>
+
+                <!-- ルートパネル（右サイドバー/オーバーレイ） -->
+                <div class="route-panel" id="route-panel">
+                    <h3>マイルート</h3>
+                    <div class="route-create-box">
+                        <input type="text" id="route-name-input" placeholder="ルート名を入力...">
+                        <button id="save-route-btn" class="batch-btn ok">ルートを保存</button>
+                    </div>
+                    <div class="search-box">
+                        <input type="text" id="route-search" placeholder="ルートを検索...">
+                    </div>
+                    <div id="route-list" class="route-list">
+                        <!-- ルートがここに動的に追加される -->
+                        <div class="empty-msg">保存されたルートはありません</div>
+                    </div>
+                </div>
+
+                <!-- バッチモードコントロール（右下オーバーレイ） -->
+                <div id="batch-controls" class="batch-controls hidden">
+                    <span class="batch-count">選択中: <span id="selected-count">0</span></span>
+                    <button id="batch-cancel-btn" class="batch-btn cancel">キャンセル</button>
+                    <button id="batch-ok-btn" class="batch-btn ok">OK (取得済みにする)</button>
+                </div>
+
+                <div id="map"></div>
             </div>
-            
-            <div id="map"></div>
             <footer class="site-footer">
                 <p>当サイトは個人が運営する非公式ファンサイトであり、使用されているテキスト・画像等の著作権は Tripwire Interactive および関連する権利者に帰属します。</p>
                 <p>掲載内容に問題がある場合は、お手数ですがご連絡ください。迅速に対応いたします。</p>
