@@ -577,13 +577,15 @@ rawCollectibles.forEach((d, index) => {
     collectibles.push({ 
         ...d, 
         id: `${d.type}-${index}`,
-        name: name
+        name: name,
+        source: d.source || 'base' // base or dlc
     });
 });
 
 // 状態管理
 let activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate', 'cave']);
 let activeAreas = new Set();
+let activeSources = new Set(['base', 'dlc']); // Base game / DLC の識別用
 let obtainedPins = new Set(JSON.parse(localStorage.getItem('maneater_obtained_pins') || '[]'));
 let showObtained = true;
 let batchMode = false;
@@ -698,8 +700,9 @@ function applyFilter() {
         } else {
             const typeOk = activeTypes.has(item.type);
             const areaOk = activeAreas.size === 0 || activeAreas.has(item.area);
+            const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
             const obtainedOk = showObtained || !obtainedPins.has(item.id);
-            isVisible = typeOk && areaOk && obtainedOk;
+            isVisible = typeOk && areaOk && sourceOk && obtainedOk;
         }
 
         if (isVisible) {
@@ -718,8 +721,9 @@ function applyFilter() {
     caveCircleLayers.forEach(({ circle, item }) => {
         const typeOk = activeTypes.has(item.type);
         const areaOk = activeAreas.size === 0 || activeAreas.has(item.area);
+        const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
         const obtainedOk = showObtained || !obtainedPins.has(item.id);
-        const isVisibleCave = typeOk && areaOk && obtainedOk;
+        const isVisibleCave = typeOk && areaOk && sourceOk && obtainedOk;
 
         if (isVisibleCave) {
             if (!map.hasLayer(circle)) {
@@ -731,6 +735,9 @@ function applyFilter() {
             }
         }
     });
+
+    // ソースボタン状態を視覚更新
+    updateSourceButtonState();
 }
 
 // 取得済み切り替え
@@ -1627,6 +1634,11 @@ function setupEventListeners() {
     const settingsBtn = document.getElementById('toggle-settings-btn');
     const settingsPopover = document.getElementById('settings-popover');
     const showObtainedCheck = document.getElementById('show-obtained-check');
+    const showBaseCheck = document.getElementById('show-base-check');
+    const showDlcCheck = document.getElementById('show-dlc-check');
+    const showBaseOnlyBtn = document.getElementById('show-base-only-btn');
+    const showDlcOnlyBtn = document.getElementById('show-dlc-only-btn');
+    const showAllSourcesBtn = document.getElementById('show-all-sources-btn');
 
     if (settingsBtn) {
         settingsBtn.addEventListener('click', (e) => {
@@ -1651,6 +1663,57 @@ function setupEventListeners() {
         });
     }
 
+    if (showBaseCheck) {
+        showBaseCheck.checked = activeSources.has('base');
+        showBaseCheck.addEventListener('change', () => {
+            if (showBaseCheck.checked) activeSources.add('base');
+            else activeSources.delete('base');
+            applyFilter();
+            updateSourceButtonState();
+        });
+    }
+
+    if (showDlcCheck) {
+        showDlcCheck.checked = activeSources.has('dlc');
+        showDlcCheck.addEventListener('change', () => {
+            if (showDlcCheck.checked) activeSources.add('dlc');
+            else activeSources.delete('dlc');
+            applyFilter();
+            updateSourceButtonState();
+        });
+    }
+
+    if (showBaseOnlyBtn) {
+        showBaseOnlyBtn.addEventListener('click', () => {
+            activeSources = new Set(['base']);
+            if (showBaseCheck) showBaseCheck.checked = true;
+            if (showDlcCheck) showDlcCheck.checked = false;
+            applyFilter();
+            updateSourceButtonState();
+        });
+    }
+
+    if (showDlcOnlyBtn) {
+        showDlcOnlyBtn.addEventListener('click', () => {
+            activeSources = new Set(['dlc']);
+            if (showBaseCheck) showBaseCheck.checked = false;
+            if (showDlcCheck) showDlcCheck.checked = true;
+            applyFilter();
+            updateSourceButtonState();
+        });
+    }
+
+    if (showAllSourcesBtn) {
+        showAllSourcesBtn.addEventListener('click', () => {
+            activeSources = new Set(['base', 'dlc']);
+            if (showBaseCheck) showBaseCheck.checked = true;
+            if (showDlcCheck) showDlcCheck.checked = true;
+            applyFilter();
+            updateSourceButtonState();
+        });
+    }
+
+
     const batchCancelBtn = document.getElementById('batch-cancel-btn');
     if (batchCancelBtn) batchCancelBtn.addEventListener('click', () => setBatchMode(false));
     
@@ -1664,6 +1727,22 @@ function setupEventListeners() {
             updateAreaProgress();
             updatePinCounts();
         });
+    }
+}
+
+function updateSourceButtonState() {
+    const showBaseOnlyBtn = document.getElementById('show-base-only-btn');
+    const showDlcOnlyBtn = document.getElementById('show-dlc-only-btn');
+    const showAllSourcesBtn = document.getElementById('show-all-sources-btn');
+
+    if (showBaseOnlyBtn) {
+        showBaseOnlyBtn.classList.toggle('active', activeSources.size === 1 && activeSources.has('base'));
+    }
+    if (showDlcOnlyBtn) {
+        showDlcOnlyBtn.classList.toggle('active', activeSources.size === 1 && activeSources.has('dlc'));
+    }
+    if (showAllSourcesBtn) {
+        showAllSourcesBtn.classList.toggle('active', activeSources.size === 2 && activeSources.has('base') && activeSources.has('dlc'));
     }
 }
 

@@ -170,6 +170,11 @@
                             <h3>設定</h3>
                             <button id="reset-filters-btn" class="filter-reset-btn" style="margin-bottom: 8px;">全てのピンを表示</button>
                             <button id="reset-all-pins-btn" class="filter-reset-btn warning">ピンを全て未取得に戻す</button>
+                            <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                                <button id="show-base-only-btn" class="filter-reset-btn source-toggle-btn">Baseのみ表示</button>
+                                <button id="show-dlc-only-btn" class="filter-reset-btn source-toggle-btn">DLCのみ表示</button>
+                                <button id="show-all-sources-btn" class="filter-reset-btn source-toggle-btn">全てのソースを表示</button>
+                            </div>
                         </div>
                     </div>
                 </aside>
@@ -286,6 +291,11 @@
                                     <input type="checkbox" id="show-obtained-check" checked>
                                     <span class="switch-slider"></span>
                                 </label>
+                            </div>
+                            <div class="popover-section">
+                                <span class="popover-title">ソースフィルタ</span>
+                                <label style="display:block;"><input type="checkbox" id="show-base-check" checked> Base</label>
+                                <label style="display:block;"><input type="checkbox" id="show-dlc-check"> DLC</label>
                             </div>
                         </div>
                     </div>

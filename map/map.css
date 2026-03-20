@@ -546,6 +546,12 @@ input:checked + .switch-slider:before {
     z-index: 1000 !important;
 }
 
+.source-toggle-btn.active {
+    border-color: var(--accent-glow);
+    background: rgba(255, 255, 255, 0.15);
+    color: #f0df7f;
+}
+
 /* 洞窟マーカー（目立たないサイズ） */
 .cave-marker-invisible {
     width: 26px !important;
