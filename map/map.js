@@ -15,9 +15,26 @@ const bounds = [[0, 0], [h, w]];
 L.imageOverlay('../images/maneater_map.png', bounds).addTo(map);
 map.fitBounds(bounds, { paddingTopLeft: [320, 0] });
 
-// デバッグ用：クリックした座標をコンソールに表示
+// デバッグ用：クリックした座標と洞窟当たり判定を表示
 map.on('click', function(e) {
     console.log(`lat: ${e.latlng.lat.toFixed(2)}, lng: ${e.latlng.lng.toFixed(2)}`);
+
+    const hitCave = collectibles.find(c => c.type === 'cave' && Math.hypot(c.lat - e.latlng.lat, c.lng - e.latlng.lng) <= CAVE_HIT_RADIUS);
+    if (hitCave) {
+        console.log(`[洞窟ヒット] ${hitCave.area} (${hitCave.id})`);
+
+        if (currentRouteView === 'create' && !batchMode) {
+            // ルート作成モードでは詳細ポップアップは出さない（他のピンと同じ動作）
+            addPinToRoute(hitCave.id);
+            console.log(`ルート作成中：洞窟ピンを追加 ${hitCave.id}`);
+            return;
+        }
+
+        L.popup({ closeButton: false, autoClose: true })
+            .setLatLng([hitCave.lat, hitCave.lng])
+            .setContent(`<strong>洞窟</strong><br>座標: ${hitCave.lat.toFixed(2)}, ${hitCave.lng.toFixed(2)}<br>（クリックでピン追加）`)
+            .openOn(map);
+    }
 });
 
 // アイコン定義
@@ -30,6 +47,7 @@ const icons = {
     manhunt: L.icon({ iconUrl: '../images/map/人間狩り.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
     grate: L.icon({ iconUrl: '../images/map/鉄格子.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
     floodgate: L.icon({ iconUrl: '../images/map/水門.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
+    cave: L.icon({ iconUrl: '../images/map/洞窟.png', iconSize: [34, 34], iconAnchor: [17, 20], popupAnchor: [0, -12], className: 'cave-marker-invisible' }),
 };
 
 // 収集物データ
@@ -491,6 +509,54 @@ const rawCollectibles = [
     { type: "grate", area: "クローフィッシュ・ベイ", lat: 585.81, lng: 1018.01 },
     { type: "main-quest", area: "クローフィッシュ・ベイ", lat: 721.04, lng: 959.51 },
     { type: "main-quest", area: "クローフィッシュ・ベイ", lat: 732.03, lng: 979.51 },
+    { type: "main-quest", area: "フォーティック・バイユー", lat: 714.77, lng: 897.53 },
+
+    // 洞窟ピン（追加リクエスト）
+    { type: "cave", area: "洞窟", lat: 714.04, lng: 902.05 },
+    { type: "cave", area: "洞窟", lat: 698.80, lng: 969.81 },
+    { type: "cave", area: "洞窟", lat: 624.77, lng: 730.05 },
+    { type: "cave", area: "洞窟", lat: 801.01, lng: 534.79 },
+    { type: "cave", area: "洞窟", lat: 596.27, lng: 326.04 },
+    { type: "cave", area: "洞窟", lat: 501.27, lng: 527.79 },
+    { type: "cave", area: "洞窟", lat: 316.77, lng: 198.29 },
+    { type: "cave", area: "洞窟", lat: 393.04, lng: 743.78 },
+];
+
+// --- ルートシステムの状態管理 ---
+let currentSidebar = 'main'; // 'main' or 'route'
+let currentRouteView = 'browse'; // 'browse' or 'create'
+let activeRouteTab = 'trend'; // 'trend' or 'my'
+let myRoutes = JSON.parse(localStorage.getItem('myRoutes') || '[]');
+let currentDetailedRoute = null; // 現在詳細表示しているルート
+let creatingRoute = {
+    id: null,
+    name: '',
+    description: '',
+    sections: [{ name: '区間1', pins: [] }] // 初期状態で1つ区間を持つ
+};
+let activeSectionIndex = 0;
+let routeIsModified = false;
+let routePolylines = [];
+let routePreviewMarkers = [];
+let routeDecorators = [];
+let focusedRoutePins = null;
+
+// 洞窟ゾーン（当たり判定用）
+const caveCircleLayers = [];
+const CAVE_HIT_RADIUS = 10; // ピクセル相当として扱う（小さめ）
+const CAVE_DISPLAY_RADIUS = 10;
+
+// トレンドルート（作者作成）のサンプルデータ
+const trendRoutes = [
+    {
+        id: 'trend-1',
+        name: 'フォーティック・バイユー全回収',
+        description: 'バイユーの全ての収集物を効率よく回収するルートです。',
+        sections: [
+            { name: '西側エリア', pins: ['landmark-0', 'landmark-1'] },
+            { name: '東側エリア', pins: ['plate-0'] }
+        ]
+    }
 ];
 
 // ID 割り当てと統合
@@ -506,6 +572,7 @@ rawCollectibles.forEach((d, index) => {
     else if (d.type === 'manhunt') name = '復讐クエスト';
     else if (d.type === 'grate') name = '鉄格子';
     else if (d.type === 'floodgate') name = '水門';
+    else if (d.type === 'cave') name = '洞窟';
 
     collectibles.push({ 
         ...d, 
@@ -515,12 +582,14 @@ rawCollectibles.forEach((d, index) => {
 });
 
 // 状態管理
-let activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate']);
+let activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate', 'cave']);
 let activeAreas = new Set();
 let obtainedPins = new Set(JSON.parse(localStorage.getItem('maneater_obtained_pins') || '[]'));
 let showObtained = true;
 let batchMode = false;
 let batchObtainedPins = new Set();
+let pinnedRoutes = new Set(JSON.parse(localStorage.getItem('maneater_pinned_routes') || '[]'));
+
 let routeMode = false;
 let currentRoutePoints = [];
 let routes = JSON.parse(localStorage.getItem('maneater_routes') || '[]');
@@ -531,7 +600,6 @@ const markers = [];
 // 初期化
 function init() {
     renderMarkers();
-    renderRoutes();
     setupEventListeners();
 }
 
@@ -552,8 +620,8 @@ function renderMarkers() {
             if (batchMode) {
                 toggleBatchSelection(item.id, marker);
                 L.DomEvent.stop(e);
-            } else if (routeMode) {
-                addToRoute(item.id, marker);
+            } else if (currentRouteView === 'create') {
+                addPinToRoute(item.id);
                 L.DomEvent.stop(e);
             }
         });
@@ -577,7 +645,30 @@ function renderMarkers() {
         updateMarkerAppearance(marker, item.id);
     });
 
+    renderCaveZones();
     applyFilter();
+}
+
+function renderCaveZones() {
+    // 既存の洞窟円をいったん消去
+    caveCircleLayers.forEach(entry => entry.circle.remove());
+    caveCircleLayers.length = 0;
+
+    collectibles
+        .filter(item => item.type === 'cave')
+        .forEach(item => {
+            const circle = L.circle([item.lat, item.lng], {
+                radius: CAVE_DISPLAY_RADIUS,
+                color: '#ff8f00',
+                fillColor: 'rgba(255, 143, 0, 0.25)',
+                weight: 2,
+                fillOpacity: 0.25,
+                interactive: false
+            });
+            caveCircleLayers.push({ circle, item });
+        });
+
+    // 表示切り替えは applyFilter() に任せる
 }
 
 function updateMarkerAppearance(marker, id) {
@@ -600,11 +691,18 @@ function updateMarkerAppearance(marker, id) {
 function applyFilter() {
     let visibleCount = 0;
     markers.forEach(({ marker, item }) => {
-        const typeOk = activeTypes.has(item.type);
-        const areaOk = activeAreas.size === 0 || activeAreas.has(item.area);
-        const obtainedOk = showObtained || !obtainedPins.has(item.id);
+        let isVisible = false;
 
-        if (typeOk && areaOk && obtainedOk) {
+        if (focusedRoutePins) {
+            isVisible = focusedRoutePins.has(item.id);
+        } else {
+            const typeOk = activeTypes.has(item.type);
+            const areaOk = activeAreas.size === 0 || activeAreas.has(item.area);
+            const obtainedOk = showObtained || !obtainedPins.has(item.id);
+            isVisible = typeOk && areaOk && obtainedOk;
+        }
+
+        if (isVisible) {
             if (!map.hasLayer(marker)) {
                 marker.addTo(map);
             }
@@ -612,6 +710,24 @@ function applyFilter() {
         } else {
             if (map.hasLayer(marker)) {
                 marker.remove();
+            }
+        }
+    });
+
+    // 洞窟当たり判定円の表示制御
+    caveCircleLayers.forEach(({ circle, item }) => {
+        const typeOk = activeTypes.has(item.type);
+        const areaOk = activeAreas.size === 0 || activeAreas.has(item.area);
+        const obtainedOk = showObtained || !obtainedPins.has(item.id);
+        const isVisibleCave = typeOk && areaOk && obtainedOk;
+
+        if (isVisibleCave) {
+            if (!map.hasLayer(circle)) {
+                circle.addTo(map);
+            }
+        } else {
+            if (map.hasLayer(circle)) {
+                circle.remove();
             }
         }
     });
@@ -635,6 +751,8 @@ window.toggleObtainedFromPopup = function(id) {
         }
     }
     applyFilter();
+    updateAreaProgress();
+    updatePinCounts();
 };
 
 function saveObtained() {
@@ -696,72 +814,672 @@ function updateBatchCount() {
     document.getElementById('selected-count').innerText = changed;
 }
 
-function toggleRouteMode() {
-    routeMode = !routeMode;
-    document.getElementById('route-mode-btn').classList.toggle('active', routeMode);
-    document.getElementById('route-panel').classList.toggle('active', routeMode);
+// --- ルートサイドバーの基本操作 ---
+function toggleRouteSidebar(show = null) {
+    const mainSidebar = document.getElementById('map-sidebar');
+    const routeSidebar = document.getElementById('route-sidebar');
+    const areaOverlay = document.getElementById('area-overlay');
     
-    markers.forEach(({ marker }) => {
-        if (routeMode) {
-            if (marker.getPopup()) {
-                marker._tempPopup = marker.getPopup();
-                marker.unbindPopup();
-            }
-        } else if (!batchMode) {
-            if (marker._tempPopup) {
-                marker.bindPopup(marker._tempPopup, { autoPan: false });
-            }
-        }
+    if (show === null) {
+        currentSidebar = (currentSidebar === 'main') ? 'route' : 'main';
+    } else {
+        currentSidebar = show ? 'route' : 'main';
+    }
+
+    if (currentSidebar === 'route') {
+        mainSidebar.classList.add('hidden');
+        routeSidebar.classList.remove('hidden');
+        areaOverlay.classList.add('hidden'); // エリア選択が出ていれば隠す
+        renderRouteList();
+    } else {
+        mainSidebar.classList.remove('hidden');
+        routeSidebar.classList.add('hidden');
+        exitCreateMode(); // 作成中なら抜ける
+    }
+}
+
+function switchRouteTab(tab) {
+    activeRouteTab = tab;
+    document.querySelectorAll('.route-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+    renderRouteList();
+}
+
+function renderRouteList() {
+    const list = document.getElementById('route-list');
+    const searchVal = document.getElementById('route-search-input').value.toLowerCase();
+    const data = (activeRouteTab === 'trend') ? trendRoutes : myRoutes;
+    
+    list.innerHTML = '';
+    const filtered = data.filter(r => r.name.toLowerCase().includes(searchVal));
+
+    filtered.sort((a, b) => {
+        const pinA = pinnedRoutes.has(a.id) ? 1 : 0;
+        const pinB = pinnedRoutes.has(b.id) ? 1 : 0;
+        return pinB - pinA;
     });
 
-    if (!routeMode) {
-        if (currentPolyline) {
-            currentPolyline.remove();
-            currentPolyline = null;
-        }
-        currentRoutePoints = [];
-    }
-}
-
-function addToRoute(id, marker) {
-    const latlng = marker.getLatLng();
-    currentRoutePoints.push(latlng);
-    if (currentPolyline) {
-        currentPolyline.setLatLngs(currentRoutePoints);
-    } else {
-        currentPolyline = L.polyline(currentRoutePoints, { color: '#00ffff', weight: 4, dashArray: '10, 10' }).addTo(map);
-    }
-}
-
-function renderRoutes() {
-    const list = document.getElementById('route-list');
-    if (!list) return;
-    if (routes.length === 0) {
-        list.innerHTML = '<div class="empty-msg">保存されたルートはありません</div>';
+    if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-msg">ルートが見つかりません</div>';
         return;
     }
-    list.innerHTML = '';
-    routes.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'route-card';
-        div.innerHTML = `
+
+    filtered.forEach(r => {
+        const totalPins = r.sections.reduce((sum, s) => sum + s.pins.length, 0);
+        const card = document.createElement('div');
+        card.className = 'route-card';
+        card.innerHTML = `
+            <div class="route-thumb">
+                <img src="../images/map/手配.png" alt="">
+            </div>
             <div class="route-info">
-                <strong>${r.name}</strong>
-                <span>${r.points.length} ピン</span>
+                <div class="route-title">${r.name}</div>
+                <div class="route-meta">
+                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>${totalPins}</span>
+                    <span>${r.description || ''}</span>
+                </div>
+            </div>
+            <div class="route-actions-wrap" style="position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 10;">
+                <button class="route-pin-btn ${pinnedRoutes.has(r.id) ? 'pinned' : ''}" onclick="event.stopPropagation(); window.togglePinRoute('${r.id}')" title="固定">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" /></svg>
+                </button>
+                ${activeRouteTab === 'my' ? `
+                    <button class="route-delete-btn" onclick="event.stopPropagation(); deleteMyRoute('${r.id}')" title="削除">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                ` : ''}
             </div>
         `;
-        div.onclick = () => showRoute(r);
-        list.appendChild(div);
+        card.onclick = () => showRouteDetail(r);
+        list.appendChild(card);
     });
 }
 
-function showRoute(r) {
-    if (currentPolyline) currentPolyline.remove();
-    currentPolyline = L.polyline(r.points, { color: '#00ffff', weight: 4 }).addTo(map);
-    map.fitBounds(currentPolyline.getBounds());
+window.togglePinRoute = function(id) {
+    if (pinnedRoutes.has(id)) {
+        pinnedRoutes.delete(id);
+    } else {
+        pinnedRoutes.add(id);
+    }
+    localStorage.setItem('maneater_pinned_routes', JSON.stringify([...pinnedRoutes]));
+    renderRouteList();
+};
+
+function deleteMyRoute(id) {
+    if (!confirm('このルートを削除しますか？')) return;
+    myRoutes = myRoutes.filter(r => r.id !== id);
+    localStorage.setItem('myRoutes', JSON.stringify(myRoutes));
+    renderRouteList();
+}
+
+function renderRouteOnMap(route, highlightIndex = -1, disableAutoZoom = false) {
+    if (!route || !route.sections) return;
+    console.log("[renderRoute] Start rendering. Sections:", route.sections.length);
+    clearRouteVisuals();
+    
+    for (let i = 0; i < route.sections.length; i++) {
+        if (highlightIndex !== -1 && highlightIndex !== i) continue;
+
+        const section = route.sections[i];
+        const color = getSectionColor(i);
+        const pts = [];
+
+        if (section.pins && Array.isArray(section.pins)) {
+            section.pins.forEach(pid => {
+                const data = markers.find(m => m.item.id === pid);
+                if (data && data.marker) {
+                    const latlng = data.marker.getLatLng();
+                    if (pts.length === 0 || !pts[pts.length - 1].equals(latlng)) {
+                        pts.push(latlng);
+                    }
+                }
+            });
+        }
+
+        console.log("[renderRoute] Section", i, ": Points=", pts.length);
+
+        if (pts.length >= 2) {
+            try {
+                const poly = L.polyline(pts, { color: color, weight: 4, opacity: 0.8 }).addTo(map);
+                routePolylines.push(poly);
+
+                const decorator = L.polylineDecorator(poly, {
+                    patterns: [
+                        { offset: '10%', repeat: 60, symbol: L.Symbol.arrowHead({ pixelSize: 15, polygon: true, pathOptions: { stroke: false, fill: true, color: color, fillOpacity: 1 } }) }
+                    ]
+                }).addTo(map);
+                routeDecorators.push(decorator);
+            } catch (err) {
+                console.error("[renderRoute] Error drawing section", i, err);
+            }
+        }
+    }
+
+    if (routePolylines.length > 0 && !disableAutoZoom) {
+        const group = new L.featureGroup(routePolylines);
+        map.fitBounds(group.getBounds().pad(0.2), { paddingTopLeft: [320, 0], paddingBottomRight: [50, 50], animate: true, duration: 0.8 });
+    }
+}
+
+// --- ルート表示ロジック ---
+function showRoutePreview(route) {
+    if (!route || !route.sections) {
+        console.error("[Preview] Invalid route data:", route);
+        return;
+    }
+    console.log(`[Preview] Start rendering route. Sections: ${route.sections.length}`);
+    clearRouteVisuals();
+
+    for (let i = 0; i < route.sections.length; i++) {
+        const section = route.sections[i];
+        const sectionPoints = [];
+        const color = getSectionColor(i);
+        
+        if (section.pins && Array.isArray(section.pins)) {
+            section.pins.forEach(pinId => {
+                const data = markers.find(m => m.item.id === pinId);
+                if (data && data.marker) {
+                    const latlng = data.marker.getLatLng();
+                    // 連続する同一座標を排除（矢印描画ライブラリのエラー防止）
+                    if (sectionPoints.length === 0 || !sectionPoints[sectionPoints.length - 1].equals(latlng)) {
+                        sectionPoints.push(latlng);
+                    }
+                }
+            });
+        }
+
+        console.log(`[Preview] Section ${i} (${section.name}): Points=${sectionPoints.length}, Color=${color}, PinsCount=${section.pins ? section.pins.length : 0}`);
+
+        if (sectionPoints.length >= 2) {
+            try {
+                const polyline = L.polyline(sectionPoints, { color: color, weight: 4, opacity: 0.8 }).addTo(map);
+                routePolylines.push(polyline);
+                
+                // 矢印（デコレータ）の追加
+                const decorator = L.polylineDecorator(polyline, {
+                    patterns: [
+                        { offset: '10%', repeat: 60, symbol: L.Symbol.arrowHead({ pixelSize: 15, polygon: true, pathOptions: { stroke: false, fill: true, color: color, fillOpacity: 1 } }) }
+                    ]
+                }).addTo(map);
+                routeDecorators.push(decorator);
+            } catch (err) {
+                console.error(`[Preview] CRITICAL ERROR drawing section ${i}:`, err);
+            }
+        } else {
+            console.log(`[Preview] Section ${i} skipped: not enough points to draw a line.`);
+        }
+    }
+}
+
+function clearRouteVisuals() {
+    routePolylines.forEach(p => p.remove());
+    routePreviewMarkers.forEach(m => m.remove());
+    routeDecorators.forEach(d => d.remove());
+    routePolylines = [];
+    routePreviewMarkers = [];
+    routeDecorators = [];
+}
+
+// --- ルート作成モード ---
+function showRouteDetail(route) {
+    currentRouteView = 'detail';
+    currentDetailedRoute = route;
+
+    document.getElementById('route-browse-view').classList.add('hidden');
+    document.getElementById('route-detail-view').classList.remove('hidden');
+    document.getElementById('route-browse-header').classList.add('hidden');
+    document.getElementById('route-detail-header').classList.remove('hidden');
+    document.getElementById('browse-footer').classList.add('hidden');
+    
+    // マイルートの場合のみ編集ボタンを表示
+    const editBtn = document.getElementById('edit-route-btn');
+    if (editBtn) {
+        editBtn.classList.toggle('hidden', activeRouteTab !== 'my');
+    }
+    
+    document.getElementById('detail-route-name').innerText = route.name;
+    document.getElementById('detail-desc').innerText = route.description || '紹介文はありません';
+    document.getElementById('detail-section-count').innerText = `このルートには ${route.sections.length} 個の区間が含まれています`;
+
+    const list = document.getElementById('detail-sections-list');
+    list.innerHTML = '';
+
+    const allRoutePins = new Set();
+    route.sections.forEach(s => s.pins.forEach(pid => allRoutePins.add(pid)));
+
+    route.sections.forEach((section, idx) => {
+        const card = document.createElement('div');
+        card.className = 'detail-section-card';
+        
+        // ピンの種類別にカウント
+        const counts = {};
+        section.pins.forEach(pid => {
+            const data = markers.find(m => m.item.id === pid);
+            if (data) counts[data.item.type] = (counts[data.item.type] || 0) + 1;
+        });
+
+        let itemsHtml = Object.entries(counts).map(([type, count]) => {
+            const iconUrl = (icons[type] && icons[type].options && icons[type].options.iconUrl) ? icons[type].options.iconUrl : '../images/map/洞窟.png';
+            return `<div class="detail-item-count"><img src="${iconUrl}"> <span>x${count}</span></div>`;
+        }).join('');
+
+        card.innerHTML = `
+            <div class="detail-section-head">
+                <span class="detail-dot" style="background:${getSectionColor(idx)}"></span>
+                <span class="detail-name">${section.name}</span>
+                <div class="batch-dropdown">
+                    <button class="batch-link">一括表記 ▾</button>
+                    <div class="batch-dropdown-content hidden">
+                        <button class="batch-action-item" onclick="event.stopPropagation(); batchMarkSection(${JSON.stringify(section.pins).replace(/"/g, "'")}, true)">すべてを表記</button>
+                        <button class="batch-action-item" onclick="event.stopPropagation(); batchMarkSection(${JSON.stringify(section.pins).replace(/"/g, "'")}, false)">すべての表記を取り消す</button>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-section-body">
+                ${itemsHtml || '<span style="color:#666; font-size:0.8rem;">ピンがありません</span>'}
+            </div>
+        `;
+
+        card.onclick = (e) => {
+            if (e.target.closest('.batch-dropdown')) return;
+            
+            const wasActive = card.classList.contains('active-highlight');
+            document.querySelectorAll('.detail-section-card').forEach(c => {
+                c.classList.remove('active-highlight');
+                c.style.backgroundColor = ''; // CSSがない場合のフォールバック用リセット
+            });
+
+            // ルート内の全ピンのみ表示
+            focusedRoutePins = allRoutePins;
+            applyFilter();
+            
+            if (wasActive) {
+                // Toggled off: 全ての線を表示し、ズームはそのまま
+                renderRouteOnMap(route, -1, true);
+            } else {
+                // Toggled on: 選択区間の線だけを表示
+                card.classList.add('active-highlight');
+                card.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; // 簡易ハイライト
+                renderRouteOnMap(route, idx, true);
+
+                // 該当区間へズーム
+                const latlngs = [];
+                section.pins.forEach(pid => {
+                    const mData = markers.find(m => m.item.id === pid);
+                    if (mData) latlngs.push(mData.marker.getLatLng());
+                });
+                if (latlngs.length > 0) {
+                    const bounds = L.latLngBounds(latlngs);
+                    map.fitBounds(bounds.pad(0.2), { paddingTopLeft: [320, 0], paddingBottomRight: [50, 50], animate: true, duration: 0.8 });
+                }
+            }
+        };
+
+        // ドロップダウンの切り替え
+        const dropdownBtn = card.querySelector('.batch-link');
+        const dropdownContent = card.querySelector('.batch-dropdown-content');
+        dropdownBtn.onclick = (e) => {
+            e.stopPropagation();
+            // 他の開いているドロップダウンを閉じる
+            document.querySelectorAll('.batch-dropdown-content').forEach(el => {
+                if (el !== dropdownContent) el.classList.add('hidden');
+            });
+            dropdownContent.classList.toggle('hidden');
+        };
+
+        list.appendChild(card);
+    });
+
+    // 画面外クリックでドロップダウンを閉じる
+    const closeDropdowns = (e) => {
+        if (!e.target.closest('.batch-dropdown')) {
+            document.querySelectorAll('.batch-dropdown-content').forEach(el => el.classList.add('hidden'));
+            document.removeEventListener('click', closeDropdowns);
+        }
+    };
+    document.addEventListener('click', closeDropdowns, { once: true });
+
+    // ビジュアル表示（ライン描画）
+    renderRouteOnMap(route);
+}
+
+function batchMarkSection(pinIds, status) {
+    pinIds.forEach(id => {
+        if (status) obtainedPins.add(id);
+        else obtainedPins.delete(id);
+    });
+    saveObtained();
+    // 全体を再描画せず、外観のみ更新
+    markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
+    applyFilter();
+    updateAreaProgress();
+    updatePinCounts();
+}
+
+function backToBrowse() {
+    currentRouteView = 'browse';
+    currentDetailedRoute = null;
+    focusedRoutePins = null; // フォーカス解除
+    applyFilter();
+    
+    document.getElementById('route-browse-view').classList.remove('hidden');
+    document.getElementById('route-detail-view').classList.add('hidden');
+    document.getElementById('route-browse-header').classList.remove('hidden');
+    document.getElementById('route-detail-header').classList.add('hidden');
+    document.getElementById('browse-footer').classList.remove('hidden');
+    clearRouteVisuals();
+}
+
+function getSectionColor(idx) {
+    const colors = ['#ffd37a', '#7affd3', '#d37aff', '#ff7ab4', '#b4ff7a'];
+    return colors[idx % colors.length];
+}
+
+function enterCreateMode() {
+    currentRouteView = 'create';
+    document.getElementById('route-browse-view').classList.add('hidden');
+    document.getElementById('route-create-view').classList.remove('hidden');
+    document.getElementById('route-browse-header').classList.add('hidden');
+    document.getElementById('route-create-header').classList.remove('hidden');
+    document.getElementById('browse-footer').classList.add('hidden');
+    document.getElementById('creation-footer').classList.remove('hidden');
+    
+    document.getElementById('route-name-input').value = '';
+    
+    // 初期化
+    creatingRoute = {
+        id: null,
+        name: '',
+        description: '',
+        sections: [{ name: '区間1', pins: [] }]
+    };
+    activeSectionIndex = 0;
+    routeIsModified = false;
+    updateCreationUI();
+
+    clearRouteVisuals();
+
+    // マーカーのクリック挙動を作成用に変更
+    markers.forEach(({ marker }) => {
+        if (marker.getPopup()) {
+            marker._tempPopup = marker.getPopup();
+            marker.unbindPopup();
+        }
+    });
+}
+
+function startEditingRoute() {
+    if (!currentDetailedRoute) return;
+
+    focusedRoutePins = null;
+    applyFilter();
+
+    creatingRoute = {
+        id: currentDetailedRoute.id,
+        name: currentDetailedRoute.name,
+        description: currentDetailedRoute.description || '',
+        sections: JSON.parse(JSON.stringify(currentDetailedRoute.sections))
+    };
+    activeSectionIndex = 0;
+
+    currentRouteView = 'create';
+    document.getElementById('route-detail-view').classList.add('hidden');
+    document.getElementById('route-detail-header').classList.add('hidden');
+    document.getElementById('route-create-view').classList.remove('hidden');
+    document.getElementById('route-create-header').classList.remove('hidden');
+    document.getElementById('creation-footer').classList.remove('hidden');
+
+    updateCreationUI();
+    updateCreationVisuals();
+
+    markers.forEach(({ marker }) => {
+        if (marker.getPopup()) {
+            marker._tempPopup = marker.getPopup();
+            marker.unbindPopup();
+        }
+    });
+}
+
+function exitCreateMode() {
+    currentRouteView = 'browse';
+    focusedRoutePins = null;
+    applyFilter();
+    
+    document.getElementById('route-browse-view').classList.remove('hidden');
+    document.getElementById('route-create-view').classList.add('hidden');
+    document.getElementById('route-browse-header').classList.remove('hidden');
+    document.getElementById('route-create-header').classList.add('hidden');
+    document.getElementById('browse-footer').classList.remove('hidden');
+    document.getElementById('creation-footer').classList.add('hidden');
+    clearRouteVisuals();
+
+    // マーカーのクリック挙動を戻す
+    markers.forEach(({ marker }) => {
+        if (marker._tempPopup) {
+            marker.bindPopup(marker._tempPopup, { autoPan: false });
+        }
+    });
+}
+
+function addSection() {
+    let maxNum = 0;
+    creatingRoute.sections.forEach(s => {
+        const match = s.name.match(/区間(\d+)/);
+        if (match) maxNum = Math.max(maxNum, parseInt(match[1]));
+    });
+    const nextNum = maxNum + 1;
+    creatingRoute.sections.push({ name: `区間${nextNum}`, pins: [] });
+    activeSectionIndex = creatingRoute.sections.length - 1;
+    routeIsModified = true;
+    updateCreationUI();
+
+    updateCreationVisuals();
+}
+
+function removeSection(idx) {
+    if (creatingRoute.sections.length <= 1) return;
+    creatingRoute.sections.splice(idx, 1);
+    if (activeSectionIndex >= creatingRoute.sections.length) {
+        activeSectionIndex = creatingRoute.sections.length - 1;
+    }
+    routeIsModified = true;
+    updateCreationUI();
+
+    updateCreationVisuals();
+}
+
+function toggleSectionCollapse(idx) {
+    if (creatingRoute.sections[idx]) {
+        creatingRoute.sections[idx].collapsed = !creatingRoute.sections[idx].collapsed;
+        updateCreationUI();
+    }
+}
+
+function addPinToRoute(pinId) {
+    if (currentRouteView !== 'create') return;
+    
+    const section = creatingRoute.sections[activeSectionIndex];
+    // 同じ区間に連続して同じピンは入れない
+    if (section.pins[section.pins.length - 1] === pinId) return;
+    
+    section.pins.push(pinId);
+    routeIsModified = true;
+    updateCreationUI();
+
+    updateCreationVisuals();
+}
+
+function removePinFromRoute(sIdx, pIdx) {
+    creatingRoute.sections[sIdx].pins.splice(pIdx, 1);
+    routeIsModified = true;
+    updateCreationUI();
+    updateCreationVisuals();
+}
+
+function updateCreationUI() {
+    const container = document.getElementById('sections-container');
+    const nameInput = document.getElementById('route-name-input');
+    const descInput = document.getElementById('route-desc-input');
+    const charCount = document.getElementById('current-char-count');
+    
+    if (document.activeElement !== nameInput) {
+        nameInput.value = creatingRoute.name;
+    }
+    if (document.activeElement !== descInput) {
+        descInput.value = creatingRoute.description;
+    }
+    charCount.innerText = creatingRoute.description.length;
+
+    const scrollPos = container.scrollTop; // Preserve scroll position
+    container.innerHTML = '';
+    creatingRoute.sections.forEach((section, sIdx) => {
+        const isActive = sIdx === activeSectionIndex;
+        const isCollapsed = section.collapsed || false;
+        const card = document.createElement('div');
+        card.className = `section-card ${isActive ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`;
+        card.onclick = () => { activeSectionIndex = sIdx; updateCreationUI(); };
+
+        let pinsHtml = '';
+        if (section.pins.length === 0) {
+            pinsHtml = '<div class="empty-pin-msg">マップからマップピンを選んでください</div>';
+        } else {
+            section.pins.forEach((pinId, pIdx) => {
+                const mData = markers.find(m => m.item.id === pinId);
+                const name = mData ? mData.item.name : '不明なピン';
+                const icon = mData ? (icons[mData.item.type].options.iconUrl || '../images/map/洞窟.png') : '';
+                
+                pinsHtml += `
+                    <div class="pin-item">
+                        <div class="pin-order">${pIdx + 1}</div>
+                        <img src="${icon}" class="pin-icon-sm">
+                        <span class="pin-name">${name}</span>
+                        <button class="delete-pin-btn" onclick="event.stopPropagation(); removePinFromRoute(${sIdx}, ${pIdx})">×</button>
+                    </div>
+                `;
+            });
+        }
+
+        card.innerHTML = `
+            <div class="section-header">
+                <div class="section-info-row" style="display:flex; align-items:center; gap:8px;">
+                    <button class="collapse-btn" onclick="event.stopPropagation(); toggleSectionCollapse(${sIdx})">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="transform: rotate(${isCollapsed ? '-90deg' : '0deg'}); transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
+                    </button>
+                    <div class="section-info">
+                        <input type="text" class="section-name-input" value="${section.name}" 
+                               onclick="event.stopPropagation()" 
+                               oninput="creatingRoute.sections[${sIdx}].name = this.value; updateCreationVisuals();"
+                               placeholder="区間名を入力">
+                        <span class="section-stats">合計${section.pins.length}個のマップピン</span>
+                    </div>
+                </div>
+                ${creatingRoute.sections.length > 1 ? `<button class="delete-section-btn" onclick="event.stopPropagation(); removeSection(${sIdx})">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>` : ''}
+            </div>
+            <div class="pin-list">
+                ${pinsHtml}
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    container.scrollTop = scrollPos;
+}
+
+function updateCreationVisuals() {
+    clearRouteVisuals();
+    showRoutePreview(creatingRoute);
+}
+
+
+function saveMyRoute() {
+    const name = document.getElementById('route-name-input').value.trim();
+    const desc = document.getElementById('route-desc-input').value.trim();
+    
+    if (!name) {
+        alert('ルート名を入力してください');
+        return;
+    }
+
+    const totalPins = creatingRoute.sections.reduce((sum, s) => sum + s.pins.length, 0);
+    if (totalPins < 1) {
+        alert('ピンを少なくとも1つ追加してください');
+        return;
+    }
+
+    if (creatingRoute.id) {
+        // 既存ルートの更新
+        const idx = myRoutes.findIndex(r => r.id === creatingRoute.id);
+        if (idx !== -1) {
+            // 保存前に折り畳まれてるフラグなどを消したクリーンな状態で保存
+            const cleanSections = creatingRoute.sections.map(s => {
+                const { collapsed, ...rest } = s;
+                return rest;
+            });
+            myRoutes[idx] = {
+                id: creatingRoute.id,
+                name: name,
+                description: desc,
+                sections: cleanSections
+            };
+        }
+    } else {
+        // 新規作成
+        const cleanSections = creatingRoute.sections.map(s => {
+            const { collapsed, ...rest } = s;
+            return rest;
+        });
+        const newRoute = {
+            id: 'my-' + Date.now(),
+            name: name,
+            description: desc,
+            sections: cleanSections
+        };
+        myRoutes.push(newRoute);
+    }
+
+    localStorage.setItem('myRoutes', JSON.stringify(myRoutes));
+    routeIsModified = false;
+    exitCreateMode();
+
+    renderRouteList();
+}
+
+function promptUnsavedChanges(onConfirm) {
+    if (currentRouteView !== 'create' || !routeIsModified) {
+        onConfirm();
+        return;
+    }
+    
+    const modal = document.getElementById('route-exit-alert-modal');
+    if (!modal) {
+        onConfirm();
+        return;
+    }
+    modal.classList.remove('hidden');
+
+    const okBtn = document.getElementById('alert-ok-btn');
+    const cancelBtn = document.getElementById('alert-cancel-btn');
+
+    const newOk = okBtn.cloneNode(true);
+    const newCancel = cancelBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOk, okBtn);
+    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+    newOk.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        onConfirm();
+    });
+
+    newCancel.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
 }
 
 function setupEventListeners() {
+    // --- 既存のフィルター系 ---
     document.querySelectorAll('.filter-type-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const t = btn.dataset.type;
@@ -813,15 +1531,12 @@ function setupEventListeners() {
         });
     }
 
-    // 全てのピン状況をリセット
     const resetAllPinsBtn = document.getElementById('reset-all-pins-btn');
     if (resetAllPinsBtn) {
         resetAllPinsBtn.addEventListener('click', () => {
             if (confirm('全てのピンを未取得の状態に戻しますか？\nこの操作は取り消せません。')) {
                 obtainedPins.clear();
                 saveObtained();
-                
-                // 表示を更新
                 markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
                 applyFilter();
                 updateAreaProgress();
@@ -831,6 +1546,84 @@ function setupEventListeners() {
         });
     }
 
+    // --- ルートサイドバー操作 ---
+    const routeIconBtn = document.getElementById('route-mode-btn');
+    if (routeIconBtn) {
+        routeIconBtn.addEventListener('click', () => {
+            if (currentSidebar === 'route' && currentRouteView === 'create') {
+                promptUnsavedChanges(() => toggleRouteSidebar());
+            } else {
+                toggleRouteSidebar();
+            }
+        });
+    }
+
+    const closeRouteSidebarBtn = document.getElementById('close-route-sidebar-btn');
+    if (closeRouteSidebarBtn) {
+        closeRouteSidebarBtn.addEventListener('click', () => {
+            promptUnsavedChanges(() => toggleRouteSidebar(false));
+        });
+    }
+
+    document.querySelectorAll('.route-tab').forEach(btn => {
+        btn.addEventListener('click', () => switchRouteTab(btn.dataset.tab));
+    });
+
+    const backBtn = document.getElementById('back-to-browse-btn');
+    if (backBtn) {
+        backBtn.addEventListener('click', backToBrowse);
+    }
+    
+    const backFromCreateBtn = document.getElementById('back-from-create-btn');
+    if (backFromCreateBtn) {
+        backFromCreateBtn.addEventListener('click', () => {
+            promptUnsavedChanges(() => exitCreateMode());
+        });
+    }
+
+    const routeSearchInput = document.getElementById('route-search-input');
+    if (routeSearchInput) {
+        routeSearchInput.addEventListener('input', () => renderRouteList());
+    }
+
+    const startCreateBtn = document.getElementById('start-create-route-btn');
+    if (startCreateBtn) {
+        startCreateBtn.addEventListener('click', () => enterCreateMode());
+    }
+
+    const editRouteBtn = document.getElementById('edit-route-btn');
+    if (editRouteBtn) {
+        editRouteBtn.addEventListener('click', () => startEditingRoute());
+    }
+
+    const addSectionBtn = document.getElementById('add-section-btn');
+    if (addSectionBtn) {
+        addSectionBtn.addEventListener('click', () => addSection());
+    }
+
+    const saveRouteBtn = document.getElementById('save-route-btn');
+    if (saveRouteBtn) {
+        saveRouteBtn.addEventListener('click', () => saveMyRoute());
+    }
+
+    const routeNameInput = document.getElementById('route-name-input');
+    if (routeNameInput) {
+        routeNameInput.addEventListener('input', () => {
+            creatingRoute.name = routeNameInput.value;
+            routeIsModified = true;
+        });
+    }
+
+    const routeDescInput = document.getElementById('route-desc-input');
+    if (routeDescInput) {
+        routeDescInput.addEventListener('input', () => {
+            creatingRoute.description = routeDescInput.value;
+            routeIsModified = true;
+            document.getElementById('current-char-count').innerText = routeDescInput.value.length;
+        });
+    }
+
+    // --- その他設定・一括 ---
     const settingsBtn = document.getElementById('toggle-settings-btn');
     const settingsPopover = document.getElementById('settings-popover');
     const showObtainedCheck = document.getElementById('show-obtained-check');
@@ -858,26 +1651,6 @@ function setupEventListeners() {
         });
     }
 
-    const routeModeBtn = document.getElementById('route-mode-btn');
-    if (routeModeBtn) routeModeBtn.addEventListener('click', toggleRouteMode);
-
-    const saveRouteBtn = document.getElementById('save-route-btn');
-    if (saveRouteBtn) {
-        saveRouteBtn.addEventListener('click', () => {
-            const name = document.getElementById('route-name-input').value.trim();
-            if (!name) { alert('ルート名を入力してください'); return; }
-            if (currentRoutePoints.length < 2) { alert('ピンを2つ以上選択してください'); return; }
-            routes.push({ name: name, points: [...currentRoutePoints] });
-            localStorage.setItem('maneater_routes', JSON.stringify(routes));
-            document.getElementById('route-name-input').value = '';
-            currentRoutePoints = [];
-            if (currentPolyline) currentPolyline.remove();
-            currentPolyline = null;
-            renderRoutes();
-            alert('ルートを保存しました');
-        });
-    }
-
     const batchCancelBtn = document.getElementById('batch-cancel-btn');
     if (batchCancelBtn) batchCancelBtn.addEventListener('click', () => setBatchMode(false));
     
@@ -888,6 +1661,8 @@ function setupEventListeners() {
             saveObtained();
             setBatchMode(false);
             applyFilter();
+            updateAreaProgress();
+            updatePinCounts();
         });
     }
 }
@@ -921,22 +1696,33 @@ function selectArea(area) {
 }
 
 function updatePinCounts() {
-    const counts = {};
+    const totalCounts = {};
+    const obtainedCounts = {};
     const currentArea = [...activeAreas][0] || 'all';
+    
     collectibles.forEach(item => {
         if (currentArea === 'all' || item.area === currentArea) {
-            counts[item.type] = (counts[item.type] || 0) + 1;
+            totalCounts[item.type] = (totalCounts[item.type] || 0) + 1;
+            if (obtainedPins.has(item.id)) {
+                obtainedCounts[item.type] = (obtainedCounts[item.type] || 0) + 1;
+            }
         }
     });
+
     document.querySelectorAll('.filter-type-btn').forEach(btn => {
         const type = btn.dataset.type;
         const countSpan = btn.querySelector('.pin-count');
-        if (countSpan) countSpan.innerText = counts[type] || 0;
+        if (countSpan) {
+            const total = totalCounts[type] || 0;
+            const obtained = obtainedCounts[type] || 0;
+            countSpan.innerText = `${obtained}/${total}`;
+        }
     });
 }
 
 function updateAreaProgress() {
-    document.querySelectorAll('.area-sub').forEach(sub => sub.innerText = `探索度: -%`);
+    // 探索度の割合計算は未実装だから、明示的に「未実装」と表示する
+    document.querySelectorAll('.area-sub').forEach(sub => sub.innerText = `探索度: -%（未実装）`);
     const percentEl = document.getElementById('area-progress-percent');
     const fillEl = document.getElementById('area-progress-fill');
     if (percentEl) percentEl.innerText = '-';

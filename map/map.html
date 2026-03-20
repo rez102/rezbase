@@ -42,7 +42,7 @@
                             <div class="progress-bar-mini">
                                 <div class="progress-fill" id="area-progress-fill" style="width: 0%"></div>
                             </div>
-                            <span class="progress-text">探索度 : <span id="area-progress-percent">0</span>%</span>
+                            <span class="progress-text">探索度 : <span id="area-progress-percent">-</span>% <small style="color:#ffb100;">(自動計算は未実装)</small></span>
                         </div>
                         <button class="area-switch-btn">⇄ 切り替える</button>
                     </div>
@@ -159,6 +159,10 @@
                                     <div class="icon-wrap"><img src="../images/map/水門.png" alt=""><span class="pin-count">0</span></div>
                                     <span>水門</span>
                                 </button>
+                                <button class="filter-type-btn active" data-type="cave">
+                                    <div class="icon-wrap"><img src="../images/map/洞窟.png" alt=""><span class="pin-count">0</span></div>
+                                    <span>洞窟</span>
+                                </button>
                             </div>
                         </div>
 
@@ -166,6 +170,105 @@
                             <h3>設定</h3>
                             <button id="reset-filters-btn" class="filter-reset-btn" style="margin-bottom: 8px;">全てのピンを表示</button>
                             <button id="reset-all-pins-btn" class="filter-reset-btn warning">ピンを全て未取得に戻す</button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- ルート専用サイドバー -->
+                <aside id="route-sidebar" class="map-sidebar hidden">
+                    <div class="sidebar-header">
+                        <!-- 閲覧用ヘッダー -->
+                        <div id="route-browse-header" class="route-header-content">
+                            <div class="route-tabs">
+                                <button class="route-tab active" data-tab="trend">トレンドルート</button>
+                                <button class="route-tab" data-tab="my">マイルート</button>
+                            </div>
+                        </div>
+                        <!-- 作成用ヘッダー -->
+                        <div id="route-create-header" class="route-header-content hidden">
+                            <button id="back-from-create-btn" class="back-btn" title="戻る">
+                                <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                            </button>
+                            <h2 class="creation-title">ルート作成・編集</h2>
+                        </div>
+                        <!-- 詳細用ヘッダー -->
+                        <div id="route-detail-header" class="route-header-content hidden">
+                            <button id="back-to-browse-btn" class="back-btn">
+                                <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                            </button>
+                            <h2 id="detail-route-name" class="creation-title" style="flex:1;">ルート詳細</h2>
+                            <button id="edit-route-btn" class="back-btn hidden" title="編集">
+                                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                        </div>
+                        <button class="close-sidebar-btn" id="close-route-sidebar-btn">
+                            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="sidebar-scroll">
+                        <div id="route-browse-view">
+                            <div class="search-box">
+                                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                                <input type="text" id="route-search-input" placeholder="検索">
+                            </div>
+                            <div id="route-list" class="route-list">
+                                <!-- ルートカードがここに挿入される -->
+                            </div>
+                        </div>
+
+                        <div id="route-create-view" class="hidden">
+                            <div class="creation-header">
+                                <h2>ルート作成</h2>
+                            </div>
+                            <div class="creation-content">
+                                <div class="input-group">
+                                    <input type="text" id="route-name-input" placeholder="ルート名を入力" maxlength="30">
+                                </div>
+                                <div class="input-group">
+                                    <textarea id="route-desc-input" placeholder="ルートの紹介をご入力ください" maxlength="300"></textarea>
+                                    <div class="char-count-wrap">
+                                        <span class="char-count"><span id="current-char-count">0</span>/300</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="section-manager">
+                                    <div class="section-title-row">
+                                        <div class="section-label">
+                                            <span class="required-mark">*</span> 区間
+                                        </div>
+                                        <button id="add-section-btn" class="add-btn">追加 +</button>
+                                    </div>
+                                    <div id="sections-container">
+                                        <!-- セクション（区間）がここに挿入される -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 詳細閲覧ビュー -->
+                        <div id="route-detail-view" class="hidden">
+                            <div class="detail-content">
+                                <div id="detail-desc" class="route-description"></div>
+                                <div id="detail-section-count" class="section-count-info"></div>
+                                <div id="detail-sections-list" class="detail-sections-list">
+                                    <!-- セクション詳細がここに挿入される -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-footer">
+                        <div id="browse-footer">
+                            <button id="start-create-route-btn" class="footer-btn create-btn">
+                                <div class="btn-icon">
+                                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"/></svg>
+                                </div>
+                                <span>ルート作成</span>
+                            </button>
+                        </div>
+                        <div id="creation-footer" class="hidden">
+                            <button id="save-route-btn" class="footer-btn ok-btn">OK</button>
                         </div>
                     </div>
                 </aside>
@@ -191,21 +294,6 @@
                     </button>
                 </div>
 
-                <!-- ルートパネル（右サイドバー/オーバーレイ） -->
-                <div class="route-panel" id="route-panel">
-                    <h3>マイルート</h3>
-                    <div class="route-create-box">
-                        <input type="text" id="route-name-input" placeholder="ルート名を入力...">
-                        <button id="save-route-btn" class="batch-btn ok">ルートを保存</button>
-                    </div>
-                    <div class="search-box">
-                        <input type="text" id="route-search" placeholder="ルートを検索...">
-                    </div>
-                    <div id="route-list" class="route-list">
-                        <!-- ルートがここに動的に追加される -->
-                        <div class="empty-msg">保存されたルートはありません</div>
-                    </div>
-                </div>
 
                 <!-- バッチモードコントロール（右下オーバーレイ） -->
                 <div id="batch-controls" class="batch-controls hidden">
@@ -222,7 +310,40 @@
             </footer>
         </main>
     </div>
+
+    <!-- HSR-style Alert Modal -->
+    <div id="route-exit-alert-modal" class="hsr-modal-overlay hidden">
+        <div class="hsr-alert-box">
+            <div class="hsr-alert-corner top-left"></div>
+            <div class="hsr-alert-corner top-right"></div>
+            <div class="hsr-alert-corner bottom-left"></div>
+            <div class="hsr-alert-corner bottom-right"></div>
+            
+            <div class="hsr-alert-content">
+                <p>保存されていない内容があります。離れてもよろしいですか？</p>
+                <div class="hsr-divider">
+                    <div class="hsr-diamond"></div>
+                </div>
+                <div class="hsr-alert-buttons">
+                    <button id="alert-cancel-btn" class="hsr-btn cancel">
+                        <div class="hsr-icon-circ cancel-circ">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                        </div>
+                        <span>キャンセル</span>
+                    </button>
+                    <button id="alert-ok-btn" class="hsr-btn ok">
+                        <div class="hsr-icon-circ ok-circ">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="8"/></svg>
+                        </div>
+                        <span>OK</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-polyline-decorator/1.6.0/leaflet.polylineDecorator.js"></script>
     <script src="map.js"></script>
 </body>
 
