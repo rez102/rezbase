@@ -32,9 +32,11 @@
         </aside>
         <main class="main">
             <div class="map-container">
+                <button id="toggle-left-sidebar-btn" class="left-sidebar-toggle hidden" title="サイドバーを開く">‹</button>
+                <button id="close-left-sidebar-btn" class="left-sidebar-close" title="サイドバーを閉じる">‹</button>
                 <!-- 左サイドバー（マップ内オーバーレイ） -->
                 <aside class="map-sidebar" id="map-sidebar">
-                    <!-- エリアヘッダー（原神風） -->
+                    <!-- エリアヘッダー -->
                     <div class="sidebar-header" id="area-header-btn">
                         <div class="current-area-info">
                             <span class="area-label">現在のエリア</span>
@@ -108,13 +110,25 @@
                                     <span class="area-sub">探索度: 0%</span>
                                 </div>
                             </button>
+                            <button class="area-card" data-area="チドリ島">
+                                <div class="area-card-content">
+                                    <strong>チドリ島（DLC）</strong>
+                                    <span class="area-sub">探索度: 0%</span>
+                                </div>
+                            </button>
                         </div>
                     </div>
 
                     <div class="sidebar-content">
                         <div class="sidebar-section">
-                            <h3>収集物</h3>
-                            <div class="pin-grid">
+                            <h3 class="section-title">
+                                <span>収集物</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="collection" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </h3>
+                            <div class="pin-grid" data-section-group="collection">
                                 <button class="filter-type-btn active" data-type="landmark">
                                     <div class="icon-wrap"><img src="../images/map/ランドマーク.png" alt=""><span class="pin-count">0</span></div>
                                     <span>ランドマーク</span>
@@ -131,17 +145,23 @@
                         </div>
 
                         <div class="sidebar-section">
-                            <h3>クエスト</h3>
-                            <div class="pin-grid">
-                                <button class="filter-type-btn active" data-type="main-quest">
+                            <h3 class="section-title">
+                                <span>クエスト</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="quest-base" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </h3>
+                            <div class="pin-grid quest-grid" data-section-group="quest-base">
+                                <button class="filter-type-btn active" data-type="main-quest" data-source="base">
                                     <div class="icon-wrap"><img src="../images/map/メインクエスト.png" alt=""><span class="pin-count">0</span></div>
                                     <span>メイン</span>
                                 </button>
-                                <button class="filter-type-btn active" data-type="sub-quest">
+                                <button class="filter-type-btn active" data-type="sub-quest" data-source="base">
                                     <div class="icon-wrap"><img src="../images/map/手配.png" alt=""><span class="pin-count">0</span></div>
                                     <span>狩猟クエスト</span>
                                 </button>
-                                <button class="filter-type-btn active" data-type="manhunt">
+                                <button class="filter-type-btn active" data-type="manhunt" data-source="base">
                                     <div class="icon-wrap"><img src="../images/map/人間狩り.png" alt=""><span class="pin-count">0</span></div>
                                     <span>復讐クエスト</span>
                                 </button>
@@ -149,8 +169,46 @@
                         </div>
 
                         <div class="sidebar-section">
-                            <h3>その他</h3>
-                            <div class="pin-grid">
+                            <h3 class="section-title">
+                                <span>DLCクエスト</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="quest-dlc" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </h3>
+                            <div class="pin-grid quest-grid" data-section-group="quest-dlc">
+                                <button class="filter-type-btn active" data-type="main-quest" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/メインクエスト.png" alt=""><span class="pin-count">0</span></div>
+                                    <span>メイン</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="sub-quest" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/手配.png" alt=""><span class="pin-count">0</span></div>
+                                    <span>狩猟クエスト</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="time-trial" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/タイムトライアル.png" alt=""><span class="pin-count">0</span></div>
+                                    <span>タイムトライアル</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="manhunt" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/人間狩り.png" alt=""><span class="pin-count">0</span></div>
+                                    <span>復讐クエスト</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="quest" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/クエスター.png" alt=""><span class="pin-count">0</span></div>
+                                    <span>クエスター</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <h3 class="section-title">
+                                <span>その他</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="other" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </h3>
+                            <div class="pin-grid" data-section-group="other">
                                 <button class="filter-type-btn active" data-type="grate">
                                     <div class="icon-wrap"><img src="../images/map/鉄格子.png" alt=""><span class="pin-count">0</span></div>
                                     <span>鉄格子</span>
@@ -167,15 +225,17 @@
                         </div>
 
                         <div class="sidebar-section">
-                            <h3>設定</h3>
-                            <button id="reset-filters-btn" class="filter-reset-btn" style="margin-bottom: 8px;">全てのピンを表示</button>
-                            <button id="reset-all-pins-btn" class="filter-reset-btn warning">ピンを全て未取得に戻す</button>
-                            <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
-                                <button id="show-base-only-btn" class="filter-reset-btn source-toggle-btn">Baseのみ表示</button>
-                                <button id="show-dlc-only-btn" class="filter-reset-btn source-toggle-btn">DLCのみ表示</button>
-                                <button id="show-all-sources-btn" class="filter-reset-btn source-toggle-btn">全てのソースを表示</button>
-                            </div>
+                            <h3 class="section-title">
+                                <span id="custom-pin-section-title">新規マップピン (0)</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="custom-pins" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                                <button id="custom-pin-sort-btn" class="custom-pin-sort-btn" title="並び替え">作成順</button>
+                            </h3>
+                            <div class="pin-grid" id="custom-pin-list" data-section-group="custom-pins"></div>
                         </div>
+
                     </div>
                 </aside>
 
@@ -225,6 +285,13 @@
                         <div id="route-create-view" class="hidden">
                             <div class="creation-header">
                                 <h2>ルート作成</h2>
+                            </div>
+                            <div class="route-map-switch">
+                                <span class="switch-label">マップ切替</span>
+                                <div class="switch-buttons">
+                                    <button id="route-map-base-btn" class="switch-btn">Baseマップ</button>
+                                    <button id="route-map-dlc-btn" class="switch-btn">DLCマップ</button>
+                                </div>
                             </div>
                             <div class="creation-content">
                                 <div class="input-group">
@@ -282,7 +349,7 @@
                 <div class="map-actions">
                     <div class="action-wrap-popover">
                         <button id="toggle-settings-btn" class="action-btn" title="表示・非表示設定">
-                            <span class="icon">👁️</span>
+                            <img src="../images/map/設定.png" alt="">
                         </button>
                         <div id="settings-popover" class="action-popover hidden">
                             <div class="popover-section">
@@ -293,15 +360,170 @@
                                 </label>
                             </div>
                             <div class="popover-section">
-                                <span class="popover-title">ソースフィルタ</span>
-                                <label style="display:block;"><input type="checkbox" id="show-base-check" checked> Base</label>
-                                <label style="display:block;"><input type="checkbox" id="show-dlc-check"> DLC</label>
+                                <span class="popover-title">ピン操作</span>
+                                <button id="reset-filters-btn" class="filter-reset-btn" style="margin-bottom: 8px;">全てのピンを表示</button>
+                                <button id="reset-all-pins-btn" class="filter-reset-btn warning">ピンを全て未取得に戻す</button>
+                            </div>
+                            <div class="popover-section">
+                                <span class="popover-title">ソース一括</span>
+                                <button id="show-base-only-btn" class="filter-reset-btn source-toggle-btn">Baseのみ表示</button>
+                                <button id="show-dlc-only-btn" class="filter-reset-btn source-toggle-btn">DLCのみ表示</button>
+                                <button id="show-all-sources-btn" class="filter-reset-btn source-toggle-btn">全てのソースを表示</button>
+                            </div>
+                            <div class="popover-section">
+                                <span class="popover-title">マップ背景</span>
+                                <button id="map-overlay-base-btn" class="filter-reset-btn source-toggle-btn">Baseマップ</button>
+                                <button id="map-overlay-dlc-btn" class="filter-reset-btn source-toggle-btn">DLCマップ</button>
                             </div>
                         </div>
                     </div>
                     <button id="route-mode-btn" class="action-btn" title="ルート作成モード">
                         <span class="icon">🛣️</span>
                     </button>
+                </div>
+
+                <!-- ルート作成用：右側アクション & パネル -->
+                <div id="route-create-actions" class="route-create-actions hidden">
+                    <button id="route-filter-btn" class="route-action-btn" title="フィルター">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2l-7 7v5l-4-2v-3L3 7V5z"/></svg>
+                    </button>
+                    <button id="route-area-btn" class="route-action-btn" title="エリア確認">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 3a7 7 0 110 14 7 7 0 010-14zm0 3a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                    </button>
+
+                    <div id="route-filter-panel" class="route-side-panel hidden">
+                        <div class="route-panel-title">ピンフィルター</div>
+                        <div class="route-filter-section">
+                            <div class="route-filter-title">
+                                <span>収集物</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="route-collection" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div class="route-filter-grid" data-section-group="route-collection">
+                                <button class="filter-type-btn active" data-type="landmark">
+                                    <div class="icon-wrap"><img src="../images/map/ランドマーク.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>ランドマーク</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="nutrient">
+                                    <div class="icon-wrap"><img src="../images/map/栄養箱.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>栄養箱</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="plate">
+                                    <div class="icon-wrap"><img src="../images/map/ナンバープレート.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>ナンバー</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="route-filter-section">
+                            <div class="route-filter-title">
+                                <span>クエスト</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="route-quest-base" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div class="route-filter-grid" data-section-group="route-quest-base">
+                                <button class="filter-type-btn active" data-type="main-quest" data-source="base">
+                                    <div class="icon-wrap"><img src="../images/map/メインクエスト.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>メイン</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="sub-quest" data-source="base">
+                                    <div class="icon-wrap"><img src="../images/map/手配.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>狩猟クエスト</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="manhunt" data-source="base">
+                                    <div class="icon-wrap"><img src="../images/map/人間狩り.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>復讐クエスト</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="route-filter-section">
+                            <div class="route-filter-title">
+                                <span>DLCクエスト</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="route-quest-dlc" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div class="route-filter-grid" data-section-group="route-quest-dlc">
+                                <button class="filter-type-btn active" data-type="main-quest" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/メインクエスト.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>メイン</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="sub-quest" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/手配.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>狩猟クエスト</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="time-trial" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/タイムトライアル.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>タイムトライアル</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="manhunt" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/人間狩り.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>復讐クエスト</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="quest" data-source="dlc">
+                                    <div class="icon-wrap"><img src="../images/map/クエスター.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>クエスター</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="route-filter-section">
+                            <div class="route-filter-title">
+                                <span>その他</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="route-other" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div class="route-filter-grid" data-section-group="route-other">
+                                <button class="filter-type-btn active" data-type="grate">
+                                    <div class="icon-wrap"><img src="../images/map/鉄格子.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>鉄格子</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="floodgate">
+                                    <div class="icon-wrap"><img src="../images/map/水門.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>水門</span>
+                                </button>
+                                <button class="filter-type-btn active" data-type="cave">
+                                    <div class="icon-wrap"><img src="../images/map/洞窟.png" alt=""><span class="pin-count route-filter-count">0/0</span></div>
+                                    <span>洞窟</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="route-area-panel" class="route-side-panel hidden">
+                        <div class="route-panel-title">エリア確認</div>
+                        <div class="route-area-tree">
+                            <div class="tree-group">
+                                <div class="tree-parent">Base</div>
+                                <button class="route-area-item" data-area="フォーティック・バイユー">フォーティック・バイユー</button>
+                                <button class="route-area-item" data-area="デッド・ホース・レイク">デッド・ホース・レイク</button>
+                                <button class="route-area-item" data-area="ゴールデン・ショア">ゴールデン・ショア</button>
+                                <button class="route-area-item" data-area="サファリア・ベイ">サファリア・ベイ</button>
+                                <button class="route-area-item" data-area="プロスピリティー・サンド">プロスピリティー・サンド</button>
+                                <button class="route-area-item" data-area="キャビアキー">キャビアキー</button>
+                                <button class="route-area-item" data-area="湾岸">湾岸</button>
+                                <button class="route-area-item" data-area="クローフィッシュ・ベイ">クローフィッシュ・ベイ</button>
+                            </div>
+                            <div class="tree-group">
+                                <div class="tree-parent">DLC</div>
+                                <button class="route-area-item" data-area="チドリ島">チドリ島（DLC）</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="route-quickview" class="route-quickview">
+                        <button id="route-quickview-toggle" class="quickview-toggle">▲</button>
+                        <button id="route-quickview-all" class="quickview-all-btn" title="全て表示">ALL</button>
+                        <div id="route-quickview-list" class="quickview-list"></div>
+                    </div>
                 </div>
 
 
@@ -312,6 +534,57 @@
                     <button id="batch-ok-btn" class="batch-btn ok">変更を適用</button>
                 </div>
 
+                <!-- カスタムピン作成サイドバー -->
+                <aside id="custom-pin-sidebar" class="custom-pin-sidebar hidden">
+                    <div class="custom-pin-header">
+                        <h3>新規マップピン</h3>
+                        <button id="custom-pin-close-btn" class="close-btn">×</button>
+                    </div>
+                    <div class="custom-pin-body">
+                        <div class="custom-pin-section">
+                            <div class="custom-pin-section-title"><span class="required">*</span> マップピン種目</div>
+                            <div class="custom-pin-icon-grid">
+                                <button class="custom-pin-icon-btn active" data-icon-type="landmark" title="ランドマーク"><img src="../images/map/ランドマーク.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="nutrient" title="栄養箱"><img src="../images/map/栄養箱.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="plate" title="ナンバープレート"><img src="../images/map/ナンバープレート.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="main-quest" title="メインクエスト"><img src="../images/map/メインクエスト.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="sub-quest" title="狩猟クエスト"><img src="../images/map/手配.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="manhunt" title="復讐クエスト"><img src="../images/map/人間狩り.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="time-trial" title="タイムトライアル"><img src="../images/map/タイムトライアル.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="quest" title="クエスター"><img src="../images/map/クエスター.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="infamy-1" title="悪名ランク1"><img src="../images/map/悪名ランク1.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="grate" title="鉄格子"><img src="../images/map/鉄格子.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="floodgate" title="水門"><img src="../images/map/水門.png" alt=""></button>
+                                <button class="custom-pin-icon-btn" data-icon-type="cave" title="洞窟"><img src="../images/map/洞窟.png" alt=""></button>
+                            </div>
+                        </div>
+
+                        <div class="custom-pin-section">
+                            <div class="custom-pin-section-title">ピン名称</div>
+                            <input id="custom-pin-name" type="text" placeholder="例：鉄格子" maxlength="30">
+                        </div>
+
+                        <div class="custom-pin-section">
+                            <div class="custom-pin-section-title">マップピン詳細</div>
+                            <textarea id="custom-pin-detail" maxlength="300" placeholder="マップピン詳細を入力してください"></textarea>
+                            <div class="custom-pin-count"><span id="custom-pin-detail-count">0</span>/300</div>
+                        </div>
+                    </div>
+                    <div class="custom-pin-footer">
+                        <button id="custom-pin-cancel-btn" class="footer-btn cancel-btn hidden">キャンセル</button>
+                        <button id="custom-pin-save-btn" class="footer-btn ok-btn">OK</button>
+                    </div>
+                </aside>
+
+                <!-- ピン一括管理サイドバー -->
+                <aside id="pin-bulk-sidebar" class="custom-pin-sidebar hidden">
+                    <div class="custom-pin-header">
+                        <h3>標記したマップピン</h3>
+                        <button id="pin-bulk-close-btn" class="close-btn">×</button>
+                    </div>
+                    <div class="custom-pin-body" id="pin-bulk-list"></div>
+                </aside>
+
                 <div id="map"></div>
             </div>
             <footer class="site-footer">
@@ -321,7 +594,7 @@
         </main>
     </div>
 
-    <!-- HSR-style Alert Modal -->
+    <!-- Alert Modal -->
     <div id="route-exit-alert-modal" class="hsr-modal-overlay hidden">
         <div class="hsr-alert-box">
             <div class="hsr-alert-corner top-left"></div>
@@ -353,7 +626,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-polyline-decorator/1.6.0/leaflet.polylineDecorator.js"></script>
+    <script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
     <script src="map.js"></script>
 </body>
 
