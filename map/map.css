@@ -903,6 +903,7 @@ body.mobile-filter-open .sidebar-backdrop {
     top: 0;
     right: 54px;
     width: 260px;
+    max-height: min(calc(100vh - 32px), 620px);
     background: #2a2e3a;
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
@@ -910,16 +911,26 @@ body.mobile-filter-open .sidebar-backdrop {
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     z-index: 1000;
     transition: all 0.2s;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.2) transparent;
 }
 
 .settings-popover-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: sticky;
+    top: -16px;
+    margin: -16px -16px 8px;
+    padding: 16px 16px 8px;
+    background: #2a2e3a;
     margin-bottom: 8px;
     color: #f3ead2;
     font-weight: 700;
     font-size: 0.9rem;
+    z-index: 1;
 }
 
 .settings-popover-close-btn {
