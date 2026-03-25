@@ -1489,6 +1489,7 @@ input:checked + .switch-slider:before {
     display: flex;
     gap: 12px;
     margin-top: 8px;
+    z-index: 1;
 }
 
 .tutorial-skip,
@@ -1500,12 +1501,41 @@ input:checked + .switch-slider:before {
     background: rgba(20, 22, 28, 0.9);
     color: #ffd37a;
     cursor: pointer;
+    touch-action: manipulation;
 }
 
 .tutorial-next {
     background: #ffd37a;
     color: #1b1b1b;
     border-color: rgba(0,0,0,0.25);
+}
+
+.tutorial-bubble.mobile-layout {
+    left: 12px !important;
+    right: 12px;
+    max-width: none;
+}
+
+.tutorial-actions.mobile-layout {
+    left: 12px !important;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    top: auto !important;
+    margin-top: 0;
+    justify-content: space-between;
+}
+
+.tutorial-actions.mobile-layout.top-aligned {
+    top: 12px !important;
+    bottom: auto;
+}
+
+.tutorial-actions.mobile-layout .tutorial-skip,
+.tutorial-actions.mobile-layout .tutorial-next {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 44px;
+    font-size: 0.92rem;
 }
 
 .map-toast-container {
@@ -2085,6 +2115,23 @@ input:checked + .switch-slider:before {
         height: 32px;
         border-radius: 16px;
         font-size: 0.8rem;
+    }
+
+    .tutorial-bubble.mobile-layout {
+        max-width: none;
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .tutorial-actions.mobile-layout {
+        gap: 10px;
+    }
+
+    .tutorial-actions.mobile-layout .tutorial-skip,
+    .tutorial-actions.mobile-layout .tutorial-next {
+        height: 46px;
+        border-radius: 18px;
+        font-size: 0.9rem;
     }
 
     .custom-pin-sidebar {

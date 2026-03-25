@@ -3234,7 +3234,11 @@ function initTutorial() {
     if (localStorage.getItem(tutorialStorageKey)) return;
 
     const steps = [
-        { selector: '.area-switch-btn', text: 'ここを押すとマップを切り替えて、特定のマップのマップピンをフィルターできるぞ!' },
+        {
+            selector: '.area-switch-btn',
+            mobileSelector: '#mobile-filter-open',
+            text: 'ここを押すとマップを切り替えて、特定のマップのマップピンをフィルターできるぞ!'
+        },
         { selector: '#toggle-settings-btn', text: 'ここを押すと設定を変更できるぞ!' },
         { selector: '#route-mode-btn', text: 'ここを押すとルートモードに切り替わるぞ!' },
         { selector: '.leaflet-control.custom-pin-control .custom-pin-btn', text: 'ここを押すとカスタムピンを追加できるぞ!' }
@@ -3245,15 +3249,19 @@ function initTutorial() {
     const spotlight = overlay.querySelector('.tutorial-spotlight');
     const nextBtn = document.getElementById('tutorial-next-btn');
     const skipBtn = document.getElementById('tutorial-skip-btn');
+    const actions = overlay.querySelector('.tutorial-actions');
+    let tutorialResizeHandler = null;
 
     function applyStep() {
         const step = steps[tutorialStepIndex];
-        const target = document.querySelector(step.selector);
+        const mapRect = document.querySelector('.map-container').getBoundingClientRect();
+        const isMobileLayout = window.innerWidth <= 768 || mapRect.width <= 768;
+        const targetSelector = isMobileLayout && step.mobileSelector ? step.mobileSelector : step.selector;
+        const target = document.querySelector(targetSelector);
         if (!target) {
             finishTutorial();
             return;
         }
-        const mapRect = document.querySelector('.map-container').getBoundingClientRect();
         const rect = target.getBoundingClientRect();
         const offsetTop = rect.top - mapRect.top;
         const offsetLeft = rect.left - mapRect.left;
@@ -3263,19 +3271,54 @@ function initTutorial() {
         spotlight.style.width = `${rect.width + 12}px`;
         spotlight.style.height = `${rect.height + 12}px`;
 
-        const bubbleTop = offsetTop + rect.height + 14;
-        const bubbleLeft = Math.min(offsetLeft, mapRect.width - 380);
-        bubble.style.top = `${bubbleTop}px`;
-        bubble.style.left = `${Math.max(12, bubbleLeft)}px`;
-
-        const actions = overlay.querySelector('.tutorial-actions');
-        actions.style.top = `${bubbleTop + bubble.offsetHeight + 8}px`;
-        actions.style.left = `${Math.max(12, bubbleLeft)}px`;
-
-
         textEl.innerText = step.text && step.text.trim().length > 0
             ? step.text
             : 'ここを押すとマップを切り替えて、特定のマップのマップピンをフィルターできるぞ!';
+
+        bubble.classList.toggle('mobile-layout', isMobileLayout);
+        actions.classList.toggle('mobile-layout', isMobileLayout);
+
+        if (isMobileLayout) {
+            bubble.style.left = '12px';
+            bubble.style.right = '12px';
+            bubble.style.width = `${Math.max(0, mapRect.width - 24)}px`;
+            actions.classList.remove('top-aligned');
+
+            const actionsHeight = actions.offsetHeight || 56;
+            const targetBottom = offsetTop + rect.height;
+            const shouldPlaceActionsTop = targetBottom >= mapRect.height - (actionsHeight + 32);
+            const bottomReserved = shouldPlaceActionsTop ? 16 : actionsHeight + 24;
+            const bubbleHeight = bubble.offsetHeight || 0;
+            const belowTop = offsetTop + rect.height + 14;
+            const aboveTop = offsetTop - bubbleHeight - 14;
+            const maxTop = Math.max(12, mapRect.height - bubbleHeight - bottomReserved);
+            let bubbleTop = belowTop;
+
+            if (bubbleTop > maxTop) {
+                bubbleTop = aboveTop >= 12 ? aboveTop : maxTop;
+            }
+
+            bubble.style.top = `${Math.max(12, Math.min(bubbleTop, maxTop))}px`;
+            actions.style.top = '';
+            actions.style.left = '';
+            actions.style.bottom = '';
+
+            if (shouldPlaceActionsTop) {
+                actions.classList.add('top-aligned');
+            }
+        } else {
+            bubble.style.right = '';
+            bubble.style.width = '';
+            actions.style.bottom = '';
+            actions.classList.remove('top-aligned');
+
+            const bubbleTop = offsetTop + rect.height + 14;
+            const bubbleLeft = Math.min(offsetLeft, mapRect.width - 380);
+            bubble.style.top = `${bubbleTop}px`;
+            bubble.style.left = `${Math.max(12, bubbleLeft)}px`;
+            actions.style.top = `${bubbleTop + bubble.offsetHeight + 8}px`;
+            actions.style.left = `${Math.max(12, bubbleLeft)}px`;
+        }
 
         nextBtn.innerText = tutorialStepIndex === steps.length - 1 ? '完了' : '次へ';
     }
@@ -3283,6 +3326,13 @@ function initTutorial() {
     function finishTutorial() {
         overlay.classList.add('hidden');
         overlay.classList.remove('active');
+        bubble.classList.remove('mobile-layout');
+        actions.classList.remove('mobile-layout');
+        actions.classList.remove('top-aligned');
+        if (tutorialResizeHandler) {
+            window.removeEventListener('resize', tutorialResizeHandler);
+            tutorialResizeHandler = null;
+        }
         localStorage.setItem(tutorialStorageKey, '1');
     }
 
@@ -3298,6 +3348,8 @@ function initTutorial() {
 
     overlay.classList.remove('hidden');
     overlay.classList.add('active');
+    tutorialResizeHandler = () => applyStep();
+    window.addEventListener('resize', tutorialResizeHandler);
     applyStep();
 }
 
