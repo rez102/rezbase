@@ -2640,6 +2640,32 @@ body.sidebar-collapsed #toggle-left-sidebar-btn {
     border-radius: 8px;
     margin-bottom: 15px;
     overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    position: relative;
+}
+
+.section-card.dragging {
+    opacity: 0.45;
+}
+
+.section-card.drag-over-top::before,
+.section-card.drag-over-bottom::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    height: 2px;
+    background: #ffd37a;
+    box-shadow: 0 0 10px rgba(255, 211, 122, 0.35);
+    z-index: 2;
+}
+
+.section-card.drag-over-top::before {
+    top: 0;
+}
+
+.section-card.drag-over-bottom::after {
+    bottom: 0;
 }
 
 .section-add-card {
@@ -2672,6 +2698,31 @@ body.sidebar-collapsed #toggle-left-sidebar-btn {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.section-drag-handle {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.55);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    flex: 0 0 auto;
+    transition: all 0.2s ease;
+}
+
+.section-drag-handle:hover {
+    color: #ffd37a;
+    border-color: rgba(255, 211, 122, 0.28);
+    background: rgba(255, 211, 122, 0.08);
+}
+
+.section-drag-handle:active {
+    cursor: grabbing;
 }
 
 .section-info {
@@ -3036,12 +3087,17 @@ body.sidebar-collapsed #toggle-left-sidebar-btn {
 }
 
 .detail-batch-btn {
-    height: 34px;
+    min-height: 34px;
+    padding: 7px 10px;
     border-radius: 8px;
     border: 1px solid rgba(255, 211, 122, 0.38);
     background: rgba(30, 34, 46, 0.85);
     color: #ffd37a;
     font-size: 0.8rem;
+    line-height: 1.35;
+    white-space: normal;
+    word-break: keep-all;
+    text-align: center;
     cursor: pointer;
 }
 

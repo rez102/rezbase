@@ -424,6 +424,10 @@ let focusedRoutePins = null;
 let routePinHighlights = [];
 let routeHoverLine = null;
 let routeHoverDecorator = null;
+let draggedSectionIndex = null;
+let sectionAutoScrollFrame = null;
+let sectionAutoScrollDirection = 0;
+let sectionAutoScrollContainer = null;
 
 // 洞窟ゾーン（当たり判定用）
 const caveCircleLayers = [];
@@ -458,13 +462,68 @@ let latestUserDataSnapshot = null;
 
 // トレンドルート（作者作成）のサンプルデータ
 const trendRoutes = [
+    // 開発者用トレンドルート追加テンプレ:
+    // {
+    //     id: 'trend-dev-001',
+    //     name: 'ルート名',
+    //     description: '説明',
+    //     sections: [
+    //         { name: '区間1', pins: ['landmark-0', 'devpin-1'] }
+    //     ],
+    //     customPins: [
+    //         {
+    //             id: 'devpin-1',
+    //             type: 'landmark',
+    //             title: '開発者ピン',
+    //             detail: '',
+    //             lat: 0,
+    //             lng: 0,
+    //             map: 'base'
+    //         }
+    //     ]
+    // },
     {
-        id: 'trend-1',
-        name: 'フォーティック・バイユー全回収',
-        description: 'バイユーの全ての収集物を効率よく回収するルートです。',
+        id: 'trend-any-base-game',
+        name: 'Any% Base game',
+        description: 'Maneater speedrunのAny% Base gameカテゴリのルートです。',
         sections: [
-            { name: '西側エリア', pins: ['landmark-0', 'landmark-1'] },
-            { name: '東側エリア', pins: ['plate-0'] }
+            { name: 'チュートリアル', pins: ['main-quest-545', 'main-quest-544'] },
+            { name: '洞窟まで', pins: ['main-quest-375', 'main-quest-376', 'landmark-0', 'nutrient-1', 'main-quest-546'] },
+            { name: 'フォーティック・バイユー北部', pins: ['cave-547', 'landmark-108', 'nutrient-109', 'main-quest-378', 'nutrient-110', 'nutrient-111', 'landmark-112', 'nutrient-114', 'landmark-115', 'nutrient-116', 'landmark-117', 'nutrient-120', 'landmark-121', 'nutrient-122', 'landmark-123', 'nutrient-124', 'landmark-125', 'landmark-126', 'cave-547'] },
+            { name: 'フォーティックバイユー南部', pins: ['cave-547', 'plate-128', 'main-quest-377', 'nutrient-129', 'plate-131', 'landmark-132', 'floodgate-314', 'main-quest-486'] },
+            { name: 'エピソード3：プロスピリティーサンドの洞窟まで', pins: ['cave-549', 'nutrient-286', 'plate-313', 'nutrient-285', 'grate-501', 'nutrient-289', 'grate-500', 'landmark-263', 'landmark-262', 'plate-261', 'nutrient-255', 'main-quest-466'] },
+            { name: 'ゴールデン・ショアの洞窟まで', pins: ['cave-552', 'landmark-252', 'landmark-253', 'floodgate-258', 'landmark-206', 'nutrient-208', 'plate-207', 'main-quest-418', 'cave-552'] },
+            { name: 'プロスピリティーサンドのランドマークめぐり', pins: ['cave-552', 'landmark-250', 'landmark-254', 'landmark-277', 'landmark-274', 'landmark-270', 'cave-552'] },
+            { name: 'デッドホースレイクの水門まで', pins: ['cave-552', 'landmark-259', 'floodgate-177'] },
+            { name: 'デッドホースレイクの洞窟まで', pins: ['floodgate-177', 'landmark-172', 'landmark-171', 'nutrient-173', 'landmark-174', 'landmark-155', 'main-quest-395'] },
+            { name: 'デッドホースレイク東部', pins: ['cave-550', 'landmark-152', 'nutrient-154', 'nutrient-163', 'main-quest-394', 'grate-409', 'landmark-148', 'nutrient-147', 'main-quest-392', 'cave-550'] },
+            { name: 'デッドホースレイク西部', pins: ['cave-550', 'nutrient-157', 'landmark-158', 'landmark-159', 'main-quest-396', '1774438439092', 'grate-414', 'plate-164', 'main-quest-397', 'grate-415', 'landmark-165', 'plate-167', 'landmark-169', 'nutrient-170', 'cave-550'] },
+            { name: 'デッドホースレイクの頂点捕食者戦', pins: ['cave-550', 'main-quest-393', 'cave-550'] },
+            { name: 'デッドホースレイク終了まで', pins: ['cave-550', 'manhunt-404', '1774438480957', 'nutrient-175', 'main-quest-399', 'main-quest-398'] },
+            { name: 'フォーティック・バイユーの洞窟へ', pins: ['main-quest-398', 'cave-547'] },
+            { name: 'フォーティック・バイユーその2', pins: ['cave-547', 'main-quest-379', 'nutrient-133', 'main-quest-380', 'main-quest-381'] },
+            { name: 'ゴールデンショアの洞窟へ', pins: ['main-quest-381', 'cave-551'] },
+            { name: 'ゴールデン・ショア', pins: ['cave-551', 'plate-200', 'nutrient-202', 'main-quest-423', 'landmark-192', 'nutrient-191', 'landmark-190', 'grate-433', 'nutrient-188', 'nutrient-185', 'main-quest-422', 'grate-433', 'nutrient-183', 'landmark-182', 'main-quest-420', 'main-quest-419', 'nutrient-189', 'plate-197', 'nutrient-199', 'plate-205', 'main-quest-417', 'cave-551'] },
+            { name: 'ゴールデン・ショアの捕食者戦', pins: ['cave-551', 'nutrient-196', 'main-quest-421', 'main-quest-424'] },
+            { name: 'サファイアベイの洞窟まで', pins: ['main-quest-424', 'nutrient-211', 'plate-210', 'nutrient-213', 'nutrient-214', 'landmark-215', 'landmark-219', 'landmark-218', 'nutrient-224', 'nutrient-234', 'main-quest-446'] },
+            { name: 'サファイアベイ北部', pins: ['cave-553', 'landmark-228', 'nutrient-230', 'main-quest-444', 'main-quest-443', 'grate-460', 'nutrient-225', 'nutrient-226', 'cave-553'] },
+            { name: 'サファイアベイ南部', pins: ['cave-553', 'plate-238', 'landmark-239', 'landmark-243', 'main-quest-449', 'nutrient-245', 'nutrient-244', 'landmark-246', 'nutrient-247', 'main-quest-450', 'nutrient-249', 'nutrient-221', 'main-quest-442', 'main-quest-448', 'landmark-235', 'main-quest-445', 'main-quest-447'] },
+            { name: 'プロスピリティー・サンドの洞窟へ', pins: ['cave-553', 'cave-552'] },
+            { name: 'プロスピリティーサンド南部～湾岸南部', pins: ['cave-552', 'nutrient-272', 'main-quest-468', 'nutrient-275', 'nutrient-276', 'main-quest-469', 'nutrient-278', 'grate-531', 'nutrient-322', 'nutrient-321', 'nutrient-320', 'grate-533', 'plate-324', 'grate-532', 'nutrient-323', 'cave-552'] },
+            { name: 'プロスピリティーサンド西部', pins: ['cave-552', 'main-quest-465', 'main-quest-464', 'cave-552'] },
+            { name: 'プロスピリティーサンド終了まで', pins: ['cave-552', 'grate-482', 'nutrient-265', 'sub-quest-473', 'nutrient-266', 'plate-267', 'grate-483', 'main-quest-467', 'plate-300', 'plate-268', 'main-quest-471', 'main-quest-470'] },
+            { name: 'キャビアキーの洞窟へ', pins: ['main-quest-470', 'cave-549'] },
+            { name: 'キャビアキー前半', pins: ['cave-549', 'landmark-292', 'grate-505', 'nutrient-311', 'nutrient-294', 'grate-505', 'main-quest-488', 'nutrient-296', 'landmark-310', 'plate-293', 'landmark-290', 'plate-284', 'main-quest-485', 'landmark-283', 'cave-549'] },
+            { name: 'キャビアキー後半', pins: ['cave-549', 'main-quest-487', 'grate-503', 'nutrient-312', 'nutrient-298', 'plate-299', 'nutrient-301', 'landmark-302', 'main-quest-490', 'main-quest-489', '1774438939681', 'plate-304', 'landmark-306', 'main-quest-491', 'main-quest-510'] },
+            { name: '湾岸中部', pins: ['cave-554', 'landmark-316', 'nutrient-317', 'plate-318', 'plate-319', 'plate-336', 'main-quest-515', 'main-quest-516', 'cave-554'] },
+            { name: '湾岸東部', pins: ['cave-554', 'nutrient-315', 'main-quest-511', 'plate-347', 'main-quest-513', 'nutrient-346', 'landmark-345', 'grate-509', 'nutrient-343', 'manhunt-523', 'landmark-344', 'nutrient-348', 'plate-350', 'nutrient-351', 'grate-538', 'main-quest-514', 'cave-554'] },
+            { name: '湾岸の頂点捕食者戦', pins: ['cave-554', 'main-quest-518', 'cave-554'] },
+            { name: 'ラスボス戦', pins: ['cave-554', 'main-quest-512', 'main-quest-517'] }
+        ],
+        customPins: [
+            { id: '1774438439092', lat: 876.7642354666698, lng: 459.71767537328384, map: 'base', type: 'infamy-1', title: '悪名ランク3まで', detail: '', userId: null, obtained: false, createdAt: '2026-03-25T11:33:59.092Z', updatedAt: '2026-03-25T12:26:12.349Z', visibility: true },
+            { id: '1774438480957', lat: 818.776900845104, lng: 464.4578063500829, map: 'base', type: 'infamy-1', title: '悪名ランク5まで', detail: '', userId: null, obtained: false, createdAt: '2026-03-25T11:34:40.957Z', updatedAt: '2026-03-25T12:26:12.349Z', visibility: true },
+            { id: '1774438939681', lat: 478.0184747049061, lng: 711.6519533999383, map: 'base', type: 'infamy-1', title: '悪名ランク6まで', detail: '', userId: null, obtained: false, createdAt: '2026-03-25T11:42:19.681Z', updatedAt: '2026-03-25T12:26:12.349Z', visibility: true }
         ]
     }
 ];
@@ -505,12 +564,6 @@ function ensureValidFilters() {
     if (activeSources.size === 0) {
         setSources(['base', 'dlc']);
     }
-    if (activeTypes.size === 0) {
-        setActiveBaseTypes(new Set(DEFAULT_BASE_TYPES));
-    }
-    if (activeDlcTypes.size === 0) {
-        setActiveDlcTypes(new Set(DEFAULT_DLC_TYPES));
-    }
     if (activeAreas.size === 0) {
         setActiveAreas(new Set(['all']));
     }
@@ -518,6 +571,22 @@ function ensureValidFilters() {
 
 function getCustomPinTitle(pin) {
     return pin.title || pin.name || '無題';
+}
+
+function getRouteCustomPins(route) {
+    return Array.isArray(route && route.customPins) ? route.customPins : [];
+}
+
+function getRouteScopedCustomPin(pinId, route) {
+    return getRouteCustomPins(route).find(pin => pin && pin.id === pinId) || null;
+}
+
+function isPersistedCustomPinVisible(pinId) {
+    const pin = customPinById.get(pinId);
+    if (!pin) return false;
+    const mapOk = !pin.map || pin.map === mapOverlayMode;
+    const obtainedOk = showObtained || !customPinObtained.has(pinId);
+    return showCustomPins && customPinVisibility.has(pinId) && mapOk && obtainedOk;
 }
 
 function syncCustomPinRecord(pinId) {
@@ -1239,8 +1308,9 @@ function buildCustomPinPopup(pin) {
         obtained ? 'obtained-toggle active' : 'obtained-toggle',
         () => toggleCustomPinObtained(pin.id)
     );
+    const batchBtn = createPopupActionButton('一括表記', '', () => startBatchFromPopup());
     const deleteBtn = createPopupActionButton('削除', '', () => deleteCustomPin(pin.id));
-    actions.append(obtainedBtn, deleteBtn);
+    actions.append(obtainedBtn, batchBtn, deleteBtn);
     popup.appendChild(actions);
 
     return popup;
@@ -1523,7 +1593,7 @@ function updateCustomPinCount() {
     if (titleEl) titleEl.innerText = `新規マップピン (${customPins.length})`;
 }
 
-function getRoutePinMeta(pinId) {
+function getRoutePinMeta(pinId, route = null) {
     const mData = markers.find(m => m.item.id === pinId);
     if (mData && mData.item) {
         return {
@@ -1532,6 +1602,18 @@ function getRoutePinMeta(pinId) {
             iconUrl: (icons[mData.item.type] && icons[mData.item.type].options && icons[mData.item.type].options.iconUrl) || '',
             map: mData.item.map,
             latlng: mData.marker.getLatLng()
+        };
+    }
+    const routeCustomPin = getRouteScopedCustomPin(pinId, route);
+    if (routeCustomPin) {
+        return {
+            name: getCustomPinTitle(routeCustomPin),
+            type: routeCustomPin.type,
+            iconUrl: (icons[routeCustomPin.type] && icons[routeCustomPin.type].options && icons[routeCustomPin.type].options.iconUrl)
+                || (customPinIcon.options && customPinIcon.options.iconUrl)
+                || '',
+            map: normalizeOverlayMode(routeCustomPin.map),
+            latlng: L.latLng(routeCustomPin.lat, routeCustomPin.lng)
         };
     }
     const cpin = customPins.find(p => p.id === pinId);
@@ -1545,6 +1627,84 @@ function getRoutePinMeta(pinId) {
         };
     }
     return null;
+}
+
+function buildRouteScopedCustomPinPopup(pin) {
+    const popup = document.createElement('div');
+    popup.className = 'custom-popup';
+
+    const title = document.createElement('div');
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '5px';
+    title.innerText = getCustomPinTitle(pin);
+    popup.appendChild(title);
+
+    if (pin.detail) {
+        const detail = document.createElement('div');
+        detail.style.fontSize = '0.85rem';
+        detail.style.color = '#ddd';
+        detail.style.marginBottom = '6px';
+        detail.innerText = pin.detail;
+        popup.appendChild(detail);
+    }
+
+    const note = document.createElement('div');
+    note.style.fontSize = '0.75rem';
+    note.style.color = '#9fb0c9';
+    note.innerText = 'このピンはルート閲覧中のみ表示されます';
+    popup.appendChild(note);
+
+    return popup;
+}
+
+function renderRouteScopedCustomPins(route) {
+    routePreviewMarkers.forEach(marker => marker.remove());
+    routePreviewMarkers = [];
+
+    const routeCustomPins = getRouteCustomPins(route);
+    if (routeCustomPins.length === 0) return;
+    const referencedPinIds = new Set();
+    if (route && Array.isArray(route.sections)) {
+        route.sections.forEach(section => {
+            if (!section || !Array.isArray(section.pins)) return;
+            section.pins.forEach(pinId => referencedPinIds.add(pinId));
+        });
+    }
+
+    const uniquePins = new Map();
+    routeCustomPins.forEach(pin => {
+        if (!pin || !pin.id) return;
+        if (referencedPinIds.size > 0 && !referencedPinIds.has(pin.id)) return;
+        uniquePins.set(pin.id, pin);
+    });
+
+    uniquePins.forEach(pin => {
+        const pinMap = normalizeOverlayMode(pin.map);
+        if (pinMap !== mapOverlayMode) return;
+        if (isPersistedCustomPinVisible(pin.id)) return;
+
+        const marker = L.marker([pin.lat, pin.lng], {
+            icon: getCustomPinIcon(pin.type),
+            routeCustomId: pin.id,
+            customMap: pinMap
+        });
+        marker.bindPopup(buildRouteScopedCustomPinPopup(pin), { autoPan: false });
+        marker.addTo(map);
+        routePreviewMarkers.push(marker);
+    });
+}
+
+function syncActiveRouteScopedCustomPins() {
+    if (currentRouteView === 'detail' && currentDetailedRoute) {
+        renderRouteScopedCustomPins(currentDetailedRoute);
+        return;
+    }
+    if (currentRouteView === 'create' && creatingRoute) {
+        renderRouteScopedCustomPins(creatingRoute);
+        return;
+    }
+    routePreviewMarkers.forEach(marker => marker.remove());
+    routePreviewMarkers = [];
 }
 
 function renderCustomPinList() {
@@ -1800,6 +1960,7 @@ function refreshMapDisplay(options = {}) {
     ensureValidFilters();
     if (syncButtons) syncFilterButtons();
     applyFilter();
+    syncActiveRouteScopedCustomPins();
     if (updateCounts) {
         updatePinCounts();
         updateRouteFilterPanelCounts();
@@ -2119,7 +2280,7 @@ function renderRouteOnMap(route, highlightIndex = -1, disableAutoZoom = false) {
         if (highlightIndex !== -1 && highlightIndex !== i) continue;
 
         const section = route.sections[i];
-        const sectionMapMode = getSectionMapMode(section);
+        const sectionMapMode = getSectionMapMode(section, route);
         if (sectionMapMode && sectionMapMode !== mapOverlayMode) {
             continue;
         }
@@ -2128,7 +2289,7 @@ function renderRouteOnMap(route, highlightIndex = -1, disableAutoZoom = false) {
 
         if (section.pins && Array.isArray(section.pins)) {
             section.pins.forEach(pid => {
-                const meta = getRoutePinMeta(pid);
+                const meta = getRoutePinMeta(pid, route);
                 if (meta && meta.latlng) {
                     const latlng = meta.latlng;
                     if (pts.length === 0 || !pts[pts.length - 1].equals(latlng)) {
@@ -2161,16 +2322,18 @@ function renderRouteOnMap(route, highlightIndex = -1, disableAutoZoom = false) {
         }
     }
 
+    renderRouteScopedCustomPins(route);
+
     if (routePolylines.length > 0 && !disableAutoZoom) {
         const group = new L.featureGroup(routePolylines);
         map.fitBounds(group.getBounds().pad(0.2), getRouteZoomOptions());
     }
 }
 
-function getSectionMapMode(section) {
+function getSectionMapMode(section, route = null) {
     if (!section || !section.pins || !Array.isArray(section.pins)) return mapOverlayMode;
     for (const pid of section.pins) {
-        const meta = getRoutePinMeta(pid);
+        const meta = getRoutePinMeta(pid, route);
         if (meta && meta.map) return meta.map;
     }
     return 'base';
@@ -2187,7 +2350,7 @@ function showRoutePreview(route) {
 
     for (let i = 0; i < route.sections.length; i++) {
         const section = route.sections[i];
-        const sectionMapMode = getSectionMapMode(section);
+        const sectionMapMode = getSectionMapMode(section, route);
         if (sectionMapMode && sectionMapMode !== mapOverlayMode) {
             continue;
         }
@@ -2196,7 +2359,7 @@ function showRoutePreview(route) {
         
         if (section.pins && Array.isArray(section.pins)) {
             section.pins.forEach(pinId => {
-                const meta = getRoutePinMeta(pinId);
+                const meta = getRoutePinMeta(pinId, route);
                 if (meta && meta.latlng) {
                     const latlng = meta.latlng;
                     // 連続する同一座標を排除（矢印描画ライブラリのエラー防止）
@@ -2232,6 +2395,8 @@ function showRoutePreview(route) {
             console.log(`[Preview] Section ${i} skipped: not enough points to draw a line.`);
         }
     }
+
+    renderRouteScopedCustomPins(route);
 }
 
 function clearRouteVisuals() {
@@ -2251,7 +2416,8 @@ function showRoutePinHighlights(pinIds) {
     if (!pinIds || pinIds.length === 0) return;
 
     pinIds.forEach(pid => {
-        const meta = getRoutePinMeta(pid);
+        const activeRoute = currentRouteView === 'create' ? creatingRoute : currentDetailedRoute;
+        const meta = getRoutePinMeta(pid, activeRoute);
         if (!meta) return;
         if (meta.map !== mapOverlayMode) return;
         const circle = L.circleMarker(meta.latlng, {
@@ -2309,7 +2475,7 @@ function showRouteDetail(route) {
 
     const summaryCounts = {};
     allPinIds.forEach(pid => {
-        const meta = getRoutePinMeta(pid);
+        const meta = getRoutePinMeta(pid, route);
         if (!meta || !meta.type) return;
         summaryCounts[meta.type] = (summaryCounts[meta.type] || 0) + 1;
     });
@@ -2331,7 +2497,7 @@ function showRouteDetail(route) {
         // ピンの種類別にカウント
         const counts = {};
         section.pins.forEach(pid => {
-            const meta = getRoutePinMeta(pid);
+            const meta = getRoutePinMeta(pid, route);
             if (meta) counts[meta.type] = (counts[meta.type] || 0) + 1;
         });
 
@@ -2357,7 +2523,7 @@ function showRouteDetail(route) {
         markAllBtn.innerText = 'すべてを表記';
         markAllBtn.addEventListener('click', (event) => {
             event.stopPropagation();
-            batchMarkSection(section.pins, true);
+            batchMarkSection(section.pins, true, route);
         });
         const unmarkAllBtn = document.createElement('button');
         unmarkAllBtn.type = 'button';
@@ -2365,7 +2531,7 @@ function showRouteDetail(route) {
         unmarkAllBtn.innerText = 'すべての表記を取り消す';
         unmarkAllBtn.addEventListener('click', (event) => {
             event.stopPropagation();
-            batchMarkSection(section.pins, false);
+            batchMarkSection(section.pins, false, route);
         });
         dropdownContent.append(markAllBtn, unmarkAllBtn);
         dropdown.append(dropdownBtn, dropdownContent);
@@ -2419,7 +2585,7 @@ function showRouteDetail(route) {
                 // Toggled on: 選択区間の線だけを表示
                 card.classList.add('active-highlight');
                 card.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; // 簡易ハイライト
-                const targetMode = getSectionMapMode(section);
+                const targetMode = getSectionMapMode(section, route);
                 if (targetMode && targetMode !== mapOverlayMode) {
                     setMapOverlay(targetMode);
                 }
@@ -2429,7 +2595,7 @@ function showRouteDetail(route) {
                 // 該当区間へズーム
                 const latlngs = [];
                 section.pins.forEach(pid => {
-                    const meta = getRoutePinMeta(pid);
+                    const meta = getRoutePinMeta(pid, route);
                     if (meta && meta.latlng) latlngs.push(meta.latlng);
                 });
                 if (latlngs.length > 0) {
@@ -2466,8 +2632,12 @@ function showRouteDetail(route) {
     showRoutePinHighlights([]);
 }
 
-function batchMarkSection(pinIds, status) {
+function batchMarkSection(pinIds, status, route = currentDetailedRoute) {
     pinIds.forEach(id => {
+        const routeScopedPin = getRouteScopedCustomPin(id, route);
+        if (routeScopedPin && !customPinById.has(id)) {
+            return;
+        }
         if (customPinById.has(id)) {
             if (status) customPinObtained.add(id);
             else customPinObtained.delete(id);
@@ -2501,6 +2671,7 @@ function backToBrowse() {
     document.getElementById('route-detail-header').classList.add('hidden');
     document.getElementById('browse-footer').classList.remove('hidden');
     clearRouteVisuals();
+    syncActiveRouteScopedCustomPins();
 }
 
 function getSectionColor(idx) {
@@ -2694,15 +2865,19 @@ function exitCreateMode() {
     });
 }
 
-function addSection() {
+function addSection(options = {}) {
+    const { position = 'after-active' } = options;
     let maxNum = 0;
     creatingRoute.sections.forEach(s => {
         const match = s.name.match(/区間(\d+)/);
         if (match) maxNum = Math.max(maxNum, parseInt(match[1]));
     });
     const nextNum = maxNum + 1;
-    creatingRoute.sections.push({ name: `区間${nextNum}`, pins: [] });
-    activeSectionIndex = creatingRoute.sections.length - 1;
+    const insertIndex = position === 'end'
+        ? creatingRoute.sections.length
+        : Math.min(activeSectionIndex + 1, creatingRoute.sections.length);
+    creatingRoute.sections.splice(insertIndex, 0, { name: `区間${nextNum}`, pins: [] });
+    activeSectionIndex = insertIndex;
     routeIsModified = true;
     updateCreationUI();
 
@@ -2723,6 +2898,93 @@ function removeSection(idx) {
     routeIsModified = true;
     updateCreationUI();
 
+    updateCreationVisuals();
+}
+
+function clearSectionDragIndicators() {
+    document.querySelectorAll('.section-card').forEach(card => {
+        card.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+}
+
+function stopSectionAutoScroll() {
+    sectionAutoScrollDirection = 0;
+    sectionAutoScrollContainer = null;
+    if (sectionAutoScrollFrame !== null) {
+        cancelAnimationFrame(sectionAutoScrollFrame);
+        sectionAutoScrollFrame = null;
+    }
+}
+
+function startSectionAutoScroll(container, direction) {
+    if (!container || direction === 0) {
+        stopSectionAutoScroll();
+        return;
+    }
+
+    sectionAutoScrollContainer = container;
+    sectionAutoScrollDirection = direction;
+
+    if (sectionAutoScrollFrame !== null) return;
+
+    const step = () => {
+        if (!sectionAutoScrollContainer || sectionAutoScrollDirection === 0) {
+            stopSectionAutoScroll();
+            return;
+        }
+
+        sectionAutoScrollContainer.scrollTop += sectionAutoScrollDirection * 10;
+        sectionAutoScrollFrame = requestAnimationFrame(step);
+    };
+
+    sectionAutoScrollFrame = requestAnimationFrame(step);
+}
+
+function updateSectionAutoScroll(container, clientY) {
+    if (!container || draggedSectionIndex === null) {
+        stopSectionAutoScroll();
+        return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    const threshold = 48;
+
+    if (clientY <= rect.top + threshold) {
+        startSectionAutoScroll(container, -1);
+    } else if (clientY >= rect.bottom - threshold) {
+        startSectionAutoScroll(container, 1);
+    } else {
+        stopSectionAutoScroll();
+    }
+}
+
+function resetSectionDragState() {
+    draggedSectionIndex = null;
+    stopSectionAutoScroll();
+    document.querySelectorAll('.section-card').forEach(card => {
+        card.classList.remove('dragging', 'drag-over-top', 'drag-over-bottom');
+    });
+}
+
+function moveSection(fromIndex, toIndex) {
+    if (fromIndex === toIndex) return;
+    if (fromIndex < 0 || toIndex < 0) return;
+    if (fromIndex >= creatingRoute.sections.length) return;
+
+    const [movedSection] = creatingRoute.sections.splice(fromIndex, 1);
+    const boundedIndex = Math.max(0, Math.min(toIndex, creatingRoute.sections.length));
+    creatingRoute.sections.splice(boundedIndex, 0, movedSection);
+
+    if (activeSectionIndex === fromIndex) {
+        activeSectionIndex = boundedIndex;
+    } else if (fromIndex < activeSectionIndex && boundedIndex >= activeSectionIndex) {
+        activeSectionIndex -= 1;
+    } else if (fromIndex > activeSectionIndex && boundedIndex <= activeSectionIndex) {
+        activeSectionIndex += 1;
+    }
+
+    routeIsModified = true;
+    updateCreationUI();
     updateCreationVisuals();
 }
 
@@ -2772,6 +3034,20 @@ function updateCreationUI() {
 
     const scrollPos = container.scrollTop; // Preserve scroll position
     container.innerHTML = '';
+    container.ondragover = (event) => {
+        updateSectionAutoScroll(container, event.clientY);
+    };
+
+    container.ondragleave = (event) => {
+        if (!container.contains(event.relatedTarget)) {
+            stopSectionAutoScroll();
+        }
+    };
+
+    container.ondrop = () => {
+        stopSectionAutoScroll();
+    };
+
     creatingRoute.sections.forEach((section, sIdx) => {
         const isActive = sIdx === activeSectionIndex;
         const isCollapsed = section.collapsed || false;
@@ -2790,6 +3066,49 @@ function updateCreationUI() {
         infoRow.style.display = 'flex';
         infoRow.style.alignItems = 'center';
         infoRow.style.gap = '8px';
+
+        const dragHandle = document.createElement('button');
+        dragHandle.type = 'button';
+        dragHandle.className = 'section-drag-handle';
+        dragHandle.draggable = true;
+        dragHandle.title = 'ドラッグして区間の順番を入れ替える';
+        dragHandle.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>';
+        dragHandle.addEventListener('click', (event) => event.stopPropagation());
+        dragHandle.addEventListener('dragstart', (event) => {
+            draggedSectionIndex = sIdx;
+            clearSectionDragIndicators();
+            card.classList.add('dragging');
+            if (event.dataTransfer) {
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', String(sIdx));
+            }
+        });
+        dragHandle.addEventListener('dragend', () => {
+            resetSectionDragState();
+        });
+
+        card.addEventListener('dragover', (event) => {
+            if (draggedSectionIndex === null || draggedSectionIndex === sIdx) return;
+            event.preventDefault();
+            updateSectionAutoScroll(container, event.clientY);
+            const rect = card.getBoundingClientRect();
+            const insertBefore = event.clientY < rect.top + rect.height / 2;
+            clearSectionDragIndicators();
+            card.classList.add(insertBefore ? 'drag-over-top' : 'drag-over-bottom');
+        });
+
+        card.addEventListener('drop', (event) => {
+            if (draggedSectionIndex === null || draggedSectionIndex === sIdx) return;
+            event.preventDefault();
+            const rect = card.getBoundingClientRect();
+            const insertBefore = event.clientY < rect.top + rect.height / 2;
+            let targetIndex = insertBefore ? sIdx : sIdx + 1;
+            if (draggedSectionIndex < targetIndex) {
+                targetIndex -= 1;
+            }
+            moveSection(draggedSectionIndex, targetIndex);
+            resetSectionDragState();
+        });
 
         const collapseBtn = document.createElement('button');
         collapseBtn.type = 'button';
@@ -2819,7 +3138,7 @@ function updateCreationUI() {
         sectionStats.className = 'section-stats';
         sectionStats.innerText = `合計${section.pins.length}個のマップピン`;
         info.append(sectionNameInput, sectionStats);
-        infoRow.append(collapseBtn, info);
+        infoRow.append(dragHandle, collapseBtn, info);
         header.appendChild(infoRow);
 
         if (creatingRoute.sections.length > 1) {
@@ -2844,7 +3163,7 @@ function updateCreationUI() {
             pinList.appendChild(empty);
         } else {
             section.pins.forEach((pinId, pIdx) => {
-                const meta = getRoutePinMeta(pinId);
+                const meta = getRoutePinMeta(pinId, creatingRoute);
                 const pinItem = document.createElement('div');
                 pinItem.className = 'pin-item';
 
@@ -2885,7 +3204,19 @@ function updateCreationUI() {
     addCard.innerHTML = '<span>＋ 区間を追加</span>';
     addCard.addEventListener('click', (event) => {
         event.stopPropagation();
-        addSection();
+        addSection({ position: 'end' });
+    });
+    addCard.addEventListener('dragover', (event) => {
+        if (draggedSectionIndex === null) return;
+        event.preventDefault();
+        updateSectionAutoScroll(container, event.clientY);
+        clearSectionDragIndicators();
+    });
+    addCard.addEventListener('drop', (event) => {
+        if (draggedSectionIndex === null) return;
+        event.preventDefault();
+        moveSection(draggedSectionIndex, creatingRoute.sections.length);
+        resetSectionDragState();
     });
     container.appendChild(addCard);
 
@@ -3564,7 +3895,7 @@ function setupEventListeners() {
                 if (section && Array.isArray(section.pins)) pinIds.push(...section.pins);
             });
             if (pinIds.length === 0) return;
-            batchMarkSection(pinIds, false);
+            batchMarkSection(pinIds, false, currentDetailedRoute);
         });
     }
 
@@ -3577,7 +3908,7 @@ function setupEventListeners() {
                 if (section && Array.isArray(section.pins)) pinIds.push(...section.pins);
             });
             if (pinIds.length === 0) return;
-            batchMarkSection(pinIds, true);
+            batchMarkSection(pinIds, true, currentDetailedRoute);
         });
     }
     if (mapOverlayDlcBtn) {
@@ -3991,12 +4322,13 @@ function showRouteHoverPreview(targetPinId) {
     if (!section || !section.pins || section.pins.length === 0) return;
     const lastPinId = section.pins[section.pins.length - 1];
     if (lastPinId === targetPinId) return;
-    const fromMeta = getRoutePinMeta(lastPinId);
-    const toMeta = getRoutePinMeta(targetPinId);
+    const fromMeta = getRoutePinMeta(lastPinId, creatingRoute);
+    const toMeta = getRoutePinMeta(targetPinId, creatingRoute);
     if (!fromMeta || !toMeta) return;
     clearRouteHoverPreview();
+    const previewColor = getSectionColor(activeSectionIndex);
     routeHoverLine = L.polyline([fromMeta.latlng, toMeta.latlng], {
-        color: '#ffd37a',
+        color: previewColor,
         weight: 2,
         dashArray: '6 6',
         opacity: 0.9
@@ -4004,7 +4336,7 @@ function showRouteHoverPreview(targetPinId) {
     if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
         routeHoverDecorator = L.polylineDecorator(routeHoverLine, {
             patterns: [
-                { offset: '60%', repeat: 0, symbol: L.Symbol.arrowHead({ pixelSize: 10, polygon: true, pathOptions: { color: '#ffd37a', fillColor: '#ffd37a', weight: 1, opacity: 1, fillOpacity: 1 } }) }
+                { offset: '60%', repeat: 0, symbol: L.Symbol.arrowHead({ pixelSize: 10, polygon: true, pathOptions: { color: previewColor, fillColor: previewColor, weight: 1, opacity: 1, fillOpacity: 1 } }) }
             ]
         }).addTo(map);
     }
