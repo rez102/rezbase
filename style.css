@@ -76,4 +76,59 @@ body {
     transform: scale(1.05);
 }
 
+@media (max-width: 900px) {
+    .home-header {
+        padding: 48px 16px 32px;
+    }
+
+    .home-logo-text {
+        font-size: 48px;
+    }
+
+    .home-header h1 {
+        font-size: 20px;
+    }
+
+    .link-grid {
+        gap: 28px;
+        padding: 16px;
+    }
+}
+
+@media (max-width: 700px) {
+    .home-logo-text {
+        font-size: 40px;
+    }
+
+    .link-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        max-width: 540px;
+    }
+
+    .game-card {
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-header {
+        padding: 36px 14px 24px;
+    }
+
+    .home-logo-text {
+        font-size: 34px;
+        letter-spacing: 1px;
+    }
+
+    .home-header h1 {
+        font-size: 18px;
+        letter-spacing: 0.6px;
+    }
+
+    .link-grid {
+        gap: 18px;
+    }
+}
+
 

@@ -59,6 +59,7 @@ map.fitBounds(bounds, { paddingTopLeft: [320, 0] });
 // デバッグ用：クリックした座標と洞窟当たり判定を表示
 map.on('click', function(e) {
     if (customPinMode) {
+        if (mobileCustomPinPlacementMode) return;
         setCustomPinDraft(e.latlng);
         return;
     }
@@ -144,6 +145,7 @@ const CAVE_DISPLAY_RADIUS = 10;
 let customPins = [];
 let customPinMarkers = new Map();
 let customPinMode = false;
+let mobileCustomPinPlacementMode = false;
 let customPinDraft = null;
 let customPinDraftMarker = null;
 let customPinSelectedType = 'landmark';
@@ -573,19 +575,49 @@ function toggleCustomPinSidebar(forceOpen = null) {
     if (!sidebar) return;
     const settingsPopover = document.getElementById('settings-popover');
     const settingsBtn = document.getElementById('toggle-settings-btn');
+    const mobilePlaceLayer = document.getElementById('mobile-pin-place-layer');
     const isHidden = sidebar.classList.contains('hidden');
     const willOpen = forceOpen === null ? isHidden : forceOpen;
+    const isMobile = window.innerWidth <= 900;
+
+    const openMobilePlacementLayer = () => {
+        if (!mobilePlaceLayer) return;
+        mobilePlaceLayer.classList.remove('hidden');
+        mobileCustomPinPlacementMode = true;
+        customPinMode = true;
+    };
+
+    const closeMobilePlacementLayer = () => {
+        if (!mobilePlaceLayer) return;
+        mobilePlaceLayer.classList.add('hidden');
+        mobileCustomPinPlacementMode = false;
+    };
+
     if (willOpen) {
+        // スマホはまず座標位置を選択してから詳細入力へ
+        if (isMobile && !customPinDraft) {
+            openMobilePlacementLayer();
+            return;
+        }
         // 他の右サイドバーを閉じる
         togglePinBulkSidebar(false);
         if (settingsPopover) settingsPopover.classList.add('hidden');
         if (settingsBtn) settingsBtn.classList.remove('active');
         sidebar.classList.remove('hidden');
         requestAnimationFrame(() => sidebar.classList.add('active'));
-        enterCustomPinMode();
+        if (isMobile) {
+            customPinMode = false;
+            mobileCustomPinPlacementMode = false;
+            const mapEl = document.getElementById('map');
+            if (mapEl) mapEl.style.cursor = '';
+            setCustomPinIconSelection(customPinSelectedType);
+        } else {
+            enterCustomPinMode();
+        }
     } else {
         sidebar.classList.remove('active');
         exitCustomPinMode();
+        closeMobilePlacementLayer();
         setTimeout(() => {
             sidebar.classList.add('hidden');
         }, 250);
@@ -594,6 +626,7 @@ function toggleCustomPinSidebar(forceOpen = null) {
 
 function enterCustomPinMode() {
     customPinMode = true;
+    mobileCustomPinPlacementMode = false;
     const mapEl = document.getElementById('map');
     if (mapEl) mapEl.style.cursor = 'crosshair';
     setCustomPinIconSelection(customPinSelectedType);
@@ -601,6 +634,7 @@ function enterCustomPinMode() {
 
 function exitCustomPinMode() {
     customPinMode = false;
+    mobileCustomPinPlacementMode = false;
     customPinDraft = null;
     const mapEl = document.getElementById('map');
     if (mapEl) mapEl.style.cursor = '';
@@ -1002,7 +1036,7 @@ function renderRouteOnMap(route, highlightIndex = -1, disableAutoZoom = false) {
 
     if (routePolylines.length > 0 && !disableAutoZoom) {
         const group = new L.featureGroup(routePolylines);
-        map.fitBounds(group.getBounds().pad(0.2), { paddingTopLeft: [320, 0], paddingBottomRight: [50, 50], animate: true, duration: 0.8 });
+        map.fitBounds(group.getBounds().pad(0.2), getRouteZoomOptions());
     }
 }
 
@@ -1113,7 +1147,9 @@ function showRouteDetail(route) {
     // ルート閲覧中はエリア制限を解除して正しく表示
     activeAreas.clear();
     const nameEl = document.getElementById('current-area-name');
+    const mobileNameEl = document.getElementById('mobile-current-area');
     if (nameEl) nameEl.innerText = '全エリアを表示';
+    if (mobileNameEl) mobileNameEl.innerText = '全エリアを表示';
     document.querySelectorAll('.area-card').forEach(card => card.classList.toggle('active', card.dataset.area === 'all'));
     applyFilter();
     activeSources = new Set(['base', 'dlc']);
@@ -1128,6 +1164,8 @@ function showRouteDetail(route) {
     document.getElementById('browse-footer').classList.add('hidden');
     const mapActions = document.querySelector('.map-actions');
     if (mapActions) mapActions.classList.add('hidden');
+    const routeSidebarEl = document.getElementById('route-sidebar');
+    if (routeSidebarEl) routeSidebarEl.classList.toggle('mobile-detail-mode', window.innerWidth <= 900);
     
     // マイルートの場合のみ編集ボタンを表示
     const editBtn = document.getElementById('edit-route-btn');
@@ -1144,9 +1182,27 @@ function showRouteDetail(route) {
 
     const allRoutePins = new Set();
     route.sections.forEach(s => s.pins.forEach(pid => allRoutePins.add(pid)));
+    const allPinIds = [...allRoutePins];
     focusedRoutePins = allRoutePins;
     applyFilter();
     updateRouteFilterPanelCounts();
+
+    const summaryCounts = {};
+    allPinIds.forEach(pid => {
+        const meta = getRoutePinMeta(pid);
+        if (!meta || !meta.type) return;
+        summaryCounts[meta.type] = (summaryCounts[meta.type] || 0) + 1;
+    });
+    const summaryItems = document.getElementById('detail-summary-items');
+    if (summaryItems) {
+        const summaryHtml = Object.entries(summaryCounts).map(([type, count]) => {
+            const iconUrl = (icons[type] && icons[type].options && icons[type].options.iconUrl)
+                ? icons[type].options.iconUrl
+                : '../images/map/新規マップピン.png';
+            return `<span class="detail-summary-item"><img src="${iconUrl}" alt=""><strong>x${count}</strong></span>`;
+        }).join('');
+        summaryItems.innerHTML = summaryHtml || '<span class="detail-summary-empty">ピンなし</span>';
+    }
 
     route.sections.forEach((section, idx) => {
         const card = document.createElement('div');
@@ -1217,7 +1273,7 @@ function showRouteDetail(route) {
                 });
                 if (latlngs.length > 0) {
                     const bounds = L.latLngBounds(latlngs);
-                    map.fitBounds(bounds.pad(0.2), { paddingTopLeft: [320, 0], paddingBottomRight: [50, 50], animate: true, duration: 0.8 });
+                    map.fitBounds(bounds.pad(0.2), getRouteZoomOptions());
                 }
             }
         };
@@ -1269,6 +1325,8 @@ function backToBrowse() {
     currentDetailedRoute = null;
     focusedRoutePins = null; // フォーカス解除
     applyFilter();
+    const routeSidebarEl = document.getElementById('route-sidebar');
+    if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
     
     document.getElementById('route-browse-view').classList.remove('hidden');
     document.getElementById('route-detail-view').classList.add('hidden');
@@ -1283,8 +1341,42 @@ function getSectionColor(idx) {
     return colors[idx % colors.length];
 }
 
+function isMobileUi() {
+    return window.innerWidth <= 900;
+}
+
+function getRouteZoomOptions() {
+    if (!isMobileUi()) {
+        return {
+            paddingTopLeft: [320, 0],
+            paddingBottomRight: [50, 50],
+            animate: true,
+            duration: 0.8
+        };
+    }
+
+    const routeSidebarEl = document.getElementById('route-sidebar');
+    const sheetHeight = routeSidebarEl && !routeSidebarEl.classList.contains('hidden')
+        ? routeSidebarEl.offsetHeight
+        : 0;
+    const bottomPad = Math.max(60, Math.min(380, sheetHeight + 20));
+
+    return {
+        paddingTopLeft: [16, 12],
+        paddingBottomRight: [16, bottomPad],
+        animate: true,
+        duration: 0.8
+    };
+}
+
 function enterCreateMode() {
+    if (isMobileUi()) {
+        alert('スマホ版ではルート作成・編集は現在準備中です。');
+        return;
+    }
     currentRouteView = 'create';
+    const routeSidebarEl = document.getElementById('route-sidebar');
+    if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
     document.getElementById('route-browse-view').classList.add('hidden');
     document.getElementById('route-create-view').classList.remove('hidden');
     document.getElementById('route-browse-header').classList.add('hidden');
@@ -1309,7 +1401,9 @@ function enterCreateMode() {
     // ルート作成中はエリア制限を解除して全ピン表示
     activeAreas.clear();
     const nameEl = document.getElementById('current-area-name');
+    const mobileNameEl = document.getElementById('mobile-current-area');
     if (nameEl) nameEl.innerText = '全エリアを表示';
+    if (mobileNameEl) mobileNameEl.innerText = '全エリアを表示';
     document.querySelectorAll('.area-card').forEach(card => card.classList.toggle('active', card.dataset.area === 'all'));
 
     syncFilterButtons();
@@ -1349,6 +1443,10 @@ function enterCreateMode() {
 }
 
 function startEditingRoute() {
+    if (isMobileUi()) {
+        alert('スマホ版ではルート作成・編集は現在準備中です。');
+        return;
+    }
     if (!currentDetailedRoute) return;
 
     focusedRoutePins = null;
@@ -1368,6 +1466,8 @@ function startEditingRoute() {
     activeSectionIndex = 0;
 
     currentRouteView = 'create';
+    const routeSidebarEl = document.getElementById('route-sidebar');
+    if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
     document.getElementById('route-detail-view').classList.add('hidden');
     document.getElementById('route-detail-header').classList.add('hidden');
     document.getElementById('route-create-view').classList.remove('hidden');
@@ -1395,6 +1495,8 @@ function startEditingRoute() {
 
 function exitCreateMode() {
     currentRouteView = 'browse';
+    const routeSidebarEl = document.getElementById('route-sidebar');
+    if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
     focusedRoutePins = null;
     if (savedActiveTypes) {
         activeTypes = new Set(savedActiveTypes);
@@ -1844,6 +1946,9 @@ function setupEventListeners() {
     const customPinSaveBtn = document.getElementById('custom-pin-save-btn');
     const customPinCancelBtn = document.getElementById('custom-pin-cancel-btn');
     const customPinCloseBtn = document.getElementById('custom-pin-close-btn');
+    const mobilePinPlaceOkBtn = document.getElementById('mobile-pin-place-ok');
+    const mobilePinPlaceCloseBtn = document.getElementById('mobile-pin-place-close');
+    const mobilePinPlaceLayer = document.getElementById('mobile-pin-place-layer');
 
     if (customPinSaveBtn) {
         customPinSaveBtn.addEventListener('click', () => {
@@ -1896,6 +2001,26 @@ function setupEventListeners() {
         });
     }
 
+    if (mobilePinPlaceOkBtn) {
+        mobilePinPlaceOkBtn.addEventListener('click', () => {
+            const center = map.getCenter();
+            setCustomPinDraft(center);
+            mobileCustomPinPlacementMode = false;
+            customPinMode = false;
+            if (mobilePinPlaceLayer) mobilePinPlaceLayer.classList.add('hidden');
+            toggleCustomPinSidebar(true);
+        });
+    }
+
+    if (mobilePinPlaceCloseBtn) {
+        mobilePinPlaceCloseBtn.addEventListener('click', () => {
+            mobileCustomPinPlacementMode = false;
+            customPinMode = false;
+            customPinDraft = null;
+            if (mobilePinPlaceLayer) mobilePinPlaceLayer.classList.add('hidden');
+        });
+    }
+
     const pinBulkCloseBtn = document.getElementById('pin-bulk-close-btn');
     if (pinBulkCloseBtn) {
         pinBulkCloseBtn.addEventListener('click', () => {
@@ -1933,6 +2058,9 @@ function setupEventListeners() {
     if (closeAreaBtn) {
         closeAreaBtn.addEventListener('click', () => {
             areaOverlay.classList.add('hidden');
+            if (window.innerWidth <= 900) {
+                closeMobileFilterPanel();
+            }
         });
     }
 
@@ -1941,6 +2069,9 @@ function setupEventListeners() {
             const area = btn.dataset.area;
             selectArea(area);
             areaOverlay.classList.add('hidden');
+            if (window.innerWidth <= 900) {
+                closeMobileFilterPanel();
+            }
         });
     });
 
@@ -2139,6 +2270,7 @@ function setupEventListeners() {
     // --- その他設定・一括 ---
     const settingsBtn = document.getElementById('toggle-settings-btn');
     const settingsPopover = document.getElementById('settings-popover');
+    const settingsPopoverCloseBtn = document.getElementById('settings-popover-close');
     const showObtainedCheck = document.getElementById('show-obtained-check');
     const showBaseCheck = document.getElementById('show-base-check');
     const showDlcCheck = document.getElementById('show-dlc-check');
@@ -2151,6 +2283,14 @@ function setupEventListeners() {
             settingsPopover.classList.toggle('hidden');
             settingsBtn.classList.toggle('active');
             e.stopPropagation();
+        });
+    }
+
+    if (settingsPopoverCloseBtn) {
+        settingsPopoverCloseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (settingsPopover) settingsPopover.classList.add('hidden');
+            if (settingsBtn) settingsBtn.classList.remove('active');
         });
     }
 
@@ -2233,9 +2373,37 @@ function setupEventListeners() {
         mapOverlayBaseBtn.addEventListener('click', () => {
             activeAreas.clear();
             const nameEl = document.getElementById('current-area-name');
+            const mobileNameEl = document.getElementById('mobile-current-area');
             if (nameEl) nameEl.innerText = '全エリアを表示';
+            if (mobileNameEl) mobileNameEl.innerText = '全エリアを表示';
             document.querySelectorAll('.area-card').forEach(card => card.classList.toggle('active', card.dataset.area === 'all'));
             setMapOverlay('base');
+        });
+    }
+
+    const detailUnmarkAllBtn = document.getElementById('detail-unmark-all-btn');
+    if (detailUnmarkAllBtn) {
+        detailUnmarkAllBtn.addEventListener('click', () => {
+            if (!currentDetailedRoute) return;
+            const pinIds = [];
+            currentDetailedRoute.sections.forEach(section => {
+                if (section && Array.isArray(section.pins)) pinIds.push(...section.pins);
+            });
+            if (pinIds.length === 0) return;
+            batchMarkSection(pinIds, false);
+        });
+    }
+
+    const detailMarkAllBtn = document.getElementById('detail-mark-all-btn');
+    if (detailMarkAllBtn) {
+        detailMarkAllBtn.addEventListener('click', () => {
+            if (!currentDetailedRoute) return;
+            const pinIds = [];
+            currentDetailedRoute.sections.forEach(section => {
+                if (section && Array.isArray(section.pins)) pinIds.push(...section.pins);
+            });
+            if (pinIds.length === 0) return;
+            batchMarkSection(pinIds, true);
         });
     }
     if (mapOverlayDlcBtn) {
@@ -2243,7 +2411,9 @@ function setupEventListeners() {
             activeAreas.clear();
             activeAreas.add('チドリ島');
             const nameEl = document.getElementById('current-area-name');
+            const mobileNameEl = document.getElementById('mobile-current-area');
             if (nameEl) nameEl.innerText = 'チドリ島';
+            if (mobileNameEl) mobileNameEl.innerText = 'チドリ島';
             document.querySelectorAll('.area-card').forEach(card => card.classList.toggle('active', card.dataset.area === 'チドリ島'));
             setMapOverlay('dlc');
         });
@@ -2315,6 +2485,126 @@ function setupEventListeners() {
             if (leftToggleBtn) leftToggleBtn.classList.remove('hidden');
             closeLeftBtn.classList.add('hidden');
         });
+    }
+
+    const mobileAreaSwitch = document.getElementById('mobile-area-switch');
+    const mobileAreaName = document.getElementById('mobile-current-area');
+    const areaHeaderBtn2 = document.getElementById('area-header-btn');
+    const mobileFilterOpen = document.getElementById('mobile-filter-open');
+    const mobileFilterClose = document.getElementById('mobile-filter-close');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+    const openMobileFilterPanel = () => {
+        document.body.classList.add('mobile-filter-open');
+        if (sidebarBackdrop && document.body.classList.contains('sidebar-collapsed')) {
+            sidebarBackdrop.classList.remove('hidden');
+        }
+    };
+    const closeMobileFilterPanel = () => {
+        document.body.classList.remove('mobile-filter-open');
+        if (sidebarBackdrop && document.body.classList.contains('sidebar-collapsed')) {
+            sidebarBackdrop.classList.add('hidden');
+        }
+    };
+
+    if (mobileAreaSwitch && areaHeaderBtn2) {
+        mobileAreaSwitch.addEventListener('click', () => {
+            if (window.innerWidth <= 900) {
+                // スマホでは全画面パネルを開いてからエリア選択オーバーレイを表示
+                openMobileFilterPanel();
+                if (areaOverlay) {
+                    updateAreaProgress();
+                    areaOverlay.classList.remove('hidden');
+                }
+                return;
+            }
+            areaHeaderBtn2.click();
+        });
+    }
+
+    if (mobileAreaName) {
+        const desktopAreaName = document.getElementById('current-area-name');
+        if (desktopAreaName) mobileAreaName.innerText = desktopAreaName.innerText;
+    }
+
+    if (mobileFilterOpen) {
+        mobileFilterOpen.addEventListener('click', () => {
+            if (document.body.classList.contains('mobile-filter-open')) {
+                closeMobileFilterPanel();
+            } else {
+                openMobileFilterPanel();
+            }
+        });
+    }
+
+    if (mobileFilterClose) {
+        mobileFilterClose.addEventListener('click', () => {
+            closeMobileFilterPanel();
+        });
+    }
+
+    if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', () => {
+            closeMobileFilterPanel();
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!document.body.classList.contains('mobile-filter-open')) return;
+        const sidebar = document.getElementById('map-sidebar');
+        const clickedMobileAreaBar = !!e.target.closest('#mobile-area-bar');
+        const clickedMobileFilterBar = !!e.target.closest('#mobile-filter-bar');
+        if (
+            sidebar &&
+            !sidebar.contains(e.target) &&
+            e.target !== mobileFilterOpen &&
+            !clickedMobileAreaBar &&
+            !clickedMobileFilterBar
+        ) {
+            closeMobileFilterPanel();
+        }
+    });
+
+    const mainSidebar = document.querySelector('.sidebar');
+    const mainOpenBtn = document.getElementById('main-sidebar-open');
+    const mainCloseBtn = document.getElementById('main-sidebar-close');
+    const mainCloseInner = document.querySelector('.main-sidebar-close-inner');
+    const mainBackdrop = document.getElementById('sidebar-backdrop');
+    const applySidebarMode = () => {
+        if (window.innerWidth <= 900) {
+            document.body.classList.add('sidebar-collapsed');
+            if (mainSidebar) mainSidebar.classList.add('collapsed');
+            if (mainBackdrop) mainBackdrop.classList.add('hidden');
+        } else {
+            document.body.classList.remove('sidebar-collapsed');
+            document.body.classList.remove('mobile-filter-open');
+            if (mainSidebar) mainSidebar.classList.remove('collapsed');
+            if (mainBackdrop) mainBackdrop.classList.add('hidden');
+        }
+    };
+    applySidebarMode();
+    window.addEventListener('resize', applySidebarMode);
+    const openMainSidebar = () => {
+        document.body.classList.remove('sidebar-collapsed');
+        if (mainSidebar) mainSidebar.classList.remove('collapsed');
+        if (mainBackdrop) mainBackdrop.classList.remove('hidden');
+    };
+    const closeMainSidebar = () => {
+        document.body.classList.add('sidebar-collapsed');
+        document.body.classList.remove('mobile-filter-open');
+        if (mainSidebar) mainSidebar.classList.add('collapsed');
+        if (mainBackdrop) mainBackdrop.classList.add('hidden');
+    };
+    if (mainOpenBtn) mainOpenBtn.addEventListener('click', openMainSidebar);
+    if (mainCloseBtn) mainCloseBtn.addEventListener('click', closeMainSidebar);
+    if (mainCloseInner) {
+        mainCloseInner.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closeMainSidebar();
+        });
+    }
+    if (mainBackdrop) {
+        mainBackdrop.addEventListener('click', closeMainSidebar);
     }
 
     const customPinSortBtn = document.getElementById('custom-pin-sort-btn');
@@ -2560,14 +2850,17 @@ function selectArea(area) {
 
     activeAreas.clear();
     const nameEl = document.getElementById('current-area-name');
+    const mobileAreaName = document.getElementById('mobile-current-area');
     document.querySelectorAll('.area-card').forEach(card => card.classList.remove('active'));
 
     if (area === 'all') {
         nameEl.innerText = "全エリアを表示";
+        if (mobileAreaName) mobileAreaName.innerText = "全エリアを表示";
         map.fitBounds(bounds, { paddingTopLeft: [320, 0], paddingBottomRight: [0, 0], animate: true, duration: 0.8 });
     } else {
         activeAreas.add(area);
         nameEl.innerText = area;
+        if (mobileAreaName) mobileAreaName.innerText = area;
 
         const selectedCard = document.querySelector(`.area-card[data-area="${area}"]`);
         if (selectedCard) selectedCard.classList.add('active');

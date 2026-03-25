@@ -13,6 +13,7 @@
 <body>
     <div class="layout">
         <aside class="sidebar">
+            <button class="main-sidebar-close-inner" type="button" title="メニューを閉じる">×</button>
             <a href="../index.html" class="logo">
                 <span>Maneater Wiki</span>
             </a>
@@ -30,12 +31,46 @@
                 </a>
             </nav>
         </aside>
+        <div id="sidebar-backdrop" class="sidebar-backdrop hidden"></div>
         <main class="main">
+            <button id="main-sidebar-open" class="main-sidebar-toggle" title="メニューを開く">≡</button>
+            <button id="main-sidebar-close" class="main-sidebar-close" title="メニューを閉じる">‹</button>
             <div class="map-container">
+                <!-- モバイル用エリア切り替えバー -->
+                <div id="mobile-area-bar" class="mobile-area-bar">
+                    <div class="mobile-area-name" id="mobile-current-area">全エリアを表示</div>
+                    <button id="mobile-area-switch" class="mobile-area-switch">⇄ 切り替える</button>
+                </div>
+
+                <!-- モバイル用フィルターボタン -->
+                <div id="mobile-filter-bar" class="mobile-filter-bar">
+                    <button id="mobile-filter-open" class="mobile-filter-open">
+                        <span>マップピンをフィルター</span>
+                    </button>
+                </div>
+
+                <!-- モバイル: 新規マップピン位置選択レイヤー -->
+                <div id="mobile-pin-place-layer" class="mobile-pin-place-layer hidden">
+                    <div class="mobile-pin-place-top">
+                        <button id="mobile-pin-place-close" class="mobile-pin-place-close-btn" type="button">×</button>
+                        <h3>マップピンの位置を選ぶ</h3>
+                        <p>マップをドラッグ/拡大縮小して位置を合わせてください</p>
+                    </div>
+                    <div id="mobile-pin-center-marker" class="mobile-pin-center-marker">+</div>
+                    <div class="mobile-pin-place-bottom">
+                        <button id="mobile-pin-place-ok" class="mobile-pin-place-ok" type="button">OK</button>
+                    </div>
+                </div>
+
                 <button id="toggle-left-sidebar-btn" class="left-sidebar-toggle hidden" title="サイドバーを開く">‹</button>
                 <button id="close-left-sidebar-btn" class="left-sidebar-close" title="サイドバーを閉じる">‹</button>
                 <!-- 左サイドバー（マップ内オーバーレイ） -->
                 <aside class="map-sidebar" id="map-sidebar">
+                    <div class="mobile-filter-sheet-head">
+                        <div class="sheet-grab"></div>
+                        <div class="sheet-title">マップピンをフィルター</div>
+                        <button id="mobile-filter-close" class="sheet-close-btn" type="button">×</button>
+                    </div>
                     <!-- エリアヘッダー -->
                     <div class="sidebar-header" id="area-header-btn">
                         <div class="current-area-info">
@@ -321,11 +356,18 @@
                         <!-- 詳細閲覧ビュー -->
                         <div id="route-detail-view" class="hidden">
                             <div class="detail-content">
-                                <div id="detail-desc" class="route-description"></div>
                                 <div id="detail-section-count" class="section-count-info"></div>
                                 <div id="detail-sections-list" class="detail-sections-list">
                                     <!-- セクション詳細がここに挿入される -->
                                 </div>
+                                <div id="detail-summary-box" class="detail-summary-box">
+                                    <div id="detail-summary-items" class="detail-summary-items"></div>
+                                </div>
+                                <div class="detail-batch-actions">
+                                    <button id="detail-unmark-all-btn" class="detail-batch-btn">すべての標記を取り消す</button>
+                                    <button id="detail-mark-all-btn" class="detail-batch-btn">すべてを標記</button>
+                                </div>
+                                <div id="detail-desc" class="route-description"></div>
                             </div>
                         </div>
                     </div>
@@ -352,6 +394,10 @@
                             <img src="../images/map/設定.png" alt="">
                         </button>
                         <div id="settings-popover" class="action-popover hidden">
+                            <div class="settings-popover-head">
+                                <span>設定</span>
+                                <button id="settings-popover-close" class="settings-popover-close-btn" type="button">×</button>
+                            </div>
                             <div class="popover-section">
                                 <span class="popover-title">取得済みピンの表示</span>
                                 <label class="toggle-switch">
