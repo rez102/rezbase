@@ -42,6 +42,191 @@ pinBulkControl.onAdd = function() {
 };
 pinBulkControl.addTo(map);
 
+const STORAGE_KEYS = {
+    overlay: 'maneater_map_overlay',
+    obtainedPins: 'maneater_obtained_pins',
+    customPins: 'maneater_custom_pins',
+    customPinObtained: 'maneater_custom_pins_obtained',
+    pinnedRoutes: 'maneater_pinned_routes',
+    myRoutes: 'myRoutes',
+    routes: 'maneater_routes',
+    preferences: 'maneater_map_preferences',
+    tutorialDone: 'maneater_map_tutorial_done_v2'
+};
+
+const DEFAULT_BASE_TYPES = ['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate', 'cave'];
+const DEFAULT_DLC_TYPES = ['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'time-trial', 'manhunt', 'quest', 'grate', 'floodgate', 'cave'];
+
+const AREA_META = {
+    all: { id: 'all', label: '全エリア', shortLabel: '全エリアを表示', source: 'all', order: 0, selectable: true },
+    'fawtick-bayou': { id: 'fawtick-bayou', label: 'フォーティック・バイユー', source: 'base', order: 1, selectable: true },
+    'dead-horse-lake': { id: 'dead-horse-lake', label: 'デッド・ホース・レイク', source: 'base', order: 2, selectable: true, deepZoom: true },
+    'golden-shores': { id: 'golden-shores', label: 'ゴールデン・ショア', source: 'base', order: 3, selectable: true },
+    'sapphire-bay': { id: 'sapphire-bay', label: 'サファリア・ベイ', source: 'base', order: 4, selectable: true, deepZoom: true },
+    'prosperity-sands': { id: 'prosperity-sands', label: 'プロスピリティー・サンド', source: 'base', order: 5, selectable: true, deepZoom: true },
+    'caviar-key': { id: 'caviar-key', label: 'キャビアキー', source: 'base', order: 6, selectable: true, deepZoom: true },
+    gulf: { id: 'gulf', label: '湾岸', source: 'base', order: 7, selectable: true },
+    'crawfish-bay': { id: 'crawfish-bay', label: 'クローフィッシュ・ベイ', source: 'base', order: 8, selectable: true },
+    'plover-island': { id: 'plover-island', label: 'チドリ島', source: 'dlc', order: 9, selectable: true, map: 'dlc', routeLabel: 'チドリ島（DLC）' },
+    floodgates: { id: 'floodgates', label: '水門', source: 'shared', order: 90, selectable: false, shared: true },
+    caves: { id: 'caves', label: '洞窟', source: 'shared', order: 91, selectable: false, shared: true }
+};
+
+const AREA_ALIASES = {
+    'フォーティック・バイユー': 'fawtick-bayou',
+    'デッド・ホース・レイク': 'dead-horse-lake',
+    'ゴールデン・ショア': 'golden-shores',
+    'サファリア・ベイ': 'sapphire-bay',
+    'プロスピリティー・サンド': 'prosperity-sands',
+    'プロスピリティーサンド': 'prosperity-sands',
+    'キャビアキー': 'caviar-key',
+    '湾岸': 'gulf',
+    'クローフィッシュ・ベイ': 'crawfish-bay',
+    'チドリ島': 'plover-island',
+    '水門': 'floodgates',
+    '洞窟': 'caves'
+};
+
+const PIN_META = {
+    landmark: {
+        label: 'ランドマーク',
+        shortLabel: 'ランドマーク',
+        category: 'collection',
+        sources: ['base', 'dlc'],
+        order: 1,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/ランドマーク.png', iconSize: [32, 32], iconAnchor: [16, 26], popupAnchor: [0, -20] }
+    },
+    nutrient: {
+        label: '栄養箱',
+        shortLabel: '栄養箱',
+        category: 'collection',
+        sources: ['base', 'dlc'],
+        order: 2,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/栄養箱.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
+    },
+    plate: {
+        label: 'ナンバープレート',
+        shortLabel: 'ナンバー',
+        category: 'collection',
+        sources: ['base', 'dlc'],
+        order: 3,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/ナンバープレート.png', iconSize: [38, 38], iconAnchor: [19, 19], popupAnchor: [0, -10] }
+    },
+    'main-quest': {
+        label: 'メインクエスト',
+        shortLabel: 'メイン',
+        category: 'quest',
+        sources: ['base', 'dlc'],
+        order: 4,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/メインクエスト.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
+    },
+    'sub-quest': {
+        label: '狩猟クエスト',
+        shortLabel: '狩猟クエスト',
+        category: 'quest',
+        sources: ['base', 'dlc'],
+        order: 5,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/手配.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
+    },
+    'time-trial': {
+        label: 'タイムトライアル',
+        shortLabel: 'タイムトライアル',
+        category: 'quest',
+        sources: ['dlc'],
+        order: 6,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/タイムトライアル.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
+    },
+    manhunt: {
+        label: '復讐クエスト',
+        shortLabel: '復讐クエスト',
+        category: 'quest',
+        sources: ['base', 'dlc'],
+        order: 7,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/人間狩り.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
+    },
+    quest: {
+        label: 'クエスター',
+        shortLabel: 'クエスター',
+        category: 'quest',
+        sources: ['dlc'],
+        order: 8,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/クエスター.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
+    },
+    'infamy-1': {
+        label: '悪名ランク1',
+        shortLabel: '悪名ランク1',
+        category: 'other',
+        sources: ['base'],
+        order: 9,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/悪名ランク1.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
+    },
+    grate: {
+        label: '鉄格子',
+        shortLabel: '鉄格子',
+        category: 'other',
+        sources: ['base', 'dlc'],
+        order: 10,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/鉄格子.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
+    },
+    floodgate: {
+        label: '水門',
+        shortLabel: '水門',
+        category: 'other',
+        sources: ['base', 'dlc'],
+        order: 11,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/水門.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
+    },
+    cave: {
+        label: '洞窟',
+        shortLabel: '洞窟',
+        category: 'other',
+        sources: ['base', 'dlc'],
+        order: 12,
+        customSelectable: true,
+        leaflet: { iconUrl: '../images/map/洞窟.png', iconSize: [34, 34], iconAnchor: [17, 20], popupAnchor: [0, -12], className: 'cave-marker-invisible' }
+    }
+};
+
+const FILTER_SECTION_META = [
+    { context: 'main', id: 'collection', types: ['landmark', 'nutrient', 'plate'] },
+    { context: 'main', id: 'quest-base', source: 'base', types: ['main-quest', 'sub-quest', 'manhunt'] },
+    { context: 'main', id: 'quest-dlc', source: 'dlc', types: ['main-quest', 'sub-quest', 'time-trial', 'manhunt', 'quest'] },
+    { context: 'main', id: 'other', types: ['grate', 'floodgate', 'cave'] },
+    { context: 'route', id: 'route-collection', types: ['landmark', 'nutrient', 'plate'] },
+    { context: 'route', id: 'route-quest-base', source: 'base', types: ['main-quest', 'sub-quest', 'manhunt'] },
+    { context: 'route', id: 'route-quest-dlc', source: 'dlc', types: ['main-quest', 'sub-quest', 'time-trial', 'manhunt', 'quest'] },
+    { context: 'route', id: 'route-other', types: ['grate', 'floodgate', 'cave'] }
+];
+
+const USER_DATA_KEYS = {
+    obtainedPins: 'obtainedPins',
+    customPins: 'customPins',
+    customPinObtained: 'customPinObtained',
+    routes: 'routes',
+    pinnedRoutes: 'pinnedRoutes',
+    preferences: 'preferences'
+};
+
+function createDefaultRoute() {
+    return {
+        id: null,
+        name: '',
+        description: '',
+        sections: [{ name: '区間1', pins: [], collapsed: true }]
+    };
+}
+
 const w = 1120;
 const h = 1120;
 const bounds = [[0, 0], [h, w]];
@@ -51,8 +236,145 @@ const mapOverlayPaths = {
     dlc: '../images/dlc_maneater_map.png'
 };
 
-let mapOverlayMode = localStorage.getItem('maneater_map_overlay') || 'base';
-let currentMapOverlay = L.imageOverlay(mapOverlayPaths[mapOverlayMode], bounds).addTo(map);
+function normalizeOverlayMode(mode) {
+    return mode === 'dlc' ? 'dlc' : 'base';
+}
+
+function normalizeSource(source) {
+    return source === 'dlc' ? 'dlc' : 'base';
+}
+
+const icons = Object.fromEntries(
+    Object.entries(PIN_META).map(([type, meta]) => [type, L.icon(meta.leaflet)])
+);
+
+const customPinIcon = L.icon({
+    iconUrl: '../images/map/新規マップピン.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 30],
+    popupAnchor: [0, -24]
+});
+
+const state = {
+    overlay: 'base',
+    activeAreas: new Set(['all']),
+    activeBaseTypes: new Set(DEFAULT_BASE_TYPES),
+    activeDlcTypes: new Set(DEFAULT_DLC_TYPES),
+    activeSources: new Set(['base', 'dlc']),
+    showObtained: true,
+    showCustomPins: true,
+    obtainedPins: new Set(),
+    customPinVisibility: new Set(),
+    customPinObtained: new Set(),
+    route: {
+        view: 'browse',
+        current: null,
+        activeTab: 'trend'
+    },
+    sidebar: {
+        current: 'main',
+        last: 'main'
+    }
+};
+
+let mapOverlayMode = state.overlay;
+let currentSidebar = state.sidebar.current;
+let lastSidebar = state.sidebar.last;
+let currentRouteView = state.route.view;
+let activeRouteTab = state.route.activeTab;
+let currentDetailedRoute = state.route.current;
+let showObtained = state.showObtained;
+let showCustomPins = state.showCustomPins;
+let customPinVisibility = state.customPinVisibility;
+let customPinObtained = state.customPinObtained;
+let activeTypes = state.activeBaseTypes;
+let activeDlcTypes = state.activeDlcTypes;
+let activeAreas = state.activeAreas;
+let activeSources = state.activeSources;
+let obtainedPins = state.obtainedPins;
+
+function setOverlay(mode) {
+    const normalizedMode = normalizeOverlayMode(mode);
+    mapOverlayMode = normalizedMode;
+    state.overlay = normalizedMode;
+}
+
+function setSidebarCurrent(value) {
+    currentSidebar = value;
+    state.sidebar.current = value;
+    if (isAppReady && !suppressPersistence) savePreferences();
+}
+
+function setSidebarLast(value) {
+    lastSidebar = value;
+    state.sidebar.last = value;
+    if (isAppReady && !suppressPersistence) savePreferences();
+}
+
+function setRouteView(value) {
+    currentRouteView = value;
+    state.route.view = value;
+    if (isAppReady && !suppressPersistence) savePreferences();
+}
+
+function setCurrentRoute(route) {
+    currentDetailedRoute = route;
+    state.route.current = route;
+    if (isAppReady && !suppressPersistence) savePreferences();
+}
+
+function setRouteTab(value) {
+    activeRouteTab = value;
+    state.route.activeTab = value;
+    if (isAppReady && !suppressPersistence) savePreferences();
+}
+
+function setActiveBaseTypes(nextTypes) {
+    activeTypes = nextTypes;
+    state.activeBaseTypes = nextTypes;
+}
+
+function setActiveDlcTypes(nextTypes) {
+    activeDlcTypes = nextTypes;
+    state.activeDlcTypes = nextTypes;
+}
+
+function setActiveAreas(nextAreas) {
+    activeAreas = nextAreas;
+    state.activeAreas = nextAreas;
+}
+
+function setSources(nextSources) {
+    activeSources = new Set(nextSources);
+    state.activeSources = activeSources;
+}
+
+function setShowObtained(flag) {
+    showObtained = !!flag;
+    state.showObtained = showObtained;
+}
+
+function setShowCustomPins(flag) {
+    showCustomPins = !!flag;
+    state.showCustomPins = showCustomPins;
+}
+
+function setObtainedPinSet(nextObtainedPins) {
+    obtainedPins = nextObtainedPins;
+    state.obtainedPins = nextObtainedPins;
+}
+
+function setCustomPinVisibilitySet(nextVisibility) {
+    customPinVisibility = nextVisibility;
+    state.customPinVisibility = nextVisibility;
+}
+
+function setCustomPinObtainedSet(nextObtained) {
+    customPinObtained = nextObtained;
+    state.customPinObtained = nextObtained;
+}
+
+let currentMapOverlay = L.imageOverlay(mapOverlayPaths[state.overlay], bounds).addTo(map);
 
 map.fitBounds(bounds, { paddingTopLeft: [320, 0] });
 
@@ -87,45 +409,12 @@ map.on('click', function(e) {
     console.log(`lat: ${e.latlng.lat.toFixed(2)}, lng: ${e.latlng.lng.toFixed(2)}`);
 });
 
-// アイコン定義
-const icons = {
-    landmark: L.icon({ iconUrl: '../images/map/ランドマーク.png', iconSize: [32, 32], iconAnchor: [16, 26], popupAnchor: [0, -20] }),
-    nutrient: L.icon({ iconUrl: '../images/map/栄養箱.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    plate: L.icon({ iconUrl: '../images/map/ナンバープレート.png', iconSize: [38, 38], iconAnchor: [19, 19], popupAnchor: [0, -10] }),
-    'main-quest': L.icon({ iconUrl: '../images/map/メインクエスト.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    'sub-quest': L.icon({ iconUrl: '../images/map/手配.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    'time-trial': L.icon({ iconUrl: '../images/map/タイムトライアル.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    manhunt: L.icon({ iconUrl: '../images/map/人間狩り.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    quest: L.icon({ iconUrl: '../images/map/クエスター.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    'infamy-1': L.icon({ iconUrl: '../images/map/悪名ランク1.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    grate: L.icon({ iconUrl: '../images/map/鉄格子.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    floodgate: L.icon({ iconUrl: '../images/map/水門.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }),
-    cave: L.icon({ iconUrl: '../images/map/洞窟.png', iconSize: [34, 34], iconAnchor: [17, 20], popupAnchor: [0, -12], className: 'cave-marker-invisible' }),
-};
-
-const customPinIcon = L.icon({
-    iconUrl: '../images/map/新規マップピン.png',
-    iconSize: [32, 32],
-    iconAnchor: [16, 30],
-    popupAnchor: [0, -24]
-});
-
 // 収集物データ
 let rawCollectibles = [];
 
 // --- ルートシステムの状態管理 ---
-let currentSidebar = 'main'; // 'main' or 'route'
-let lastSidebar = 'main';
-let currentRouteView = 'browse'; // 'browse' or 'create'
-let activeRouteTab = 'trend'; // 'trend' or 'my'
-let myRoutes = JSON.parse(localStorage.getItem('myRoutes') || '[]');
-let currentDetailedRoute = null; // 現在詳細表示しているルート
-let creatingRoute = {
-    id: null,
-    name: '',
-    description: '',
-    sections: [{ name: '区間1', pins: [] }] // 初期状態で1つ区間を持つ
-};
+let myRoutes = [];
+let creatingRoute = createDefaultRoute();
 let activeSectionIndex = 0;
 let routeIsModified = false;
 let routePolylines = [];
@@ -149,15 +438,23 @@ let mobileCustomPinPlacementMode = false;
 let customPinDraft = null;
 let customPinDraftMarker = null;
 let customPinSelectedType = 'landmark';
-let showCustomPins = true;
-let customPinVisibility = new Set();
-let customPinObtained = new Set(JSON.parse(localStorage.getItem('maneater_custom_pins_obtained') || '[]'));
 let batchCustomObtained = new Set();
 let customPinById = new Map();
 let pinBulkSidebarOpen = false;
 let customPinSortMode = 'created';
 let tutorialStepIndex = 0;
-const tutorialStorageKey = 'maneater_map_tutorial_done_v2';
+const tutorialStorageKey = STORAGE_KEYS.tutorialDone;
+const SAVE_DEBOUNCE_MS = 700;
+
+let authManager = null;
+let storageController = null;
+let authSubscription = null;
+let suppressPersistence = false;
+let pendingSaveTimer = null;
+let pendingSavePromise = Promise.resolve();
+let isAppReady = false;
+let currentAuthUser = null;
+let latestUserDataSnapshot = null;
 
 // トレンドルート（作者作成）のサンプルデータ
 const trendRoutes = [
@@ -175,48 +472,524 @@ const trendRoutes = [
 // ID 割り当てと統合
 const collectibles = [];
 
-function buildCollectibles(raw) {
-    collectibles.length = 0;
-    raw.forEach((d, index) => {
-        let name = d.type;
-        if (d.type === 'landmark') name = 'ランドマーク';
-        else if (d.type === 'nutrient') name = '栄養箱';
-        else if (d.type === 'plate') name = 'ナンバープレート';
-        else if (d.type === 'main-quest') name = 'メインクエスト';
-        else if (d.type === 'sub-quest') name = '狩猟クエスト';
-        else if (d.type === 'time-trial') name = 'タイムトライアル';
-        else if (d.type === 'manhunt') name = '復讐クエスト';
-        else if (d.type === 'quest') name = 'クエスター';
-        else if (d.type === 'grate') name = '鉄格子';
-        else if (d.type === 'floodgate') name = '水門';
-        else if (d.type === 'cave') name = '洞窟';
+function getPinMeta(type) {
+    return PIN_META[type] || { label: type, shortLabel: type, sources: ['base'], order: 999 };
+}
 
-        collectibles.push({ 
-            ...d, 
-            id: `${d.type}-${index}`,
-            name: name,
-            source: d.source || 'base', // base or dlc
-            map: d.map || 'base' // base or dlc overlay association
-        });
+function resolveAreaId(areaValue) {
+    if (!areaValue) return 'all';
+    if (AREA_META[areaValue]) return areaValue;
+    return AREA_ALIASES[areaValue] || 'all';
+}
+
+function getAreaMeta(areaValue = 'all') {
+    const areaId = resolveAreaId(areaValue);
+    return AREA_META[areaId] || AREA_META.all;
+}
+
+function getSelectableAreas() {
+    return Object.values(AREA_META)
+        .filter(area => area.selectable && area.id !== 'all')
+        .sort((a, b) => a.order - b.order);
+}
+
+function isSharedArea(areaId) {
+    return !!(AREA_META[areaId] && AREA_META[areaId].shared);
+}
+
+function getCurrentAreaId() {
+    return [...state.activeAreas][0] || 'all';
+}
+
+function ensureValidFilters() {
+    if (activeSources.size === 0) {
+        setSources(['base', 'dlc']);
+    }
+    if (activeTypes.size === 0) {
+        setActiveBaseTypes(new Set(DEFAULT_BASE_TYPES));
+    }
+    if (activeDlcTypes.size === 0) {
+        setActiveDlcTypes(new Set(DEFAULT_DLC_TYPES));
+    }
+    if (activeAreas.size === 0) {
+        setActiveAreas(new Set(['all']));
+    }
+}
+
+function getCustomPinTitle(pin) {
+    return pin.title || pin.name || '無題';
+}
+
+function syncCustomPinRecord(pinId) {
+    const pin = customPins.find(item => item.id === pinId);
+    if (!pin) return;
+    pin.title = getCustomPinTitle(pin);
+    pin.name = pin.title;
+    pin.detail = pin.detail || '';
+    pin.visibility = customPinVisibility.has(pinId);
+    pin.obtained = customPinObtained.has(pinId);
+    pin.userId = pin.userId ?? null;
+    pin.updatedAt = new Date().toISOString();
+}
+
+function syncAllCustomPinRecords() {
+    customPins.forEach(pin => syncCustomPinRecord(pin.id));
+}
+
+function createUserDataSnapshot() {
+    syncAllCustomPinRecords();
+    return {
+        [USER_DATA_KEYS.obtainedPins]: [...state.obtainedPins],
+        [USER_DATA_KEYS.customPins]: customPins.map(pin => ({
+            id: pin.id,
+            type: pin.type,
+            title: getCustomPinTitle(pin),
+            detail: pin.detail || '',
+            lat: pin.lat,
+            lng: pin.lng,
+            map: pin.map || 'base',
+            createdAt: pin.createdAt || new Date().toISOString(),
+            updatedAt: pin.updatedAt || pin.createdAt || new Date().toISOString(),
+            visibility: customPinVisibility.has(pin.id),
+            obtained: customPinObtained.has(pin.id),
+            userId: pin.userId ?? null
+        })),
+        [USER_DATA_KEYS.customPinObtained]: [...state.customPinObtained],
+        [USER_DATA_KEYS.routes]: myRoutes,
+        [USER_DATA_KEYS.pinnedRoutes]: [...pinnedRoutes],
+        [USER_DATA_KEYS.preferences]: {
+            overlay: state.overlay,
+            activeSources: [...state.activeSources],
+            activeAreas: [...state.activeAreas],
+            activeBaseTypes: [...state.activeBaseTypes],
+            activeDlcTypes: [...state.activeDlcTypes],
+            showObtained: state.showObtained,
+            showCustomPins: state.showCustomPins,
+            customPinVisibility: [...state.customPinVisibility],
+            customPinSortMode,
+            sidebar: { ...state.sidebar },
+            route: {
+                view: state.route.view,
+                activeTab: state.route.activeTab,
+                currentId: state.route.current ? state.route.current.id : null
+            }
+        }
+    };
+}
+
+function createSharedDataSnapshot() {
+    return {
+        areas: AREA_META,
+        pins: PIN_META,
+        collectibles
+    };
+}
+
+function getBulkManageablePinTypes() {
+    const mapped = Object.entries(PIN_META)
+        .filter(([, meta]) => meta.hiddenInBulk !== true)
+        .sort((a, b) => a[1].order - b[1].order)
+        .map(([type, meta]) => ({ type, label: meta.label }));
+    mapped.push({ type: 'custom', label: '新規マップピン' });
+    return mapped;
+}
+
+function syncRouteMirrorState() {
+    routes = JSON.parse(JSON.stringify(myRoutes));
+}
+
+function getNormalizedUserData(input = {}) {
+    if (storageController && typeof storageController.normalizeUserMapData === 'function') {
+        return storageController.normalizeUserMapData(input);
+    }
+    return input;
+}
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById('map-toast-container');
+    if (!container || !message) return;
+
+    const toast = document.createElement('div');
+    toast.className = `map-toast toast-${type}`.trim();
+    toast.innerText = message;
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('visible'));
+
+    window.setTimeout(() => {
+        toast.classList.remove('visible');
+        window.setTimeout(() => toast.remove(), 220);
+    }, 3200);
+}
+
+function handleCloudSaveError(error) {
+    console.error('[cloud-save]', error);
+    showToast('クラウド保存に失敗しました', 'error');
+}
+
+function queueUserDataSave({ immediate = false } = {}) {
+    if (suppressPersistence || !storageController) {
+        return Promise.resolve();
+    }
+
+    latestUserDataSnapshot = createUserDataSnapshot();
+    storageController.saveLocalShadow(latestUserDataSnapshot).catch(error => {
+        console.error('[save-local-shadow]', error);
+    });
+
+    if (pendingSaveTimer) {
+        clearTimeout(pendingSaveTimer);
+        pendingSaveTimer = null;
+    }
+
+    if (immediate) {
+        return flushUserDataSave();
+    }
+
+    return new Promise(resolve => {
+        pendingSaveTimer = window.setTimeout(() => {
+            flushUserDataSave().finally(resolve);
+        }, SAVE_DEBOUNCE_MS);
     });
 }
 
-// 状態管理
-let activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate', 'cave']);
-let activeDlcTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'time-trial', 'manhunt', 'quest', 'grate', 'floodgate', 'cave']);
-let activeAreas = new Set();
+function flushUserDataSave() {
+    if (pendingSaveTimer) {
+        clearTimeout(pendingSaveTimer);
+        pendingSaveTimer = null;
+    }
+
+    if (suppressPersistence || !storageController) {
+        return Promise.resolve();
+    }
+
+    const snapshot = latestUserDataSnapshot || createUserDataSnapshot();
+    pendingSavePromise = pendingSavePromise.then(async () => {
+        try {
+            syncRouteMirrorState();
+            await storageController.saveUserMapData(snapshot);
+        } catch (error) {
+            console.error('[save-user-data]', error);
+        }
+    });
+    return pendingSavePromise;
+}
+
+function savePinnedRoutes() {
+    return queueUserDataSave();
+}
+
+function saveMyRoutes() {
+    syncRouteMirrorState();
+    return queueUserDataSave();
+}
+
+function savePreferences() {
+    return queueUserDataSave();
+}
+
+function updateAuthUi(user = currentAuthUser) {
+    const badge = document.getElementById('auth-status-badge');
+    const caption = document.getElementById('auth-sync-caption');
+    const anonBtn = document.getElementById('auth-anon-btn');
+    const googleBtn = document.getElementById('auth-google-btn');
+    const signOutBtn = document.getElementById('auth-signout-btn');
+    if (!badge || !caption || !anonBtn || !googleBtn || !signOutBtn) return;
+
+    badge.classList.remove('auth-status-local', 'auth-status-anon', 'auth-status-google');
+
+    if (!authManager || !authManager.isConfigured) {
+        badge.classList.add('auth-status-local');
+        badge.innerText = '未ログイン';
+        caption.innerText = 'Supabase 未設定のため、この端末だけに保存されます';
+        anonBtn.classList.remove('hidden');
+        googleBtn.classList.remove('hidden');
+        anonBtn.disabled = true;
+        googleBtn.disabled = true;
+        signOutBtn.classList.add('hidden');
+        return;
+    }
+
+    anonBtn.disabled = false;
+    googleBtn.disabled = false;
+
+    if (!user) {
+        badge.classList.add('auth-status-local');
+        badge.innerText = '未ログイン';
+        caption.innerText = 'この端末だけに保存されます';
+        anonBtn.classList.remove('hidden');
+        googleBtn.classList.remove('hidden');
+        signOutBtn.classList.add('hidden');
+        return;
+    }
+
+    anonBtn.classList.add('hidden');
+    googleBtn.classList.add('hidden');
+    signOutBtn.classList.remove('hidden');
+
+    if (authManager.isAnonymousUser(user)) {
+        badge.classList.add('auth-status-anon');
+        badge.innerText = '仮ログイン中';
+        caption.innerText = '同期中: 仮アカウントとしてクラウド保存されています';
+        return;
+    }
+
+    badge.classList.add('auth-status-google');
+    badge.innerText = 'Googleログイン中';
+    caption.innerText = '同期中: Google アカウントでクラウド保存されています';
+}
+
+function showCloudMigrationModal() {
+    const modal = document.getElementById('cloud-migration-modal');
+    const keepBtn = document.getElementById('migration-keep-local-btn');
+    const migrateBtn = document.getElementById('migration-to-cloud-btn');
+    if (!modal || !keepBtn || !migrateBtn) {
+        return Promise.resolve(false);
+    }
+
+    modal.classList.remove('hidden');
+
+    return new Promise(resolve => {
+        const cleanup = (result) => {
+            modal.classList.add('hidden');
+            keepBtn.replaceWith(keepBtn.cloneNode(true));
+            migrateBtn.replaceWith(migrateBtn.cloneNode(true));
+            resolve(result);
+        };
+
+        keepBtn.addEventListener('click', () => cleanup(false), { once: true });
+        migrateBtn.addEventListener('click', () => cleanup(true), { once: true });
+    });
+}
+
+function clearAuthCallbackQuery() {
+    if (!window.history || !window.history.replaceState) return;
+    const url = new URL(window.location.href);
+    ['code', 'error', 'error_description', 'provider_token', 'refresh_token'].forEach(key => {
+        url.searchParams.delete(key);
+    });
+    if (url.hash && /error=|access_token=|refresh_token=|type=/.test(url.hash)) {
+        url.hash = '';
+    }
+    window.history.replaceState({}, document.title, url.toString());
+}
+
+function getMigrationCheckKey(user) {
+    return user && user.id ? `maneater_migration_checked_${user.id}` : null;
+}
+
+function hasMigrationBeenChecked(user) {
+    const key = getMigrationCheckKey(user);
+    return key ? window.sessionStorage.getItem(key) === '1' : false;
+}
+
+function markMigrationChecked(user) {
+    const key = getMigrationCheckKey(user);
+    if (key) {
+        window.sessionStorage.setItem(key, '1');
+    }
+}
+
+function showAuthCallbackErrorIfNeeded() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const message = searchParams.get('error_description')
+        || hashParams.get('error_description')
+        || searchParams.get('error')
+        || hashParams.get('error');
+    if (message) {
+        showToast(decodeURIComponent(message), 'error');
+    }
+}
+
+function applyLoadedUserData(data) {
+    const normalized = getNormalizedUserData(data || {});
+    const preferences = normalized.preferences || {};
+    const activeSources = preferences.activeSources && preferences.activeSources.length
+        ? preferences.activeSources
+        : ['base', 'dlc'];
+    const activeAreas = preferences.activeAreas && preferences.activeAreas.length
+        ? preferences.activeAreas
+        : ['all'];
+    const baseTypes = preferences.activeBaseTypes && preferences.activeBaseTypes.length
+        ? preferences.activeBaseTypes
+        : DEFAULT_BASE_TYPES;
+    const dlcTypes = preferences.activeDlcTypes && preferences.activeDlcTypes.length
+        ? preferences.activeDlcTypes
+        : DEFAULT_DLC_TYPES;
+
+    suppressPersistence = true;
+    try {
+        setOverlay(normalizeOverlayMode(preferences.overlay || 'base'));
+        setSources(activeSources);
+        setActiveAreas(new Set(activeAreas));
+        setActiveBaseTypes(new Set(baseTypes));
+        setActiveDlcTypes(new Set(dlcTypes));
+        setShowObtained(preferences.showObtained !== false);
+        setShowCustomPins(preferences.showCustomPins !== false);
+        setObtainedPinSet(new Set(normalized.obtainedPins || []));
+        customPins = Array.isArray(normalized.customPins) ? JSON.parse(JSON.stringify(normalized.customPins)) : [];
+        myRoutes = Array.isArray(normalized.routes) ? JSON.parse(JSON.stringify(normalized.routes)) : [];
+        syncRouteMirrorState();
+        pinnedRoutes = new Set(normalized.pinnedRoutes || []);
+        setCustomPinObtainedSet(new Set(normalized.customPinObtained || []));
+        const storedVisibility = preferences.customPinVisibility && preferences.customPinVisibility.length
+            ? preferences.customPinVisibility
+            : customPins.filter(pin => pin.visibility !== false).map(pin => pin.id);
+        setCustomPinVisibilitySet(new Set(storedVisibility));
+        customPinSortMode = preferences.customPinSortMode === 'name' ? 'name' : 'created';
+
+        setSidebarCurrent(preferences.sidebar && preferences.sidebar.current ? preferences.sidebar.current : 'main');
+        setSidebarLast(preferences.sidebar && preferences.sidebar.last ? preferences.sidebar.last : 'main');
+        setRouteTab(preferences.route && preferences.route.activeTab === 'my' ? 'my' : 'trend');
+        setRouteView('browse');
+        setCurrentRoute(null);
+        latestUserDataSnapshot = createUserDataSnapshot();
+    } finally {
+        suppressPersistence = false;
+    }
+}
+
+function syncUiFromLoadedData() {
+    const customPinSortBtn = document.getElementById('custom-pin-sort-btn');
+    const showObtainedCheck = document.getElementById('show-obtained-check');
+    if (customPinSortBtn) {
+        customPinSortBtn.innerText = customPinSortMode === 'created' ? '作成順' : '名前順';
+    }
+    if (showObtainedCheck) {
+        showObtainedCheck.checked = showObtained;
+    }
+    document.querySelectorAll('.route-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === activeRouteTab);
+    });
+
+    suppressPersistence = true;
+    try {
+        setMapOverlay(state.overlay);
+        loadCustomPins();
+        renderMarkers();
+        renderCustomPins();
+        updateCustomPinCount();
+        renderRouteList();
+        syncAreaSelectionUi(getCurrentAreaId());
+        refreshMapDisplay({ syncButtons: true, skipPersistence: true });
+        updateAuthUi();
+    } finally {
+        suppressPersistence = false;
+    }
+}
+
+async function initializePersistence() {
+    authManager = window.createMapAuthManager(window.MANEATER_MAP_CONFIG || {});
+    storageController = window.createMapStorageController({
+        authManager,
+        storageKeys: STORAGE_KEYS,
+        onCloudError: handleCloudSaveError
+    });
+
+    await storageController.init();
+    currentAuthUser = await authManager.getUser().catch(() => null);
+    updateAuthUi(currentAuthUser);
+
+    let loadedData = await storageController.loadUserMapData();
+    if (currentAuthUser && !hasMigrationBeenChecked(currentAuthUser)) {
+        const migrationResult = await storageController.migrateLocalToCloudIfNeeded({
+            confirmOverwrite: showCloudMigrationModal
+        });
+        if (migrationResult.data) {
+            loadedData = migrationResult.data;
+        }
+        if (migrationResult.status === 'migrated' || migrationResult.status === 'overwritten') {
+            showToast('ローカルデータをクラウドへ反映しました', 'success');
+        }
+        markMigrationChecked(currentAuthUser);
+    }
+
+    applyLoadedUserData(loadedData);
+    showAuthCallbackErrorIfNeeded();
+    clearAuthCallbackQuery();
+
+    const subscriptionResult = authManager.onAuthStateChange((event, session) => {
+        handleAuthStateChange(event, session);
+    });
+    authSubscription = subscriptionResult && subscriptionResult.data ? subscriptionResult.data.subscription : null;
+}
+
+async function handleAuthStateChange(event, session) {
+    const nextUser = session ? session.user : await authManager.getUser().catch(() => null);
+    const previousUserId = currentAuthUser ? currentAuthUser.id : null;
+    const nextUserId = nextUser ? nextUser.id : null;
+
+    if (previousUserId === nextUserId && event !== 'SIGNED_OUT') {
+        updateAuthUi(nextUser);
+        return;
+    }
+
+    currentAuthUser = nextUser;
+    updateAuthUi(nextUser);
+
+    try {
+        await storageController.refreshAdapter();
+        let loadedData = await storageController.loadUserMapData();
+
+        if (nextUser && previousUserId !== nextUserId && !hasMigrationBeenChecked(nextUser)) {
+            const migrationResult = await storageController.migrateLocalToCloudIfNeeded({
+                confirmOverwrite: showCloudMigrationModal
+            });
+            if (migrationResult.data) {
+                loadedData = migrationResult.data;
+            }
+            if (migrationResult.status === 'migrated' || migrationResult.status === 'overwritten') {
+                showToast('ローカルデータをクラウドへ反映しました', 'success');
+            }
+            markMigrationChecked(nextUser);
+        }
+
+        applyLoadedUserData(loadedData);
+        if (isAppReady) {
+            syncUiFromLoadedData();
+        }
+    } catch (error) {
+        console.error('[auth-state-change]', error);
+        showToast(error && error.message ? error.message : '認証状態の反映に失敗しました', 'error');
+    }
+}
+
+function normalizeCollectible(rawItem, index) {
+    const areaMeta = getAreaMeta(rawItem.areaId || rawItem.area || 'all');
+    const pinMeta = getPinMeta(rawItem.type);
+    const source = normalizeSource(rawItem.source || rawItem.map);
+    const map = normalizeOverlayMode(
+        rawItem.map || areaMeta.map || (source === 'dlc' && areaMeta.source === 'dlc' ? 'dlc' : 'base')
+    );
+    return {
+        ...rawItem,
+        id: rawItem.id || `${rawItem.type}-${index}`,
+        name: rawItem.name || pinMeta.label,
+        source,
+        map,
+        areaId: areaMeta.id,
+        areaLabel: rawItem.areaLabel || areaMeta.label,
+        area: rawItem.areaLabel || areaMeta.label
+    };
+}
+
+function buildCollectibles(raw) {
+    collectibles.length = 0;
+    raw.forEach((item, index) => {
+        collectibles.push(normalizeCollectible(item, index));
+    });
+}
+
 let savedActiveTypes = null;
 let savedActiveDlcTypes = null;
-let activeSources = new Set(['base', 'dlc']); // Base game / DLC の識別用
-let obtainedPins = new Set(JSON.parse(localStorage.getItem('maneater_obtained_pins') || '[]'));
-let showObtained = true;
 let batchMode = false;
 let batchObtainedPins = new Set();
-let pinnedRoutes = new Set(JSON.parse(localStorage.getItem('maneater_pinned_routes') || '[]'));
+let pinnedRoutes = new Set();
 
 let routeMode = false;
 let currentRoutePoints = [];
-let routes = JSON.parse(localStorage.getItem('maneater_routes') || '[]');
+let routes = [];
 let currentPolyline = null;
 
 const markers = [];
@@ -237,14 +1010,240 @@ async function init() {
     } catch (err) {
         console.error(err);
     }
+    try {
+        await initializePersistence();
+    } catch (error) {
+        console.error('[initializePersistence]', error);
+        showToast('保存設定の初期化に失敗しました', 'error');
+    }
+    renderStaticUi();
+    const customPinSortBtn = document.getElementById('custom-pin-sort-btn');
+    if (customPinSortBtn) {
+        customPinSortBtn.innerText = customPinSortMode === 'created' ? '作成順' : '名前順';
+    }
+    document.querySelectorAll('.route-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === activeRouteTab);
+    });
     renderMarkers();
     loadCustomPins();
     renderCustomPins();
     updateCustomPinCount();
     setupEventListeners();
+    renderRouteList();
+    refreshMapDisplay({ syncButtons: true, skipPersistence: true });
+    updateAuthUi();
+    isAppReady = true;
     setTimeout(() => {
         initTutorial();
     }, 400);
+}
+
+function createFilterButton(type, source, context) {
+    const pinMeta = getPinMeta(type);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'filter-type-btn active';
+    btn.dataset.type = type;
+    btn.dataset.filterContext = context;
+    if (source) btn.dataset.source = source;
+
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'icon-wrap';
+    const img = document.createElement('img');
+    img.src = pinMeta.leaflet.iconUrl;
+    img.alt = pinMeta.label;
+    const count = document.createElement('span');
+    count.className = context === 'route' ? 'pin-count route-filter-count' : 'pin-count';
+    count.innerText = '0';
+    iconWrap.append(img, count);
+
+    const label = document.createElement('span');
+    label.innerText = pinMeta.shortLabel;
+
+    btn.append(iconWrap, label);
+    return btn;
+}
+
+function renderFilterButtons() {
+    FILTER_SECTION_META.forEach(section => {
+        const group = document.querySelector(`[data-section-group="${section.id}"]`);
+        if (!group) return;
+        group.innerHTML = '';
+        section.types.forEach(type => {
+            group.appendChild(createFilterButton(type, section.source, section.context));
+        });
+    });
+}
+
+function createAreaCard(areaMeta) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'area-card';
+    button.dataset.areaId = areaMeta.id;
+
+    const content = document.createElement('div');
+    content.className = 'area-card-content';
+
+    const title = document.createElement('strong');
+    title.innerText = areaMeta.routeLabel || areaMeta.label;
+    content.appendChild(title);
+
+    if (areaMeta.id === 'all') {
+        const desc = document.createElement('span');
+        desc.innerText = 'すべてのピンを表示';
+        content.appendChild(desc);
+    } else {
+        if (areaMeta.source === 'dlc') {
+            const source = document.createElement('span');
+            source.className = 'area-source';
+            source.innerText = 'DLC';
+            content.appendChild(source);
+        }
+    }
+
+    button.appendChild(content);
+    return button;
+}
+
+function renderAreaCards() {
+    const container = document.getElementById('area-filters');
+    if (!container) return;
+    container.innerHTML = '';
+    container.appendChild(createAreaCard(AREA_META.all));
+    getSelectableAreas().forEach(areaMeta => {
+        container.appendChild(createAreaCard(areaMeta));
+    });
+}
+
+function renderRouteAreaTree() {
+    const container = document.getElementById('route-area-tree');
+    if (!container) return;
+    container.innerHTML = '';
+
+    ['base', 'dlc'].forEach(source => {
+        const areas = getSelectableAreas().filter(area => area.source === source);
+        if (areas.length === 0) return;
+
+        const group = document.createElement('div');
+        group.className = 'tree-group';
+        const title = document.createElement('div');
+        title.className = 'tree-parent';
+        title.innerText = source === 'base' ? 'Base' : 'DLC';
+        group.appendChild(title);
+
+        areas.forEach(areaMeta => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'route-area-item';
+            button.dataset.areaId = areaMeta.id;
+            button.innerText = areaMeta.routeLabel || areaMeta.label;
+            group.appendChild(button);
+        });
+
+        container.appendChild(group);
+    });
+}
+
+function renderCustomPinTypeButtons() {
+    const container = document.getElementById('custom-pin-icon-grid');
+    if (!container) return;
+    container.innerHTML = '';
+    Object.entries(PIN_META)
+        .filter(([, meta]) => meta.customSelectable)
+        .sort((a, b) => a[1].order - b[1].order)
+        .forEach(([type, meta], index) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'custom-pin-icon-btn';
+            button.dataset.iconType = type;
+            button.title = meta.label;
+            if (index === 0) button.classList.add('active');
+
+            const img = document.createElement('img');
+            img.src = meta.leaflet.iconUrl;
+            img.alt = meta.label;
+            button.appendChild(img);
+            container.appendChild(button);
+        });
+}
+
+function renderStaticUi() {
+    renderAreaCards();
+    renderFilterButtons();
+    renderRouteAreaTree();
+    renderCustomPinTypeButtons();
+}
+
+function createPopupActionButton(label, className, handler) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `popup-btn ${className}`.trim();
+    button.innerText = label;
+    button.addEventListener('click', handler);
+    return button;
+}
+
+function buildCollectiblePopup(item, isObtained) {
+    const popupContent = document.createElement('div');
+    popupContent.className = 'custom-popup';
+
+    const title = document.createElement('div');
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '5px';
+    title.innerText = item.name;
+
+    const area = document.createElement('div');
+    area.style.fontSize = '0.8rem';
+    area.style.color = '#aaa';
+    area.style.marginBottom = '10px';
+    area.innerText = item.areaLabel;
+
+    const actions = document.createElement('div');
+    actions.className = 'popup-buttons';
+
+    const obtainedBtn = createPopupActionButton(
+        isObtained ? '✓ 取得済み' : '取得済みにする',
+        isObtained ? 'obtained-toggle active' : 'obtained-toggle',
+        () => toggleObtainedFromPopup(item.id)
+    );
+    const batchBtn = createPopupActionButton('一括表記', '', () => startBatchFromPopup());
+    actions.append(obtainedBtn, batchBtn);
+    popupContent.append(title, area, actions);
+    return popupContent;
+}
+
+function buildCustomPinPopup(pin) {
+    const popup = document.createElement('div');
+    popup.className = 'custom-popup';
+
+    const title = document.createElement('div');
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = '5px';
+    title.innerText = getCustomPinTitle(pin);
+    popup.appendChild(title);
+
+    if (pin.detail) {
+        const detail = document.createElement('div');
+        detail.style.fontSize = '0.85rem';
+        detail.style.color = '#ddd';
+        detail.style.marginBottom = '6px';
+        detail.innerText = pin.detail;
+        popup.appendChild(detail);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'popup-buttons';
+    const obtained = customPinObtained.has(pin.id);
+    const obtainedBtn = createPopupActionButton(
+        obtained ? '✓ 取得済み' : '取得済みにする',
+        obtained ? 'obtained-toggle active' : 'obtained-toggle',
+        () => toggleCustomPinObtained(pin.id)
+    );
+    const deleteBtn = createPopupActionButton('削除', '', () => deleteCustomPin(pin.id));
+    actions.append(obtainedBtn, deleteBtn);
+    popup.appendChild(actions);
+
+    return popup;
 }
 
 function renderMarkers() {
@@ -281,18 +1280,7 @@ function renderMarkers() {
         });
 
         // ポップアップ内容
-        const popupContent = document.createElement('div');
-        popupContent.className = 'custom-popup';
-        popupContent.innerHTML = `
-            <div style="font-weight:bold; margin-bottom:5px;">${item.name}</div>
-            <div style="font-size:0.8rem; color:#aaa; margin-bottom:10px;">${item.area}</div>
-            <div class="popup-buttons">
-                <button class="popup-btn obtained-toggle ${isObtained ? 'active' : ''}" onclick="toggleObtainedFromPopup('${item.id}')">
-                    ${isObtained ? '✓ 取得済み' : '取得済みにする'}
-                </button>
-                <button class="popup-btn" onclick="startBatchFromPopup()">一括表記</button>
-            </div>
-        `;
+        const popupContent = buildCollectiblePopup(item, isObtained);
         marker.bindPopup(popupContent, { autoPan: false });
 
         markers.push({ marker, item });
@@ -345,26 +1333,60 @@ function updateMarkerAppearance(marker, id) {
 // --- カスタムピン ---
 function loadCustomPins() {
     try {
-        const stored = JSON.parse(localStorage.getItem('maneater_custom_pins') || '[]');
-        customPins = Array.isArray(stored) ? stored : [];
-        customPins = customPins.map(pin => ({
-            ...pin,
-            map: pin.map || 'base'
-        }));
+        const rawPins = Array.isArray(customPins) ? customPins : [];
+        const normalizedPins = rawPins.map(pin => {
+            const title = pin.title || pin.name || '無題';
+            const createdAt = pin.createdAt || new Date().toISOString();
+            return {
+                ...pin,
+                title,
+                name: title,
+                detail: pin.detail || '',
+                map: normalizeOverlayMode(pin.map),
+                createdAt,
+                updatedAt: pin.updatedAt || createdAt,
+                visibility: pin.visibility !== false,
+                obtained: !!pin.obtained,
+                userId: pin.userId ?? null
+            };
+        });
+        customPins = normalizedPins;
+        const visibleIds = normalizedPins.filter(pin => pin.visibility !== false).map(pin => pin.id);
+        const obtainedIds = new Set([
+            ...normalizedPins.filter(pin => pin.obtained).map(pin => pin.id),
+            ...customPinObtained
+        ]);
+        setCustomPinVisibilitySet(new Set(visibleIds));
+        setCustomPinObtainedSet(obtainedIds);
+        syncAllCustomPinRecords();
     } catch (e) {
         customPins = [];
+        setCustomPinVisibilitySet(new Set());
     }
 }
 
 function saveCustomPins() {
-    localStorage.setItem('maneater_custom_pins', JSON.stringify(customPins));
+    return queueUserDataSave();
 }
 
 function renderCustomPins() {
     customPinMarkers.forEach(marker => marker.remove());
     customPinMarkers.clear();
     customPinById = new Map();
-    customPinVisibility = new Set(customPins.map(p => p.id));
+    if (customPins.length > 0 && customPinVisibility.size === 0) {
+        setCustomPinVisibilitySet(new Set(customPins.map(pin => pin.id)));
+    }
+    const previousVisibility = new Set(customPinVisibility);
+    setCustomPinVisibilitySet(new Set(
+        customPins
+            .filter(pin => previousVisibility.size === 0 || previousVisibility.has(pin.id))
+            .map(pin => pin.id)
+    ));
+    customPins.forEach(pin => {
+        if (previousVisibility.size !== 0 && !previousVisibility.has(pin.id)) {
+            customPinVisibility.add(pin.id);
+        }
+    });
     customPins.forEach(pin => {
         customPinById.set(pin.id, pin);
         addCustomPinMarker(pin);
@@ -405,18 +1427,7 @@ function addCustomPinMarker(pin) {
             clearRouteHoverPreview();
         }
     });
-    const popup = document.createElement('div');
-    popup.className = 'custom-popup';
-    popup.innerHTML = `
-        <div style="font-weight:bold; margin-bottom:5px;">${pin.name || 'カスタムピン'}</div>
-        ${pin.detail ? `<div style="font-size:0.85rem; color:#ddd; margin-bottom:6px;">${pin.detail}</div>` : ''}
-        <div class="popup-buttons">
-            <button class="popup-btn obtained-toggle ${customPinObtained.has(pin.id) ? 'active' : ''}" onclick="toggleCustomPinObtained('${pin.id}')">
-                ${customPinObtained.has(pin.id) ? '✓ 取得済み' : '取得済みにする'}
-            </button>
-            <button class="popup-btn" onclick="deleteCustomPin('${pin.id}')">削除</button>
-        </div>
-    `;
+    const popup = buildCustomPinPopup(pin);
     if (currentRouteView !== 'create') {
         marker.bindPopup(popup, { autoPan: false });
     }
@@ -436,10 +1447,11 @@ window.deleteCustomPin = function(id) {
     saveCustomPinObtained();
     updateCustomPinCount();
     renderCustomPinList();
+    refreshMapDisplay();
 };
 
 function saveCustomPinObtained() {
-    localStorage.setItem('maneater_custom_pins_obtained', JSON.stringify([...customPinObtained]));
+    return queueUserDataSave();
 }
 
 function updateCustomPinObtainedAppearance(id) {
@@ -474,6 +1486,8 @@ window.toggleCustomPinObtained = function(id) {
     } else {
         customPinObtained.add(id);
     }
+    syncCustomPinRecord(id);
+    saveCustomPins();
     saveCustomPinObtained();
     updateCustomPinObtainedAppearance(id);
     renderCustomPinList();
@@ -485,6 +1499,7 @@ window.toggleCustomPinObtained = function(id) {
             btn.innerText = customPinObtained.has(id) ? '✓ 取得済み' : '取得済みにする';
         }
     }
+    refreshMapDisplay({ updateCounts: true });
 };
 
 function applyCustomPinVisibility() {
@@ -493,7 +1508,8 @@ function applyCustomPinVisibility() {
         const pinData = id ? customPinById.get(id) : null;
         const mapValue = pinData ? pinData.map : (marker.options && marker.options.customMap);
         const mapOk = !mapValue || mapValue === mapOverlayMode;
-        const pinVisible = showCustomPins && (!id || customPinVisibility.has(id)) && mapOk;
+        const obtainedOk = !id || showObtained || !customPinObtained.has(id);
+        const pinVisible = showCustomPins && (!id || customPinVisibility.has(id)) && mapOk && obtainedOk;
         if (pinVisible) {
             if (!map.hasLayer(marker)) marker.addTo(map);
         } else if (map.hasLayer(marker)) {
@@ -521,7 +1537,7 @@ function getRoutePinMeta(pinId) {
     const cpin = customPins.find(p => p.id === pinId);
     if (cpin) {
         return {
-            name: cpin.name && cpin.name.trim().length > 0 ? cpin.name : '無題',
+            name: getCustomPinTitle(cpin),
             type: cpin.type,
             iconUrl: (icons[cpin.type] && icons[cpin.type].options && icons[cpin.type].options.iconUrl) || (customPinIcon.options && customPinIcon.options.iconUrl) || '',
             map: cpin.map || mapOverlayMode,
@@ -537,7 +1553,7 @@ function renderCustomPinList() {
     list.innerHTML = '';
     const sortedPins = [...customPins];
     if (customPinSortMode === 'name') {
-        sortedPins.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
+        sortedPins.sort((a, b) => getCustomPinTitle(a).localeCompare(getCustomPinTitle(b), 'ja'));
     }
     sortedPins.forEach(pin => {
         const btn = document.createElement('button');
@@ -548,23 +1564,32 @@ function renderCustomPinList() {
         const iconUrl = (icons[pin.type] && icons[pin.type].options && icons[pin.type].options.iconUrl)
             ? icons[pin.type].options.iconUrl
             : '../images/map/新規マップピン.png';
-        const name = pin.name && pin.name.trim().length > 0 ? pin.name : '無題';
-        btn.innerHTML = `
-            <div class="icon-wrap">
-                <img src="${iconUrl}" alt="">
-                <span class="custom-pin-obtained">✓</span>
-            </div>
-            <span>${name}</span>
-        `;
+        const name = getCustomPinTitle(pin);
+        const iconWrap = document.createElement('div');
+        iconWrap.className = 'icon-wrap';
+        const img = document.createElement('img');
+        img.src = iconUrl;
+        img.alt = '';
+        const obtained = document.createElement('span');
+        obtained.className = 'custom-pin-obtained';
+        obtained.innerText = '✓';
+        iconWrap.append(img, obtained);
+
+        const label = document.createElement('span');
+        label.innerText = name;
+        btn.append(iconWrap, label);
         btn.addEventListener('click', () => {
             if (customPinVisibility.has(pin.id)) {
                 customPinVisibility.delete(pin.id);
             } else {
                 customPinVisibility.add(pin.id);
             }
+            syncCustomPinRecord(pin.id);
+            saveCustomPins();
             btn.classList.toggle('active', customPinVisibility.has(pin.id));
             applyCustomPinVisibility();
             updateSectionMasterToggles();
+            refreshMapDisplay({ updateCounts: false });
         });
         list.appendChild(btn);
     });
@@ -688,39 +1713,113 @@ function setCustomPinIconSelection(type) {
 }
 
 function getCustomPinIcon(type) {
-    if (type === 'cave') {
-        return L.icon({ iconUrl: '../images/map/洞窟.png', iconSize: [34, 34], iconAnchor: [17, 20], popupAnchor: [0, -12] });
+    const pinMeta = getPinMeta(type);
+    if (pinMeta.leaflet) {
+        const { className, ...leafletMeta } = pinMeta.leaflet;
+        return L.icon(leafletMeta);
     }
     return icons[type] || customPinIcon;
 }
 
+function isTypeActive(type, source) {
+    return source === 'dlc' ? activeDlcTypes.has(type) : activeTypes.has(type);
+}
+
+function matchesSelectedArea(item) {
+    const currentAreaId = getCurrentAreaId();
+    if (activeAreas.size === 0 || currentAreaId === 'all') return true;
+    return item.areaId === currentAreaId || isSharedArea(item.areaId);
+}
+
+function shouldDisplayCollectible(item, options = {}) {
+    const { ignoreObtainedHidden = false } = options;
+    if (focusedRoutePins) {
+        return focusedRoutePins.has(item.id) && item.map === mapOverlayMode;
+    }
+
+    const typeOk = isTypeActive(item.type, item.source);
+    const areaOk = matchesSelectedArea(item);
+    const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
+    const mapOk = item.map === mapOverlayMode;
+    const obtainedOk = ignoreObtainedHidden || showObtained || !obtainedPins.has(item.id);
+    return typeOk && areaOk && sourceOk && mapOk && obtainedOk;
+}
+
+function getVisibleCollectibles(options = {}) {
+    return collectibles.filter(item => shouldDisplayCollectible(item, options));
+}
+
+function setTypeActiveState(type, source, enabled) {
+    const targetSet = source === 'dlc' ? activeDlcTypes : activeTypes;
+    if (enabled) {
+        targetSet.add(type);
+    } else {
+        targetSet.delete(type);
+    }
+}
+
+function toggleTypeFilter(type, source) {
+    if (source) {
+        setTypeActiveState(type, source, !isTypeActive(type, source));
+        return;
+    }
+
+    const pinMeta = getPinMeta(type);
+    const targetSources = pinMeta.sources || ['base'];
+    const allEnabled = targetSources.every(src => isTypeActive(type, src));
+    targetSources.forEach(src => setTypeActiveState(type, src, !allEnabled));
+}
+
+function syncAreaSelectionUi(areaId = getCurrentAreaId()) {
+    const currentMeta = getAreaMeta(areaId);
+    const nameEl = document.getElementById('current-area-name');
+    const mobileAreaName = document.getElementById('mobile-current-area');
+    if (nameEl) nameEl.innerText = currentMeta.shortLabel || (areaId === 'all' ? '全エリアを表示' : currentMeta.label);
+    if (mobileAreaName) mobileAreaName.innerText = currentMeta.shortLabel || (areaId === 'all' ? '全エリアを表示' : currentMeta.label);
+
+    document.querySelectorAll('.area-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.areaId === areaId);
+    });
+}
+
+function updateFilterSummary() {
+    const summary = document.getElementById('active-filter-summary');
+    if (!summary) return;
+
+    const currentAreaMeta = getAreaMeta(getCurrentAreaId());
+    const overlayLabel = mapOverlayMode === 'dlc' ? 'DLCマップ' : 'Baseマップ';
+    const sourceLabel = activeSources.size === 2
+        ? 'Base + DLC'
+        : (activeSources.has('dlc') ? 'DLCのみ' : 'Baseのみ');
+    const hiddenObtainedLabel = showObtained ? '取得済みも表示' : '取得済みを隠す';
+    summary.innerText = `表示条件: ${currentAreaMeta.label} / ${overlayLabel} / ${sourceLabel} / ${hiddenObtainedLabel}`;
+}
+
+function refreshMapDisplay(options = {}) {
+    const { syncButtons = false, updateCounts = true, skipPersistence = false } = options;
+    ensureValidFilters();
+    if (syncButtons) syncFilterButtons();
+    applyFilter();
+    if (updateCounts) {
+        updatePinCounts();
+        updateRouteFilterPanelCounts();
+        updateFilterSummary();
+    }
+    updateSectionMasterToggles();
+    if (!skipPersistence) {
+        savePreferences();
+    }
+}
 
 function applyFilter() {
-    let visibleCount = 0;
     const visibleTypes = new Set();
     markers.forEach(({ marker, item }) => {
-        let isVisible = false;
-
-        if (focusedRoutePins) {
-            const mapOk = item.map === mapOverlayMode;
-            isVisible = focusedRoutePins.has(item.id) && mapOk;
-        } else {
-            const typeOk = item.source === 'dlc' ? activeDlcTypes.has(item.type) : activeTypes.has(item.type);
-            const areaOk = activeAreas.size === 0 ||
-                activeAreas.has(item.area) ||
-                (item.type === 'cave' && item.area === '洞窟') ||
-                (item.type === 'floodgate' && item.area === '水門');
-            const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
-            const mapOk = item.map === mapOverlayMode;
-            const obtainedOk = showObtained || !obtainedPins.has(item.id);
-            isVisible = typeOk && areaOk && sourceOk && mapOk && obtainedOk;
-        }
+        const isVisible = shouldDisplayCollectible(item);
 
         if (isVisible) {
             if (!map.hasLayer(marker)) {
                 marker.addTo(map);
             }
-            visibleCount++;
             visibleTypes.add(item.type);
         } else {
             if (map.hasLayer(marker)) {
@@ -731,15 +1830,7 @@ function applyFilter() {
 
     // 洞窟当たり判定円の表示制御
     caveCircleLayers.forEach(({ circle, item }) => {
-        const typeOk = item.source === 'dlc' ? activeDlcTypes.has(item.type) : activeTypes.has(item.type);
-        const areaOk = activeAreas.size === 0 ||
-            activeAreas.has(item.area) ||
-            (item.type === 'cave' && item.area === '洞窟') ||
-            (item.type === 'floodgate' && item.area === '水門');
-        const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
-        const mapOk = item.map === mapOverlayMode;
-        const obtainedOk = showObtained || !obtainedPins.has(item.id);
-        const isVisibleCave = typeOk && areaOk && sourceOk && mapOk && obtainedOk;
+        const isVisibleCave = shouldDisplayCollectible(item);
 
         if (isVisibleCave) {
             if (!map.hasLayer(circle)) {
@@ -755,7 +1846,6 @@ function applyFilter() {
     // ソースボタン状態を視覚更新
     updateSourceButtonState();
     updateQuickView(visibleTypes);
-    updateRouteFilterPanelCounts();
     applyCustomPinVisibility();
 }
 
@@ -776,13 +1866,11 @@ window.toggleObtainedFromPopup = function(id) {
             btn.innerText = obtainedPins.has(id) ? '✓ 取得済み' : '取得済みにする';
         }
     }
-    applyFilter();
-    updateAreaProgress();
-    updatePinCounts();
+    refreshMapDisplay();
 };
 
 function saveObtained() {
-    localStorage.setItem('maneater_obtained_pins', JSON.stringify([...obtainedPins]));
+    return queueUserDataSave();
 }
 
 window.startBatchFromPopup = function() {
@@ -873,8 +1961,8 @@ function toggleRouteSidebar(show = null, showMainOnClose = true) {
     }
 
     if (show) {
-        currentSidebar = 'route';
-        lastSidebar = 'route';
+        setSidebarCurrent('route');
+        setSidebarLast('route');
         const leftToggleBtn = document.getElementById('toggle-left-sidebar-btn');
         if (leftToggleBtn) leftToggleBtn.classList.add('hidden');
         const closeLeftBtn = document.getElementById('close-left-sidebar-btn');
@@ -882,20 +1970,20 @@ function toggleRouteSidebar(show = null, showMainOnClose = true) {
         mainSidebar.classList.add('hidden');
         routeSidebar.classList.remove('hidden');
         areaOverlay.classList.add('hidden'); // エリア選択が出ていれば隠す
-        currentRouteView = 'browse';
-        currentDetailedRoute = null;
+        setRouteView('browse');
+        setCurrentRoute(null);
         renderRouteList();
     } else {
         if (showMainOnClose) {
-            currentSidebar = 'main';
-            lastSidebar = 'main';
+            setSidebarCurrent('main');
+            setSidebarLast('main');
             mainSidebar.classList.remove('hidden');
             const leftToggleBtn = document.getElementById('toggle-left-sidebar-btn');
             if (leftToggleBtn) leftToggleBtn.classList.add('hidden');
             const closeLeftBtn = document.getElementById('close-left-sidebar-btn');
             if (closeLeftBtn) closeLeftBtn.classList.remove('hidden');
         } else {
-            currentSidebar = 'none';
+            setSidebarCurrent('none');
             mainSidebar.classList.add('hidden');
             const leftToggleBtn = document.getElementById('toggle-left-sidebar-btn');
             if (leftToggleBtn) leftToggleBtn.classList.remove('hidden');
@@ -909,11 +1997,12 @@ function toggleRouteSidebar(show = null, showMainOnClose = true) {
 }
 
 function switchRouteTab(tab) {
-    activeRouteTab = tab;
+    setRouteTab(tab);
     document.querySelectorAll('.route-tab').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tab);
     });
     renderRouteList();
+    savePreferences();
 }
 
 function renderRouteList() {
@@ -931,7 +2020,10 @@ function renderRouteList() {
     });
 
     if (filtered.length === 0) {
-        list.innerHTML = '<div class="empty-msg">ルートが見つかりません</div>';
+        const empty = document.createElement('div');
+        empty.className = 'empty-msg';
+        empty.innerText = 'ルートが見つかりません';
+        list.appendChild(empty);
         return;
     }
 
@@ -939,47 +2031,82 @@ function renderRouteList() {
         const totalPins = r.sections.reduce((sum, s) => sum + s.pins.length, 0);
         const card = document.createElement('div');
         card.className = 'route-card';
-        card.innerHTML = `
-            <div class="route-thumb">
-                <img src="../images/map/手配.png" alt="">
-            </div>
-            <div class="route-info">
-                <div class="route-title">${r.name}</div>
-                <div class="route-meta">
-                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>${totalPins}</span>
-                    <span>${r.description || ''}</span>
-                </div>
-            </div>
-            <div class="route-actions-wrap" style="position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; z-index: 10;">
-                <button class="route-pin-btn ${pinnedRoutes.has(r.id) ? 'pinned' : ''}" onclick="event.stopPropagation(); window.togglePinRoute('${r.id}')" title="固定">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" /></svg>
-                </button>
-                ${activeRouteTab === 'my' ? `
-                    <button class="route-delete-btn" onclick="event.stopPropagation(); deleteMyRoute('${r.id}')" title="削除">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                    </button>
-                ` : ''}
-            </div>
-        `;
-        card.onclick = () => showRouteDetail(r);
+        card.addEventListener('click', () => showRouteDetail(r));
+
+        const thumb = document.createElement('div');
+        thumb.className = 'route-thumb';
+        const thumbImg = document.createElement('img');
+        thumbImg.src = '../images/map/手配.png';
+        thumbImg.alt = '';
+        thumb.appendChild(thumbImg);
+
+        const info = document.createElement('div');
+        info.className = 'route-info';
+        const title = document.createElement('div');
+        title.className = 'route-title';
+        title.innerText = r.name;
+        const meta = document.createElement('div');
+        meta.className = 'route-meta';
+        const totalSpan = document.createElement('span');
+        totalSpan.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>';
+        totalSpan.append(document.createTextNode(`${totalPins}`));
+        const descSpan = document.createElement('span');
+        descSpan.innerText = r.description || '';
+        meta.append(totalSpan, descSpan);
+        info.append(title, meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'route-actions-wrap';
+        actions.style.position = 'absolute';
+        actions.style.top = '5px';
+        actions.style.right = '5px';
+        actions.style.display = 'flex';
+        actions.style.gap = '5px';
+        actions.style.zIndex = '10';
+
+        const pinButton = document.createElement('button');
+        pinButton.type = 'button';
+        pinButton.className = `route-pin-btn ${pinnedRoutes.has(r.id) ? 'pinned' : ''}`.trim();
+        pinButton.title = '固定';
+        pinButton.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" /></svg>';
+        pinButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            togglePinRoute(r.id);
+        });
+        actions.appendChild(pinButton);
+
+        if (activeRouteTab === 'my') {
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'route-delete-btn';
+            deleteButton.title = '削除';
+            deleteButton.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+            deleteButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                deleteMyRoute(r.id);
+            });
+            actions.appendChild(deleteButton);
+        }
+
+        card.append(thumb, info, actions);
         list.appendChild(card);
     });
 }
 
-window.togglePinRoute = function(id) {
+function togglePinRoute(id) {
     if (pinnedRoutes.has(id)) {
         pinnedRoutes.delete(id);
     } else {
         pinnedRoutes.add(id);
     }
-    localStorage.setItem('maneater_pinned_routes', JSON.stringify([...pinnedRoutes]));
+    savePinnedRoutes();
     renderRouteList();
-};
+}
 
 function deleteMyRoute(id) {
     if (!confirm('このルートを削除しますか？')) return;
     myRoutes = myRoutes.filter(r => r.id !== id);
-    localStorage.setItem('myRoutes', JSON.stringify(myRoutes));
+    saveMyRoutes();
     renderRouteList();
 }
 
@@ -1141,21 +2268,15 @@ function showRoutePinHighlights(pinIds) {
 
 // --- ルート作成モード ---
 function showRouteDetail(route) {
-    currentRouteView = 'detail';
-    currentDetailedRoute = route;
+    setRouteView('detail');
+    setCurrentRoute(route);
 
     // ルート閲覧中はエリア制限を解除して正しく表示
-    activeAreas.clear();
-    const nameEl = document.getElementById('current-area-name');
-    const mobileNameEl = document.getElementById('mobile-current-area');
-    if (nameEl) nameEl.innerText = '全エリアを表示';
-    if (mobileNameEl) mobileNameEl.innerText = '全エリアを表示';
-    document.querySelectorAll('.area-card').forEach(card => card.classList.toggle('active', card.dataset.area === 'all'));
-    applyFilter();
-    activeSources = new Set(['base', 'dlc']);
+    setActiveAreas(new Set(['all']));
+    syncAreaSelectionUi('all');
+    setSources(['base', 'dlc']);
     updateSourceButtonState();
-    applyFilter();
-    updateRouteFilterPanelCounts();
+    refreshMapDisplay();
 
     document.getElementById('route-browse-view').classList.add('hidden');
     document.getElementById('route-detail-view').classList.remove('hidden');
@@ -1184,8 +2305,7 @@ function showRouteDetail(route) {
     route.sections.forEach(s => s.pins.forEach(pid => allRoutePins.add(pid)));
     const allPinIds = [...allRoutePins];
     focusedRoutePins = allRoutePins;
-    applyFilter();
-    updateRouteFilterPanelCounts();
+    refreshMapDisplay();
 
     const summaryCounts = {};
     allPinIds.forEach(pid => {
@@ -1211,31 +2331,72 @@ function showRouteDetail(route) {
         // ピンの種類別にカウント
         const counts = {};
         section.pins.forEach(pid => {
-            const data = markers.find(m => m.item.id === pid);
-            if (data) counts[data.item.type] = (counts[data.item.type] || 0) + 1;
+            const meta = getRoutePinMeta(pid);
+            if (meta) counts[meta.type] = (counts[meta.type] || 0) + 1;
         });
 
-        let itemsHtml = Object.entries(counts).map(([type, count]) => {
-            const iconUrl = (icons[type] && icons[type].options && icons[type].options.iconUrl) ? icons[type].options.iconUrl : '../images/map/洞窟.png';
-            return `<div class="detail-item-count"><img src="${iconUrl}"> <span>x${count}</span></div>`;
-        }).join('');
+        const head = document.createElement('div');
+        head.className = 'detail-section-head';
+        const dot = document.createElement('span');
+        dot.className = 'detail-dot';
+        dot.style.background = getSectionColor(idx);
+        const name = document.createElement('span');
+        name.className = 'detail-name';
+        name.innerText = section.name;
+        const dropdown = document.createElement('div');
+        dropdown.className = 'batch-dropdown';
+        const dropdownBtn = document.createElement('button');
+        dropdownBtn.type = 'button';
+        dropdownBtn.className = 'batch-link';
+        dropdownBtn.innerText = '一括表記 ▾';
+        const dropdownContent = document.createElement('div');
+        dropdownContent.className = 'batch-dropdown-content hidden';
+        const markAllBtn = document.createElement('button');
+        markAllBtn.type = 'button';
+        markAllBtn.className = 'batch-action-item';
+        markAllBtn.innerText = 'すべてを表記';
+        markAllBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            batchMarkSection(section.pins, true);
+        });
+        const unmarkAllBtn = document.createElement('button');
+        unmarkAllBtn.type = 'button';
+        unmarkAllBtn.className = 'batch-action-item';
+        unmarkAllBtn.innerText = 'すべての表記を取り消す';
+        unmarkAllBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            batchMarkSection(section.pins, false);
+        });
+        dropdownContent.append(markAllBtn, unmarkAllBtn);
+        dropdown.append(dropdownBtn, dropdownContent);
+        head.append(dot, name, dropdown);
 
-        card.innerHTML = `
-            <div class="detail-section-head">
-                <span class="detail-dot" style="background:${getSectionColor(idx)}"></span>
-                <span class="detail-name">${section.name}</span>
-                <div class="batch-dropdown">
-                    <button class="batch-link">一括表記 ▾</button>
-                    <div class="batch-dropdown-content hidden">
-                        <button class="batch-action-item" onclick="event.stopPropagation(); batchMarkSection(${JSON.stringify(section.pins).replace(/"/g, "'")}, true)">すべてを表記</button>
-                        <button class="batch-action-item" onclick="event.stopPropagation(); batchMarkSection(${JSON.stringify(section.pins).replace(/"/g, "'")}, false)">すべての表記を取り消す</button>
-                    </div>
-                </div>
-            </div>
-            <div class="detail-section-body">
-                ${itemsHtml || '<span style="color:#666; font-size:0.8rem;">ピンがありません</span>'}
-            </div>
-        `;
+        const body = document.createElement('div');
+        body.className = 'detail-section-body';
+        const entries = Object.entries(counts);
+        if (entries.length === 0) {
+            const empty = document.createElement('span');
+            empty.style.color = '#666';
+            empty.style.fontSize = '0.8rem';
+            empty.innerText = 'ピンがありません';
+            body.appendChild(empty);
+        } else {
+            entries.forEach(([type, count]) => {
+                const item = document.createElement('div');
+                item.className = 'detail-item-count';
+                const icon = document.createElement('img');
+                icon.src = (icons[type] && icons[type].options && icons[type].options.iconUrl)
+                    ? icons[type].options.iconUrl
+                    : ((customPinIcon.options && customPinIcon.options.iconUrl) || '');
+                icon.alt = '';
+                const countText = document.createElement('span');
+                countText.innerText = `x${count}`;
+                item.append(icon, countText);
+                body.appendChild(item);
+            });
+        }
+
+        card.append(head, body);
 
         card.onclick = (e) => {
             if (e.target.closest('.batch-dropdown')) return;
@@ -1248,7 +2409,7 @@ function showRouteDetail(route) {
 
             // ルート内の全ピンのみ表示
             focusedRoutePins = allRoutePins;
-            applyFilter();
+            refreshMapDisplay();
             
             if (wasActive) {
                 // Toggled off: 全ての線を表示し、ズームはそのまま
@@ -1279,8 +2440,6 @@ function showRouteDetail(route) {
         };
 
         // ドロップダウンの切り替え
-        const dropdownBtn = card.querySelector('.batch-link');
-        const dropdownContent = card.querySelector('.batch-dropdown-content');
         dropdownBtn.onclick = (e) => {
             e.stopPropagation();
             // 他の開いているドロップダウンを閉じる
@@ -1309,22 +2468,30 @@ function showRouteDetail(route) {
 
 function batchMarkSection(pinIds, status) {
     pinIds.forEach(id => {
+        if (customPinById.has(id)) {
+            if (status) customPinObtained.add(id);
+            else customPinObtained.delete(id);
+            syncCustomPinRecord(id);
+            return;
+        }
         if (status) obtainedPins.add(id);
         else obtainedPins.delete(id);
     });
+    saveCustomPins();
     saveObtained();
+    saveCustomPinObtained();
     // 全体を再描画せず、外観のみ更新
     markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
-    applyFilter();
-    updateAreaProgress();
-    updatePinCounts();
+    customPins.forEach(pin => updateCustomPinObtainedAppearance(pin.id));
+    renderCustomPinList();
+    refreshMapDisplay();
 }
 
 function backToBrowse() {
-    currentRouteView = 'browse';
-    currentDetailedRoute = null;
+    setRouteView('browse');
+    setCurrentRoute(null);
     focusedRoutePins = null; // フォーカス解除
-    applyFilter();
+    refreshMapDisplay();
     const routeSidebarEl = document.getElementById('route-sidebar');
     if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
     
@@ -1374,7 +2541,7 @@ function enterCreateMode() {
         alert('スマホ版ではルート作成・編集は現在準備中です。');
         return;
     }
-    currentRouteView = 'create';
+    setRouteView('create');
     const routeSidebarEl = document.getElementById('route-sidebar');
     if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
     document.getElementById('route-browse-view').classList.add('hidden');
@@ -1388,36 +2555,25 @@ function enterCreateMode() {
     if (mapActions) mapActions.classList.add('hidden');
 
     // ルート作成中はソース制限も解除
-    activeSources = new Set(['base', 'dlc']);
+    setSources(['base', 'dlc']);
     updateSourceButtonState();
 
     savedActiveTypes = new Set(activeTypes);
     savedActiveDlcTypes = new Set(activeDlcTypes);
-    activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate', 'cave']);
-    activeDlcTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'time-trial', 'manhunt', 'quest', 'grate', 'floodgate', 'cave']);
-    showCustomPins = true;
-    customPinVisibility = new Set(customPins.map(p => p.id));
+    setActiveBaseTypes(new Set(DEFAULT_BASE_TYPES));
+    setActiveDlcTypes(new Set(DEFAULT_DLC_TYPES));
+    setShowCustomPins(true);
+    setCustomPinVisibilitySet(new Set(customPins.map(p => p.id)));
 
     // ルート作成中はエリア制限を解除して全ピン表示
-    activeAreas.clear();
-    const nameEl = document.getElementById('current-area-name');
-    const mobileNameEl = document.getElementById('mobile-current-area');
-    if (nameEl) nameEl.innerText = '全エリアを表示';
-    if (mobileNameEl) mobileNameEl.innerText = '全エリアを表示';
-    document.querySelectorAll('.area-card').forEach(card => card.classList.toggle('active', card.dataset.area === 'all'));
-
-    syncFilterButtons();
-    applyFilter();
+    setActiveAreas(new Set(['all']));
+    syncAreaSelectionUi('all');
+    refreshMapDisplay({ syncButtons: true });
     
     document.getElementById('route-name-input').value = '';
     
     // 初期化（新規作成時は区間を折りたたみ状態でスタート）
-    creatingRoute = {
-        id: null,
-        name: '',
-        description: '',
-        sections: [{ name: '区間1', pins: [], collapsed: true }]
-    };
+    creatingRoute = createDefaultRoute();
     activeSectionIndex = 0;
     routeIsModified = false;
     updateCreationUI();
@@ -1450,7 +2606,7 @@ function startEditingRoute() {
     if (!currentDetailedRoute) return;
 
     focusedRoutePins = null;
-    applyFilter();
+    refreshMapDisplay();
 
     creatingRoute = {
         id: currentDetailedRoute.id,
@@ -1465,7 +2621,7 @@ function startEditingRoute() {
 
     activeSectionIndex = 0;
 
-    currentRouteView = 'create';
+    setRouteView('create');
     const routeSidebarEl = document.getElementById('route-sidebar');
     if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
     document.getElementById('route-detail-view').classList.add('hidden');
@@ -1477,10 +2633,9 @@ function startEditingRoute() {
 
     savedActiveTypes = new Set(activeTypes);
     savedActiveDlcTypes = new Set(activeDlcTypes);
-    activeTypes = new Set(activeTypes);
-    activeDlcTypes = new Set(activeDlcTypes);
-    syncFilterButtons();
-    applyFilter();
+    setActiveBaseTypes(new Set(activeTypes));
+    setActiveDlcTypes(new Set(activeDlcTypes));
+    refreshMapDisplay({ syncButtons: true });
 
     updateCreationUI();
     updateCreationVisuals();
@@ -1494,21 +2649,20 @@ function startEditingRoute() {
 }
 
 function exitCreateMode() {
-    currentRouteView = 'browse';
+    setRouteView('browse');
     const routeSidebarEl = document.getElementById('route-sidebar');
     if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
     focusedRoutePins = null;
     if (savedActiveTypes) {
-        activeTypes = new Set(savedActiveTypes);
+        setActiveBaseTypes(new Set(savedActiveTypes));
         savedActiveTypes = null;
     }
     if (savedActiveDlcTypes) {
-        activeDlcTypes = new Set(savedActiveDlcTypes);
+        setActiveDlcTypes(new Set(savedActiveDlcTypes));
         savedActiveDlcTypes = null;
     }
-    syncFilterButtons();
     setRouteCreateActionsVisible(false);
-    applyFilter();
+    refreshMapDisplay({ syncButtons: true });
     
     document.getElementById('route-browse-view').classList.remove('hidden');
     document.getElementById('route-create-view').classList.add('hidden');
@@ -1534,18 +2688,7 @@ function exitCreateMode() {
         if (marker._tempPopup) {
             marker.bindPopup(marker._tempPopup, { autoPan: false });
         } else if (!marker.getPopup()) {
-            const popup = document.createElement('div');
-            popup.className = 'custom-popup';
-            popup.innerHTML = `
-                <div style="font-weight:bold; margin-bottom:5px;">${pin.name || 'カスタムピン'}</div>
-                ${pin.detail ? `<div style="font-size:0.85rem; color:#ddd; margin-bottom:6px;">${pin.detail}</div>` : ''}
-                <div class="popup-buttons">
-                    <button class="popup-btn obtained-toggle ${customPinObtained.has(pin.id) ? 'active' : ''}" onclick="toggleCustomPinObtained('${pin.id}')">
-                        ${customPinObtained.has(pin.id) ? '✓ 取得済み' : '取得済みにする'}
-                    </button>
-                    <button class="popup-btn" onclick="deleteCustomPin('${pin.id}')">削除</button>
-                </div>
-            `;
+            const popup = buildCustomPinPopup(pin);
             marker.bindPopup(popup, { autoPan: false });
         }
     });
@@ -1634,50 +2777,105 @@ function updateCreationUI() {
         const isCollapsed = section.collapsed || false;
         const card = document.createElement('div');
         card.className = `section-card ${isActive ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`;
-        card.onclick = () => { activeSectionIndex = sIdx; updateCreationUI(); };
+        card.addEventListener('click', () => {
+            activeSectionIndex = sIdx;
+            updateCreationUI();
+        });
 
-        let pinsHtml = '';
+        const header = document.createElement('div');
+        header.className = 'section-header';
+
+        const infoRow = document.createElement('div');
+        infoRow.className = 'section-info-row';
+        infoRow.style.display = 'flex';
+        infoRow.style.alignItems = 'center';
+        infoRow.style.gap = '8px';
+
+        const collapseBtn = document.createElement('button');
+        collapseBtn.type = 'button';
+        collapseBtn.className = 'collapse-btn';
+        collapseBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="transform: rotate(${isCollapsed ? '-90deg' : '0deg'}); transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>`;
+        collapseBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleSectionCollapse(sIdx);
+        });
+
+        const info = document.createElement('div');
+        info.className = 'section-info';
+
+        const sectionNameInput = document.createElement('input');
+        sectionNameInput.type = 'text';
+        sectionNameInput.className = 'section-name-input';
+        sectionNameInput.value = section.name;
+        sectionNameInput.placeholder = '区間名を入力';
+        sectionNameInput.addEventListener('click', (event) => event.stopPropagation());
+        sectionNameInput.addEventListener('input', () => {
+            creatingRoute.sections[sIdx].name = sectionNameInput.value;
+            routeIsModified = true;
+            updateCreationVisuals();
+        });
+
+        const sectionStats = document.createElement('span');
+        sectionStats.className = 'section-stats';
+        sectionStats.innerText = `合計${section.pins.length}個のマップピン`;
+        info.append(sectionNameInput, sectionStats);
+        infoRow.append(collapseBtn, info);
+        header.appendChild(infoRow);
+
+        if (creatingRoute.sections.length > 1) {
+            const deleteSectionBtn = document.createElement('button');
+            deleteSectionBtn.type = 'button';
+            deleteSectionBtn.className = 'delete-section-btn';
+            deleteSectionBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+            deleteSectionBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                removeSection(sIdx);
+            });
+            header.appendChild(deleteSectionBtn);
+        }
+
+        const pinList = document.createElement('div');
+        pinList.className = 'pin-list';
+
         if (section.pins.length === 0) {
-            pinsHtml = '<div class="empty-pin-msg">マップからマップピンを選んでください</div>';
+            const empty = document.createElement('div');
+            empty.className = 'empty-pin-msg';
+            empty.innerText = 'マップからマップピンを選んでください';
+            pinList.appendChild(empty);
         } else {
             section.pins.forEach((pinId, pIdx) => {
                 const meta = getRoutePinMeta(pinId);
-                const name = meta ? meta.name : '不明なピン';
-                const icon = meta ? meta.iconUrl : '';
-                
-                pinsHtml += `
-                    <div class="pin-item">
-                        <div class="pin-order">${pIdx + 1}</div>
-                        <img src="${icon}" class="pin-icon-sm">
-                        <span class="pin-name">${name}</span>
-                        <button class="delete-pin-btn" onclick="event.stopPropagation(); removePinFromRoute(${sIdx}, ${pIdx})">×</button>
-                    </div>
-                `;
+                const pinItem = document.createElement('div');
+                pinItem.className = 'pin-item';
+
+                const order = document.createElement('div');
+                order.className = 'pin-order';
+                order.innerText = `${pIdx + 1}`;
+
+                const icon = document.createElement('img');
+                icon.className = 'pin-icon-sm';
+                icon.src = meta ? meta.iconUrl : '';
+                icon.alt = '';
+
+                const name = document.createElement('span');
+                name.className = 'pin-name';
+                name.innerText = meta ? meta.name : '不明なピン';
+
+                const deletePinBtn = document.createElement('button');
+                deletePinBtn.type = 'button';
+                deletePinBtn.className = 'delete-pin-btn';
+                deletePinBtn.innerText = '×';
+                deletePinBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    removePinFromRoute(sIdx, pIdx);
+                });
+
+                pinItem.append(order, icon, name, deletePinBtn);
+                pinList.appendChild(pinItem);
             });
         }
 
-        card.innerHTML = `
-            <div class="section-header">
-                <div class="section-info-row" style="display:flex; align-items:center; gap:8px;">
-                    <button class="collapse-btn" onclick="event.stopPropagation(); toggleSectionCollapse(${sIdx})">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="transform: rotate(${isCollapsed ? '-90deg' : '0deg'}); transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>
-                    </button>
-                    <div class="section-info">
-                        <input type="text" class="section-name-input" value="${section.name}" 
-                               onclick="event.stopPropagation()" 
-                               oninput="creatingRoute.sections[${sIdx}].name = this.value; updateCreationVisuals();"
-                               placeholder="区間名を入力">
-                        <span class="section-stats">合計${section.pins.length}個のマップピン</span>
-                    </div>
-                </div>
-                ${creatingRoute.sections.length > 1 ? `<button class="delete-section-btn" onclick="event.stopPropagation(); removeSection(${sIdx})">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                </button>` : ''}
-            </div>
-            <div class="pin-list">
-                ${pinsHtml}
-            </div>
-        `;
+        card.append(header, pinList);
         container.appendChild(card);
     });
 
@@ -1685,10 +2883,10 @@ function updateCreationUI() {
     addCard.type = 'button';
     addCard.className = 'section-add-card';
     addCard.innerHTML = '<span>＋ 区間を追加</span>';
-    addCard.onclick = (e) => {
-        e.stopPropagation();
+    addCard.addEventListener('click', (event) => {
+        event.stopPropagation();
         addSection();
-    };
+    });
     container.appendChild(addCard);
 
     container.scrollTop = scrollPos;
@@ -1832,7 +3030,7 @@ function saveMyRoute() {
         myRoutes.push(newRoute);
     }
 
-    localStorage.setItem('myRoutes', JSON.stringify(myRoutes));
+    saveMyRoutes();
     routeIsModified = false;
     exitCreateMode();
 
@@ -1881,45 +3079,68 @@ function confirmLeaveIfUnsaved(targetHref) {
 }
 
 function setupEventListeners() {
-    // --- 既存のフィルター系 ---
-    document.querySelectorAll('.filter-type-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const target = e.currentTarget;
-            if (target.dataset.custom === 'true') {
-                showCustomPins = !showCustomPins;
-                target.classList.toggle('active', showCustomPins);
-                applyCustomPinVisibility();
+    const mapSidebar = document.getElementById('map-sidebar');
+    const routeFilterPanelRoot = document.getElementById('route-filter-panel');
+    const areaOverlay = document.getElementById('area-overlay');
+    const routeAreaTree = document.getElementById('route-area-tree');
+    const customPinIconGrid = document.getElementById('custom-pin-icon-grid');
+
+    const handleFilterButtonClick = (event) => {
+        const button = event.target.closest('.filter-type-btn[data-type]');
+        if (!button) return;
+        toggleTypeFilter(button.dataset.type, button.dataset.source || null);
+        refreshMapDisplay({ syncButtons: true });
+    };
+
+    if (mapSidebar) {
+        mapSidebar.addEventListener('click', (event) => {
+            const areaCard = event.target.closest('.area-card[data-area-id]');
+            if (areaCard) {
+                selectArea(areaCard.dataset.areaId);
+                if (areaOverlay) areaOverlay.classList.add('hidden');
+                if (window.innerWidth <= 900) {
+                    closeMobileFilterPanel();
+                }
                 return;
             }
-            const t = target.dataset.type;
-            const source = target.dataset.source;
-            if (source === 'dlc') {
-                if (activeDlcTypes.has(t)) {
-                    activeDlcTypes.delete(t);
-                } else {
-                    activeDlcTypes.add(t);
-                }
-            } else {
-                if (activeTypes.has(t)) {
-                    activeTypes.delete(t);
-                } else {
-                    activeTypes.add(t);
-                }
+
+            const filterButton = event.target.closest('.filter-type-btn[data-type]');
+            if (filterButton) {
+                handleFilterButtonClick(event);
             }
-            syncFilterButtons();
-            applyFilter();
         });
-    });
+    }
+
+    if (routeFilterPanelRoot) {
+        routeFilterPanelRoot.addEventListener('click', handleFilterButtonClick);
+    }
+
+    if (routeAreaTree) {
+        routeAreaTree.addEventListener('click', (event) => {
+            const areaButton = event.target.closest('.route-area-item[data-area-id]');
+            if (!areaButton) return;
+            selectArea(areaButton.dataset.areaId);
+            closeRouteCreatePanels();
+        });
+    }
+
+    if (customPinIconGrid) {
+        customPinIconGrid.addEventListener('click', (event) => {
+            const iconButton = event.target.closest('.custom-pin-icon-btn[data-icon-type]');
+            if (!iconButton) return;
+            setCustomPinIconSelection(iconButton.dataset.iconType);
+        });
+    }
 
     // --- セクション一括トグル ---
     document.querySelectorAll('.section-master-toggle').forEach(master => {
         master.addEventListener('change', () => {
             const section = master.dataset.section;
             if (section === 'custom-pins') {
-                showCustomPins = master.checked;
-                customPinVisibility = master.checked ? new Set(customPins.map(p => p.id)) : new Set();
+                setShowCustomPins(master.checked);
+                setCustomPinVisibilitySet(master.checked ? new Set(customPins.map(p => p.id)) : new Set());
                 renderCustomPinList();
-                applyCustomPinVisibility();
+                refreshMapDisplay();
                 return;
             }
             const group = document.querySelector(`[data-section-group="${section}"]`);
@@ -1928,17 +3149,13 @@ function setupEventListeners() {
             buttons.forEach(btn => {
                 const t = btn.dataset.type;
                 const source = btn.dataset.source;
-                if (master.checked) {
-                    if (source === 'dlc') activeDlcTypes.add(t);
-                    else activeTypes.add(t);
-                } else {
-                    if (source === 'dlc') activeDlcTypes.delete(t);
-                    else activeTypes.delete(t);
+                setTypeActiveState(t, source || 'base', master.checked);
+                if (!source) {
+                    const pinMeta = getPinMeta(t);
+                    (pinMeta.sources || ['base']).forEach(src => setTypeActiveState(t, src, master.checked));
                 }
             });
-            syncFilterButtons();
-            applyFilter();
-            updatePinCounts();
+            refreshMapDisplay({ syncButtons: true });
         });
     });
 
@@ -1962,13 +3179,20 @@ function setupEventListeners() {
                 alert('ピン名称を入力してください。');
                 return;
             }
+            const now = new Date().toISOString();
             const newPin = {
                 id: Date.now().toString(),
                 name,
+                title: name,
                 lat: customPinDraft.lat,
                 lng: customPinDraft.lng,
                 type: customPinSelectedType,
                 map: mapOverlayMode,
+                createdAt: now,
+                updatedAt: now,
+                visibility: true,
+                obtained: false,
+                userId: null,
                 detail: (() => {
                     const detailInput = document.getElementById('custom-pin-detail');
                     return detailInput ? detailInput.value.trim() : '';
@@ -1986,6 +3210,7 @@ function setupEventListeners() {
             updateCustomPinCount();
             renderCustomPinList();
             toggleCustomPinSidebar(false);
+            refreshMapDisplay();
         });
     }
 
@@ -2028,14 +3253,6 @@ function setupEventListeners() {
         });
     }
 
-    document.querySelectorAll('.custom-pin-icon-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const type = btn.dataset.iconType;
-            if (type) setCustomPinIconSelection(type);
-        });
-    });
-
-
     const customPinDetailInput = document.getElementById('custom-pin-detail');
     if (customPinDetailInput) {
         customPinDetailInput.addEventListener('input', () => {
@@ -2045,12 +3262,10 @@ function setupEventListeners() {
     }
 
     const areaHeaderBtn = document.getElementById('area-header-btn');
-    const areaOverlay = document.getElementById('area-overlay');
     const closeAreaBtn = document.getElementById('close-area-overlay');
 
     if (areaHeaderBtn) {
         areaHeaderBtn.addEventListener('click', () => {
-            updateAreaProgress();
             areaOverlay.classList.remove('hidden');
         });
     }
@@ -2064,30 +3279,16 @@ function setupEventListeners() {
         });
     }
 
-    document.querySelectorAll('.area-card').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const area = btn.dataset.area;
-            selectArea(area);
-            areaOverlay.classList.add('hidden');
-            if (window.innerWidth <= 900) {
-                closeMobileFilterPanel();
-            }
-        });
-    });
-
     const resetBtn = document.getElementById('reset-filters-btn');
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate', 'cave']);
-            activeDlcTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'time-trial', 'manhunt', 'quest', 'grate', 'floodgate', 'cave']);
-            showCustomPins = true;
-            customPinVisibility = new Set(customPins.map(p => p.id));
-            activeSources = new Set(['base', 'dlc']);
+            setActiveBaseTypes(new Set(DEFAULT_BASE_TYPES));
+            setActiveDlcTypes(new Set(DEFAULT_DLC_TYPES));
+            setShowCustomPins(true);
+            setCustomPinVisibilitySet(new Set(customPins.map(p => p.id)));
+            setSources(['base', 'dlc']);
             selectArea('all');
-            syncFilterButtons();
-            applyFilter();
-            updateRouteFilterPanelCounts();
-            updateSourceButtonState();
+            refreshMapDisplay({ syncButtons: true });
         });
     }
 
@@ -2098,9 +3299,7 @@ function setupEventListeners() {
                 obtainedPins.clear();
                 saveObtained();
                 markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
-                applyFilter();
-                updateAreaProgress();
-                updatePinCounts();
+                refreshMapDisplay();
                 alert('全てのピンをリセットしました。');
             }
         });
@@ -2181,14 +3380,6 @@ function setupEventListeners() {
         });
     }
 
-    document.querySelectorAll('.route-area-item').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const area = btn.dataset.area;
-            if (area) selectArea(area);
-            closeRouteCreatePanels();
-        });
-    });
-
     if (quickviewToggle && quickviewWrap) {
         quickviewToggle.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -2199,11 +3390,9 @@ function setupEventListeners() {
     if (quickviewAllBtn) {
         quickviewAllBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            activeTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate', 'cave']);
-            activeDlcTypes = new Set(['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'time-trial', 'manhunt', 'quest', 'grate', 'floodgate', 'cave']);
-            syncFilterButtons();
-            applyFilter();
-            updateRouteFilterPanelCounts();
+            setActiveBaseTypes(new Set(DEFAULT_BASE_TYPES));
+            setActiveDlcTypes(new Set(DEFAULT_DLC_TYPES));
+            refreshMapDisplay({ syncButtons: true });
         });
     }
 
@@ -2304,9 +3493,8 @@ function setupEventListeners() {
     if (showObtainedCheck) {
         showObtainedCheck.checked = showObtained;
         showObtainedCheck.addEventListener('change', () => {
-            showObtained = showObtainedCheck.checked;
-            applyFilter();
-            updateRouteFilterPanelCounts();
+            setShowObtained(showObtainedCheck.checked);
+            refreshMapDisplay();
         });
     }
 
@@ -2315,9 +3503,7 @@ function setupEventListeners() {
         showBaseCheck.addEventListener('change', () => {
             if (showBaseCheck.checked) activeSources.add('base');
             else activeSources.delete('base');
-            applyFilter();
-            updateSourceButtonState();
-            updateRouteFilterPanelCounts();
+            refreshMapDisplay();
         });
     }
 
@@ -2326,42 +3512,34 @@ function setupEventListeners() {
         showDlcCheck.addEventListener('change', () => {
             if (showDlcCheck.checked) activeSources.add('dlc');
             else activeSources.delete('dlc');
-            applyFilter();
-            updateSourceButtonState();
-            updateRouteFilterPanelCounts();
+            refreshMapDisplay();
         });
     }
 
     if (showBaseOnlyBtn) {
         showBaseOnlyBtn.addEventListener('click', () => {
-            activeSources = new Set(['base']);
+            setSources(['base']);
             if (showBaseCheck) showBaseCheck.checked = true;
             if (showDlcCheck) showDlcCheck.checked = false;
-            applyFilter();
-            updateSourceButtonState();
-            updateRouteFilterPanelCounts();
+            refreshMapDisplay();
         });
     }
 
     if (showDlcOnlyBtn) {
         showDlcOnlyBtn.addEventListener('click', () => {
-            activeSources = new Set(['dlc']);
+            setSources(['dlc']);
             if (showBaseCheck) showBaseCheck.checked = false;
             if (showDlcCheck) showDlcCheck.checked = true;
-            applyFilter();
-            updateSourceButtonState();
-            updateRouteFilterPanelCounts();
+            refreshMapDisplay();
         });
     }
 
     if (showAllSourcesBtn) {
         showAllSourcesBtn.addEventListener('click', () => {
-            activeSources = new Set(['base', 'dlc']);
+            setSources(['base', 'dlc']);
             if (showBaseCheck) showBaseCheck.checked = true;
             if (showDlcCheck) showDlcCheck.checked = true;
-            applyFilter();
-            updateSourceButtonState();
-            updateRouteFilterPanelCounts();
+            refreshMapDisplay();
         });
     }
 
@@ -2371,12 +3549,8 @@ function setupEventListeners() {
     const routeMapDlcBtn = document.getElementById('route-map-dlc-btn');
     if (mapOverlayBaseBtn) {
         mapOverlayBaseBtn.addEventListener('click', () => {
-            activeAreas.clear();
-            const nameEl = document.getElementById('current-area-name');
-            const mobileNameEl = document.getElementById('mobile-current-area');
-            if (nameEl) nameEl.innerText = '全エリアを表示';
-            if (mobileNameEl) mobileNameEl.innerText = '全エリアを表示';
-            document.querySelectorAll('.area-card').forEach(card => card.classList.toggle('active', card.dataset.area === 'all'));
+            setActiveAreas(new Set(['all']));
+            syncAreaSelectionUi('all');
             setMapOverlay('base');
         });
     }
@@ -2408,13 +3582,8 @@ function setupEventListeners() {
     }
     if (mapOverlayDlcBtn) {
         mapOverlayDlcBtn.addEventListener('click', () => {
-            activeAreas.clear();
-            activeAreas.add('チドリ島');
-            const nameEl = document.getElementById('current-area-name');
-            const mobileNameEl = document.getElementById('mobile-current-area');
-            if (nameEl) nameEl.innerText = 'チドリ島';
-            if (mobileNameEl) mobileNameEl.innerText = 'チドリ島';
-            document.querySelectorAll('.area-card').forEach(card => card.classList.toggle('active', card.dataset.area === 'チドリ島'));
+            setActiveAreas(new Set(['plover-island']));
+            syncAreaSelectionUi('plover-island');
             setMapOverlay('dlc');
         });
     }
@@ -2438,15 +3607,13 @@ function setupEventListeners() {
     const batchOkBtn = document.getElementById('batch-ok-btn');
     if (batchOkBtn) {
         batchOkBtn.addEventListener('click', () => {
-            obtainedPins = new Set(batchObtainedPins);
+            setObtainedPinSet(new Set(batchObtainedPins));
             saveObtained();
-            customPinObtained = new Set(batchCustomObtained);
+            setCustomPinObtainedSet(new Set(batchCustomObtained));
             saveCustomPinObtained();
             setBatchMode(false);
-            applyFilter();
-            updateAreaProgress();
-            updatePinCounts();
             renderCustomPinList();
+            refreshMapDisplay();
         });
     }
 
@@ -2459,11 +3626,11 @@ function setupEventListeners() {
             leftToggleBtn.classList.add('hidden');
             if (closeLeftBtn) closeLeftBtn.classList.remove('hidden');
             if (lastSidebar === 'route') {
-                currentSidebar = 'route';
+                setSidebarCurrent('route');
                 routeSidebar.classList.remove('hidden');
                 mainSidebar.classList.add('hidden');
             } else {
-                currentSidebar = 'main';
+                setSidebarCurrent('main');
                 mainSidebar.classList.remove('hidden');
                 routeSidebar.classList.add('hidden');
             }
@@ -2475,13 +3642,13 @@ function setupEventListeners() {
             const mainSidebar = document.getElementById('map-sidebar');
             const routeSidebar = document.getElementById('route-sidebar');
             if (currentSidebar === 'route') {
-                lastSidebar = 'route';
+                setSidebarLast('route');
                 routeSidebar.classList.add('hidden');
             } else {
-                lastSidebar = 'main';
+                setSidebarLast('main');
                 mainSidebar.classList.add('hidden');
             }
-            currentSidebar = 'none';
+            setSidebarCurrent('none');
             if (leftToggleBtn) leftToggleBtn.classList.remove('hidden');
             closeLeftBtn.classList.add('hidden');
         });
@@ -2512,7 +3679,6 @@ function setupEventListeners() {
                 // スマホでは全画面パネルを開いてからエリア選択オーバーレイを表示
                 openMobileFilterPanel();
                 if (areaOverlay) {
-                    updateAreaProgress();
                     areaOverlay.classList.remove('hidden');
                 }
                 return;
@@ -2614,6 +3780,57 @@ function setupEventListeners() {
             customPinSortMode = customPinSortMode === 'created' ? 'name' : 'created';
             customPinSortBtn.innerText = customPinSortMode === 'created' ? '作成順' : '名前順';
             renderCustomPinList();
+            savePreferences();
+        });
+    }
+
+    const authAnonBtn = document.getElementById('auth-anon-btn');
+    const authGoogleBtn = document.getElementById('auth-google-btn');
+    const authSignOutBtn = document.getElementById('auth-signout-btn');
+
+    if (authAnonBtn) {
+        authAnonBtn.addEventListener('click', async () => {
+            if (!authManager || !authManager.isConfigured) {
+                showToast('Supabase の設定が未完了です', 'error');
+                return;
+            }
+            try {
+                await flushUserDataSave();
+                await authManager.signInAnonymously();
+            } catch (error) {
+                console.error('[signInAnonymously]', error);
+                showToast(error && error.message ? error.message : '仮ログインに失敗しました', 'error');
+            }
+        });
+    }
+
+    if (authGoogleBtn) {
+        authGoogleBtn.addEventListener('click', async () => {
+            if (!authManager || !authManager.isConfigured) {
+                showToast('Supabase の設定が未完了です', 'error');
+                return;
+            }
+            try {
+                await flushUserDataSave();
+                await authManager.signInWithGoogle();
+            } catch (error) {
+                console.error('[signInWithGoogle]', error);
+                showToast(error && error.message ? error.message : 'Google ログインに失敗しました', 'error');
+            }
+        });
+    }
+
+    if (authSignOutBtn) {
+        authSignOutBtn.addEventListener('click', async () => {
+            if (!authManager) return;
+            try {
+                await flushUserDataSave();
+                await authManager.signOut();
+                showToast('ログアウトしました', 'success');
+            } catch (error) {
+                console.error('[signOut]', error);
+                showToast(error && error.message ? error.message : 'ログアウトに失敗しました', 'error');
+            }
         });
     }
 
@@ -2643,31 +3860,34 @@ function updateSourceButtonState() {
 }
 
 function setMapOverlay(mode) {
-    if (!mapOverlayPaths[mode]) return;
-    if (currentMapOverlay) {
-        map.removeLayer(currentMapOverlay);
+    const normalizedMode = normalizeOverlayMode(mode);
+    if (!mapOverlayPaths[normalizedMode]) return;
+    if (currentMapOverlay && typeof currentMapOverlay.setUrl === 'function') {
+        currentMapOverlay.setUrl(mapOverlayPaths[normalizedMode]);
+    } else {
+        if (currentMapOverlay) {
+            map.removeLayer(currentMapOverlay);
+        }
+        currentMapOverlay = L.imageOverlay(mapOverlayPaths[normalizedMode], bounds).addTo(map);
     }
-    currentMapOverlay = L.imageOverlay(mapOverlayPaths[mode], bounds).addTo(map);
-    mapOverlayMode = mode;
-    localStorage.setItem('maneater_map_overlay', mode);
+    setOverlay(normalizedMode);
 
     const baseBtn = document.getElementById('map-overlay-base-btn');
     const dlcBtn = document.getElementById('map-overlay-dlc-btn');
     const routeBaseBtn = document.getElementById('route-map-base-btn');
     const routeDlcBtn = document.getElementById('route-map-dlc-btn');
-    if (baseBtn) baseBtn.classList.toggle('active', mode === 'base');
-    if (dlcBtn) dlcBtn.classList.toggle('active', mode === 'dlc');
-    if (routeBaseBtn) routeBaseBtn.classList.toggle('active', mode === 'base');
-    if (routeDlcBtn) routeDlcBtn.classList.toggle('active', mode === 'dlc');
+    if (baseBtn) baseBtn.classList.toggle('active', normalizedMode === 'base');
+    if (dlcBtn) dlcBtn.classList.toggle('active', normalizedMode === 'dlc');
+    if (routeBaseBtn) routeBaseBtn.classList.toggle('active', normalizedMode === 'base');
+    if (routeDlcBtn) routeDlcBtn.classList.toggle('active', normalizedMode === 'dlc');
 
-    applyFilter();
-    updateRouteFilterPanelCounts();
-    updatePinCounts();
-    updateRouteFilterPanelCounts();
+    refreshMapDisplay();
 
     if (currentRouteView === 'create') {
         updateCreationVisuals();
     }
+
+    savePreferences();
 }
 
 function togglePinBulkSidebar(forceOpen = null) {
@@ -2702,20 +3922,7 @@ function renderPinBulkList() {
     list.style.display = 'flex';
     list.style.flexDirection = 'column';
     list.style.gap = '10px';
-    const typeList = [
-        { type: 'landmark', label: 'ランドマーク' },
-        { type: 'nutrient', label: '栄養箱' },
-        { type: 'plate', label: 'ナンバープレート' },
-        { type: 'main-quest', label: 'メインクエスト' },
-        { type: 'sub-quest', label: '狩猟クエスト' },
-        { type: 'time-trial', label: 'タイムトライアル' },
-        { type: 'manhunt', label: '復讐クエスト' },
-        { type: 'quest', label: 'クエスター' },
-        { type: 'grate', label: '鉄格子' },
-        { type: 'floodgate', label: '水門' },
-        { type: 'cave', label: '洞窟' },
-        { type: 'custom', label: '新規マップピン' }
-    ];
+    const typeList = getBulkManageablePinTypes();
 
     typeList.forEach(item => {
         const row = document.createElement('div');
@@ -2806,6 +4013,8 @@ function showRouteHoverPreview(targetPinId) {
 function clearObtainedByType(type) {
     if (type === 'custom') {
         customPinObtained.clear();
+        syncAllCustomPinRecords();
+        saveCustomPins();
         saveCustomPinObtained();
         customPins.forEach(pin => updateCustomPinObtainedAppearance(pin.id));
         renderCustomPinList();
@@ -2815,76 +4024,60 @@ function clearObtainedByType(type) {
         });
         saveObtained();
         markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
-        updatePinCounts();
     }
-    applyFilter();
-    updateRouteFilterPanelCounts();
+    refreshMapDisplay();
 }
 
-
-function selectArea(area) {
-    if (currentRouteView === 'create') {
-        // ルート作成中はフィルタリングせず、ズームのみ行う
-        if (area === 'all') {
-            map.fitBounds(bounds, { paddingTopLeft: [320, 0], paddingBottomRight: [0, 0], animate: true, duration: 0.8 });
-            return;
-        }
-
-        if (area === 'チドリ島') {
-            setMapOverlay('dlc');
-            map.fitBounds(bounds, { paddingTopLeft: [320, 0], paddingBottomRight: [0, 0], animate: true, duration: 0.8 });
-            return;
-        }
-
-        setMapOverlay('base');
-        const areaPins = markers.filter(m => m.item.area === area);
-        if (areaPins.length > 0) {
-            const latlngs = areaPins.map(m => m.marker.getLatLng());
-            const areaBounds = L.latLngBounds(latlngs);
-            const deepZoomAreas = ['デッド・ホース・レイク', 'サファリア・ベイ', 'プロスピリティー・サンド', 'キャビアキー'];
-            const targetMaxZoom = deepZoomAreas.includes(area) ? 2.0 : 1.5;
-            map.fitBounds(areaBounds.pad(0.2), { paddingTopLeft: [320, 0], paddingBottomRight: [100, 100], maxZoom: targetMaxZoom, animate: true, duration: 0.8 });
-        }
+function zoomToArea(areaId) {
+    if (areaId === 'all') {
+        map.fitBounds(bounds, { paddingTopLeft: [320, 0], paddingBottomRight: [0, 0], animate: true, duration: 0.8 });
         return;
     }
 
-    activeAreas.clear();
-    const nameEl = document.getElementById('current-area-name');
-    const mobileAreaName = document.getElementById('mobile-current-area');
-    document.querySelectorAll('.area-card').forEach(card => card.classList.remove('active'));
-
-    if (area === 'all') {
-        nameEl.innerText = "全エリアを表示";
-        if (mobileAreaName) mobileAreaName.innerText = "全エリアを表示";
+    const areaMeta = getAreaMeta(areaId);
+    const areaPins = markers.filter(m => m.item.areaId === areaId);
+    if (areaMeta.source === 'dlc') {
         map.fitBounds(bounds, { paddingTopLeft: [320, 0], paddingBottomRight: [0, 0], animate: true, duration: 0.8 });
-    } else {
-        activeAreas.add(area);
-        nameEl.innerText = area;
-        if (mobileAreaName) mobileAreaName.innerText = area;
-
-        const selectedCard = document.querySelector(`.area-card[data-area="${area}"]`);
-        if (selectedCard) selectedCard.classList.add('active');
-
-        if (area === 'チドリ島') {
-            setMapOverlay('dlc');
-            // チドリ島は DLC 用マップなので、全体を表示（過度なズーム防止）
-            map.fitBounds(bounds, { paddingTopLeft: [320, 0], paddingBottomRight: [0, 0], animate: true, duration: 0.8 });
-        } else {
-            setMapOverlay('base');
-
-            const areaPins = markers.filter(m => m.item.area === area);
-            if (areaPins.length > 0) {
-                const latlngs = areaPins.map(m => m.marker.getLatLng());
-                const areaBounds = L.latLngBounds(latlngs);
-                const deepZoomAreas = ['デッド・ホース・レイク', 'サファリア・ベイ', 'プロスピリティー・サンド', 'キャビアキー'];
-                const targetMaxZoom = deepZoomAreas.includes(area) ? 2.0 : 1.5;
-                map.fitBounds(areaBounds.pad(0.2), { paddingTopLeft: [320, 0], paddingBottomRight: [100, 100], maxZoom: targetMaxZoom, animate: true, duration: 0.8 });
-            }
-        }
+        return;
     }
-    updateAreaProgress();
-    updatePinCounts();
-    applyFilter();
+    if (areaPins.length === 0) return;
+
+    const latlngs = areaPins.map(m => m.marker.getLatLng());
+    const areaBounds = L.latLngBounds(latlngs);
+    const targetMaxZoom = areaMeta.deepZoom ? 2.0 : 1.5;
+    map.fitBounds(areaBounds.pad(0.2), {
+        paddingTopLeft: [320, 0],
+        paddingBottomRight: [100, 100],
+        maxZoom: targetMaxZoom,
+        animate: true,
+        duration: 0.8
+    });
+}
+
+function selectArea(areaValue) {
+    const areaMeta = getAreaMeta(areaValue);
+    const areaId = areaMeta.id;
+
+    if (currentRouteView === 'create') {
+        if (areaMeta.source === 'dlc') {
+            setMapOverlay('dlc');
+        } else if (areaId !== 'all') {
+            setMapOverlay('base');
+        }
+        zoomToArea(areaId);
+        return;
+    }
+
+    const nextAreas = new Set(['all']);
+    if (areaId !== 'all') {
+        nextAreas.clear();
+        nextAreas.add(areaId);
+        setMapOverlay(areaMeta.source === 'dlc' ? 'dlc' : 'base');
+    }
+    setActiveAreas(nextAreas);
+    syncAreaSelectionUi(areaId);
+    zoomToArea(areaId);
+    refreshMapDisplay();
 }
 
 function updatePinCounts() {
@@ -2892,64 +4085,56 @@ function updatePinCounts() {
     const obtainedCounts = {};
     const totalCountsDlc = {};
     const obtainedCountsDlc = {};
-    const currentArea = [...activeAreas][0] || 'all';
-    
+
     collectibles.forEach(item => {
         const mapOk = item.map === mapOverlayMode;
-        if (!mapOk) return;
-        const areaOk = currentArea === 'all' ||
-            item.area === currentArea ||
-            (item.type === 'cave' && item.area === '洞窟') ||
-            (item.type === 'floodgate' && item.area === '水門');
-        if (areaOk) {
-            if (item.source === 'dlc') {
-                totalCountsDlc[item.type] = (totalCountsDlc[item.type] || 0) + 1;
-                if (obtainedPins.has(item.id)) {
-                    obtainedCountsDlc[item.type] = (obtainedCountsDlc[item.type] || 0) + 1;
-                }
-            } else {
-                totalCounts[item.type] = (totalCounts[item.type] || 0) + 1;
-                if (obtainedPins.has(item.id)) {
-                    obtainedCounts[item.type] = (obtainedCounts[item.type] || 0) + 1;
-                }
+        const areaOk = matchesSelectedArea(item);
+        const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
+        if (!mapOk || !areaOk || !sourceOk) return;
+
+        if (item.source === 'dlc') {
+            totalCountsDlc[item.type] = (totalCountsDlc[item.type] || 0) + 1;
+            if (obtainedPins.has(item.id)) {
+                obtainedCountsDlc[item.type] = (obtainedCountsDlc[item.type] || 0) + 1;
+            }
+        } else {
+            totalCounts[item.type] = (totalCounts[item.type] || 0) + 1;
+            if (obtainedPins.has(item.id)) {
+                obtainedCounts[item.type] = (obtainedCounts[item.type] || 0) + 1;
             }
         }
     });
 
-    document.querySelectorAll('.filter-type-btn').forEach(btn => {
+    document.querySelectorAll('.filter-type-btn[data-filter-context="main"]').forEach(btn => {
         const type = btn.dataset.type;
         const source = btn.dataset.source;
         const countSpan = btn.querySelector('.pin-count');
-        if (btn.dataset.custom === 'true') {
-            if (countSpan) countSpan.innerText = `${customPins.length}`;
-            return;
-        }
         if (countSpan) {
             const total = source === 'dlc'
                 ? (totalCountsDlc[type] || 0)
-                : (totalCounts[type] || 0) + (totalCountsDlc[type] || 0);
+                : source === 'base'
+                    ? (totalCounts[type] || 0)
+                    : (totalCounts[type] || 0) + (totalCountsDlc[type] || 0);
             const obtained = source === 'dlc'
                 ? (obtainedCountsDlc[type] || 0)
-                : (obtainedCounts[type] || 0) + (obtainedCountsDlc[type] || 0);
+                : source === 'base'
+                    ? (obtainedCounts[type] || 0)
+                    : (obtainedCounts[type] || 0) + (obtainedCountsDlc[type] || 0);
             countSpan.innerText = `${obtained}/${total}`;
         }
     });
 }
 
 function syncFilterButtons() {
-    document.querySelectorAll('.filter-type-btn').forEach(btn => {
-        if (btn.dataset.custom === 'true') {
-            btn.classList.toggle('active', showCustomPins);
-            return;
-        }
+    document.querySelectorAll('.filter-type-btn[data-type]').forEach(btn => {
         const t = btn.dataset.type;
         const source = btn.dataset.source;
         if (!t) return;
-        if (source === 'dlc') {
-            btn.classList.toggle('active', activeDlcTypes.has(t));
-        } else {
-            btn.classList.toggle('active', activeTypes.has(t));
-        }
+        const pinMeta = getPinMeta(t);
+        const enabled = source
+            ? isTypeActive(t, source)
+            : (pinMeta.sources || ['base']).every(src => isTypeActive(t, src));
+        btn.classList.toggle('active', enabled);
     });
     updateSectionMasterToggles();
 }
@@ -2973,30 +4158,18 @@ function updateSectionMasterToggles() {
 
 function updateRouteFilterPanelCounts() {
     const totalCounts = {};
-    const obtainedCounts = {};
     const totalCountsDlc = {};
-    const obtainedCountsDlc = {};
-    const currentArea = [...activeAreas][0] || 'all';
 
     collectibles.forEach(item => {
         const mapOk = item.map === mapOverlayMode;
-        const areaOk = currentArea === 'all' ||
-            item.area === currentArea ||
-            (item.type === 'cave' && item.area === '洞窟') ||
-            (item.type === 'floodgate' && item.area === '水門');
+        const areaOk = matchesSelectedArea(item);
         const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
         if (!mapOk || !areaOk || !sourceOk) return;
 
         if (item.source === 'dlc') {
             totalCountsDlc[item.type] = (totalCountsDlc[item.type] || 0) + 1;
-            if (obtainedPins.has(item.id)) {
-                obtainedCountsDlc[item.type] = (obtainedCountsDlc[item.type] || 0) + 1;
-            }
         } else {
             totalCounts[item.type] = (totalCounts[item.type] || 0) + 1;
-            if (obtainedPins.has(item.id)) {
-                obtainedCounts[item.type] = (obtainedCounts[item.type] || 0) + 1;
-            }
         }
     });
 
@@ -3029,11 +4202,8 @@ function updateQuickView(visibleTypes) {
         btn.dataset.type = type;
         btn.innerHTML = `<img src="${iconUrl}" alt="">`;
         btn.addEventListener('click', () => {
-            if (activeTypes.has(type)) activeTypes.delete(type);
-            else activeTypes.add(type);
-            syncFilterButtons();
-            applyFilter();
-            updateRouteFilterPanelCounts();
+            toggleTypeFilter(type);
+            refreshMapDisplay({ syncButtons: true });
         });
         container.appendChild(btn);
     });
@@ -3067,18 +4237,5 @@ function setRouteCreateActionsVisible(visible) {
     }
 }
 
-function updateAreaProgress() {
-    // 探索度の割合計算は未実装だから、明示的に「未実装」と表示する
-    document.querySelectorAll('.area-sub').forEach(sub => sub.innerText = `探索度: -%（未実装）`);
-    const percentEl = document.getElementById('area-progress-percent');
-    const fillEl = document.getElementById('area-progress-fill');
-    if (percentEl) percentEl.innerText = '-';
-    if (fillEl) fillEl.style.width = `0%`;
-}
-
-setTimeout(() => {
-    updateAreaProgress();
-    updatePinCounts();
-}, 500);
 init();
 
