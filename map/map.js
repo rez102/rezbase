@@ -849,13 +849,27 @@ function getMigrationCheckKey(user) {
 
 function hasMigrationBeenChecked(user) {
     const key = getMigrationCheckKey(user);
-    return key ? window.sessionStorage.getItem(key) === '1' : false;
+    if (!key) {
+        return false;
+    }
+
+    try {
+        return window.localStorage.getItem(key) === '1';
+    } catch (error) {
+        return false;
+    }
 }
 
 function markMigrationChecked(user) {
     const key = getMigrationCheckKey(user);
-    if (key) {
-        window.sessionStorage.setItem(key, '1');
+    if (!key) {
+        return;
+    }
+
+    try {
+        window.localStorage.setItem(key, '1');
+    } catch (error) {
+        // Ignore storage write failures and allow the prompt to reappear later.
     }
 }
 
