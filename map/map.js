@@ -154,6 +154,8 @@ let batchCustomObtained = new Set();
 let customPinById = new Map();
 let pinBulkSidebarOpen = false;
 let customPinSortMode = 'created';
+let tutorialStepIndex = 0;
+const tutorialStorageKey = 'maneater_map_tutorial_done_v2';
 
 // トレンドルート（作者作成）のサンプルデータ
 const trendRoutes = [
@@ -238,6 +240,9 @@ async function init() {
     renderCustomPins();
     updateCustomPinCount();
     setupEventListeners();
+    setTimeout(() => {
+        initTutorial();
+    }, 400);
 }
 
 function renderMarkers() {
@@ -1592,6 +1597,79 @@ function updateCreationVisuals() {
     showRoutePreview(creatingRoute);
 }
 
+function initTutorial() {
+    const overlay = document.getElementById('map-tutorial');
+    if (!overlay) return;
+    if (localStorage.getItem(tutorialStorageKey)) return;
+
+    const steps = [
+        { selector: '.area-switch-btn', text: 'ここを押すとマップを切り替えて、特定のマップのマップピンをフィルターできるぞ!' },
+        { selector: '#toggle-settings-btn', text: 'ここを押すと設定を変更できるぞ!' },
+        { selector: '#route-mode-btn', text: 'ここを押すとルートモードに切り替わるぞ!' },
+        { selector: '.leaflet-control.custom-pin-control .custom-pin-btn', text: 'ここを押すとカスタムピンを追加できるぞ!' }
+    ];
+
+    const bubble = overlay.querySelector('.tutorial-bubble');
+    const textEl = overlay.querySelector('.tutorial-text');
+    const spotlight = overlay.querySelector('.tutorial-spotlight');
+    const nextBtn = document.getElementById('tutorial-next-btn');
+    const skipBtn = document.getElementById('tutorial-skip-btn');
+
+    function applyStep() {
+        const step = steps[tutorialStepIndex];
+        const target = document.querySelector(step.selector);
+        if (!target) {
+            finishTutorial();
+            return;
+        }
+        const mapRect = document.querySelector('.map-container').getBoundingClientRect();
+        const rect = target.getBoundingClientRect();
+        const offsetTop = rect.top - mapRect.top;
+        const offsetLeft = rect.left - mapRect.left;
+
+        spotlight.style.top = `${offsetTop - 6}px`;
+        spotlight.style.left = `${offsetLeft - 6}px`;
+        spotlight.style.width = `${rect.width + 12}px`;
+        spotlight.style.height = `${rect.height + 12}px`;
+
+        const bubbleTop = offsetTop + rect.height + 14;
+        const bubbleLeft = Math.min(offsetLeft, mapRect.width - 380);
+        bubble.style.top = `${bubbleTop}px`;
+        bubble.style.left = `${Math.max(12, bubbleLeft)}px`;
+
+        const actions = overlay.querySelector('.tutorial-actions');
+        actions.style.top = `${bubbleTop + bubble.offsetHeight + 8}px`;
+        actions.style.left = `${Math.max(12, bubbleLeft)}px`;
+
+
+        textEl.innerText = step.text && step.text.trim().length > 0
+            ? step.text
+            : 'ここを押すとマップを切り替えて、特定のマップのマップピンをフィルターできるぞ!';
+
+        nextBtn.innerText = tutorialStepIndex === steps.length - 1 ? '完了' : '次へ';
+    }
+
+    function finishTutorial() {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('active');
+        localStorage.setItem(tutorialStorageKey, '1');
+    }
+
+    nextBtn.addEventListener('click', () => {
+        tutorialStepIndex += 1;
+        if (tutorialStepIndex >= steps.length) {
+            finishTutorial();
+        } else {
+            applyStep();
+        }
+    });
+    skipBtn.addEventListener('click', finishTutorial);
+
+    overlay.classList.remove('hidden');
+    overlay.classList.add('active');
+    applyStep();
+}
+
 
 function saveMyRoute() {
     const name = document.getElementById('route-name-input').value.trim();
@@ -2710,3 +2788,4 @@ setTimeout(() => {
     updatePinCounts();
 }, 500);
 init();
+

@@ -711,8 +711,8 @@
 
 .left-sidebar-close {
     position: absolute;
-    top: 20px;
-    left: 332px;
+    top: 12px;
+    left: 320px;
     width: 34px;
     height: 34px;
     border-radius: 10px;
@@ -725,6 +725,7 @@
     justify-content: center;
     font-size: 18px;
     z-index: 1300;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
 }
 
 .left-sidebar-close:hover {
@@ -1132,6 +1133,81 @@ input:checked + .switch-slider:before {
     font-size: 0.7rem;
     color: rgba(255,255,255,0.65);
     margin-bottom: 6px;
+}
+
+/* Tutorial */
+.tutorial-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.tutorial-overlay.active {
+    pointer-events: auto;
+}
+
+.tutorial-dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+}
+
+.tutorial-spotlight {
+    position: absolute;
+    border: 2px solid rgba(255, 211, 122, 0.8);
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
+    pointer-events: none;
+}
+
+.tutorial-bubble {
+    position: absolute;
+    max-width: 360px;
+    background: rgba(36, 40, 54, 0.95);
+    color: #f3ead2;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid rgba(255, 211, 122, 0.5);
+}
+
+.tutorial-text {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.tutorial-character {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+}
+
+.tutorial-actions {
+    position: absolute;
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.tutorial-skip,
+.tutorial-next {
+    height: 36px;
+    min-width: 90px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 211, 122, 0.6);
+    background: rgba(20, 22, 28, 0.9);
+    color: #ffd37a;
+    cursor: pointer;
+}
+
+.tutorial-next {
+    background: #ffd37a;
+    color: #1b1b1b;
+    border-color: rgba(0,0,0,0.25);
 }
 
 .pin-bulk-popover button {
