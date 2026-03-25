@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>更新履歴</title>
+    <link rel="stylesheet" href="../fonts.css">
     <link rel="stylesheet" href="../equipment/equipment.css">
     <link rel="stylesheet" href="history.css">
 </head>
@@ -12,6 +13,7 @@
 <body>
     <div class="layout">
         <aside class="sidebar">
+            <button class="main-sidebar-close-inner" type="button" title="メニューを閉じる">×</button>
             <a href="../index.html" class="logo">
                 <span>Maneater Wiki</span>
             </a>
@@ -24,17 +26,32 @@
                     <img src="../images/map1.png" alt="マップ">
                     <span>マップ</span>
                 </a>
-                <a href="history.html" class="menu-item">
+                <a href="history.html" class="menu-item active">
                     <span>更新履歴</span>
                 </a>
             </nav>
-
         </aside>
+        <div id="sidebar-backdrop" class="sidebar-backdrop hidden"></div>
         <main class="main">
+            <button id="main-sidebar-open" class="main-sidebar-toggle" title="メニューを開く">≡</button>
+            <button id="main-sidebar-close" class="main-sidebar-close" title="メニューを閉じる">‹</button>
             <div class="history-container">
-                <div id="history-list">
-                    <!-- JS will render history items here -->
-                </div>
+                <section class="history-hero">
+                    <p class="history-eyebrow">Site Update</p>
+                    <h1>更新履歴</h1>
+                    <p class="history-subtitle">Maneater Wiki の機能追加・改善をまとめています。</p>
+                    <div class="history-summary">
+                        <div class="history-summary-card">
+                            <span class="history-summary-value" id="history-total-count">0</span>
+                            <span class="history-summary-label">更新件数</span>
+                        </div>
+                        <div class="history-summary-card">
+                            <span class="history-summary-value" id="history-last-date">-</span>
+                            <span class="history-summary-label">最新更新日</span>
+                        </div>
+                    </div>
+                </section>
+                <div id="history-list" class="history-timeline"></div>
                 <footer class="site-footer">
                     <p>当サイトは個人が運営する非公式ファンサイトであり、使用されているテキスト・画像等の著作権は Tripwire Interactive および関連する権利者に帰属します。</p>
                     <p>掲載内容に問題がある場合は、お手数ですがご連絡ください。迅速に対応いたします。</p>

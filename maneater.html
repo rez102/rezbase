@@ -13,6 +13,7 @@
     <div class="layout">
         <!--左サイドバー-->
         <aside class="sidebar">
+            <button class="main-sidebar-close-inner" type="button" title="メニューを閉じる">×</button>
             <a href="index.html" class="logo">
                 <span>Maneater Wiki</span>
             </a>
@@ -30,40 +31,48 @@
                 </a>
             </nav>
         </aside>
+        <div id="sidebar-backdrop" class="sidebar-backdrop hidden"></div>
         <!--メインコンテンツ-->
         <main class="main">
-            <div id="filters">
-                <!--フィルターや検索ボタンを入れる所-->
-                <button class="filter-btn" data-filter="atomic" data-filter-type="element">
-                    <img src="images/アトミック.png" alt="アトミック">
-                </button>
-                <button class="filter-btn" data-filter="shadow" data-filter-type="element">
-                    <img src="images/シャドウ.png" alt="シャドウ">
-                </button>
-                <button class="filter-btn" data-filter="bioelectric" data-filter-type="element">
-                    <img src="images/バイオエレクトリック.png" alt="バイオエレクトリック">
-                </button>
-                <button class="filter-btn" data-filter="bone" data-filter-type="element">
-                    <img src="images/ボーン.png" alt="ボーン">
-                </button>
-                <button class="filter-btn" data-filter="organ" data-filter-type="slot">
-                    <img src="images/内蔵.png" alt="内蔵">
-                </button>
-                <button class="filter-btn" data-filter="jaw" data-filter-type="slot">
-                    <img src="images/あご.png" alt="あご">
-                </button>
-                <button class="filter-btn" data-filter="fin" data-filter-type="slot">
-                    <img src="images/ひれ.png" alt="ひれ">
-                </button>
-                <button class="filter-btn" data-filter="tail" data-filter-type="slot">
-                    <img src="images/しっぽ.png" alt="しっぽ">
-                </button>
-                <button class="filter-btn" data-filter="body" data-filter-type="slot">
-                    <img src="images/からだ.png" alt="からだ">
-                </button>
-                <button class="filter-btn" data-filter="head" data-filter-type="slot">
-                    <img src="images/あたま.png" alt="あたま">
-                </button>
+            <button id="main-sidebar-open" class="main-sidebar-toggle" title="メニューを開く">≡</button>
+            <button id="main-sidebar-close" class="main-sidebar-close" title="メニューを閉じる">‹</button>
+            <button id="equipment-filter-toggle" class="filter-toggle-btn" title="フィルター">
+                <img src="images/minisameicon.png" alt="フィルター">
+            </button>
+            <div id="filter-popover" class="filter-popover hidden">
+                <div id="filters">
+                    <!--フィルターや検索ボタンを入れる所-->
+                    <button class="filter-btn" data-filter="atomic" data-filter-type="element">
+                        <img src="images/アトミック.png" alt="アトミック">
+                    </button>
+                    <button class="filter-btn" data-filter="shadow" data-filter-type="element">
+                        <img src="images/シャドウ.png" alt="シャドウ">
+                    </button>
+                    <button class="filter-btn" data-filter="bioelectric" data-filter-type="element">
+                        <img src="images/バイオエレクトリック.png" alt="バイオエレクトリック">
+                    </button>
+                    <button class="filter-btn" data-filter="bone" data-filter-type="element">
+                        <img src="images/ボーン.png" alt="ボーン">
+                    </button>
+                    <button class="filter-btn" data-filter="organ" data-filter-type="slot">
+                        <img src="images/内蔵.png" alt="内蔵">
+                    </button>
+                    <button class="filter-btn" data-filter="jaw" data-filter-type="slot">
+                        <img src="images/あご.png" alt="あご">
+                    </button>
+                    <button class="filter-btn" data-filter="fin" data-filter-type="slot">
+                        <img src="images/ひれ.png" alt="ひれ">
+                    </button>
+                    <button class="filter-btn" data-filter="tail" data-filter-type="slot">
+                        <img src="images/しっぽ.png" alt="しっぽ">
+                    </button>
+                    <button class="filter-btn" data-filter="body" data-filter-type="slot">
+                        <img src="images/からだ.png" alt="からだ">
+                    </button>
+                    <button class="filter-btn" data-filter="head" data-filter-type="slot">
+                        <img src="images/あたま.png" alt="あたま">
+                    </button>
+                </div>
             </div>
             <div id="equipment-container" class="grid">
                 <!-- 装備アイテムがここに表示されます -->
@@ -335,6 +344,64 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const sidebar = document.querySelector('.sidebar');
+            const openSidebarBtn = document.getElementById('main-sidebar-open');
+            const closeSidebarBtn = document.getElementById('main-sidebar-close');
+            const filterToggleBtn = document.getElementById('equipment-filter-toggle');
+            const filterPopover = document.getElementById('filter-popover');
+            const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+            const sidebarCloseInner = document.querySelector('.main-sidebar-close-inner');
+
+            const applySidebarMode = () => {
+                if (window.innerWidth <= 900) {
+                    body.classList.add('sidebar-collapsed');
+                    if (sidebar) sidebar.classList.add('collapsed');
+                    if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+                } else {
+                    body.classList.remove('sidebar-collapsed');
+                    if (sidebar) sidebar.classList.remove('collapsed');
+                    if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+                }
+            };
+
+            applySidebarMode();
+            window.addEventListener('resize', applySidebarMode);
+
+            const openSidebar = () => {
+                body.classList.remove('sidebar-collapsed');
+                if (sidebar) sidebar.classList.remove('collapsed');
+                if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
+            };
+            const closeSidebar = () => {
+                body.classList.add('sidebar-collapsed');
+                if (sidebar) sidebar.classList.add('collapsed');
+                if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+            };
+
+            if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
+            if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+            if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+            if (sidebarCloseInner) {
+                sidebarCloseInner.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeSidebar();
+                });
+            }
+
+            if (filterToggleBtn && filterPopover) {
+                filterToggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    filterPopover.classList.toggle('hidden');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!filterPopover.contains(e.target) && e.target !== filterToggleBtn) {
+                        filterPopover.classList.add('hidden');
+                    }
+                });
+            }
+
             const buttons = document.querySelectorAll('.filter-btn');
             const cards = document.querySelectorAll('.equipment-card');
 

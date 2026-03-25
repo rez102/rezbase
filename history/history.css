@@ -1,28 +1,218 @@
 .history-container {
-    max-width: 900px;
-    margin: 60px auto;
+    max-width: 980px;
+    margin: 0 auto;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.history-hero {
+    padding: 26px 28px;
+    border-radius: 22px;
+    border: 1px solid rgba(0, 255, 255, 0.16);
+    background:
+        radial-gradient(circle at 85% 0%, rgba(0, 255, 255, 0.16), rgba(0, 255, 255, 0) 40%),
+        rgba(0, 20, 28, 0.55);
+    backdrop-filter: blur(8px);
+}
+
+.history-eyebrow {
+    margin: 0;
+    color: #79d7d7;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.history-hero h1 {
+    margin: 8px 0 6px;
+    font-size: 34px;
+    line-height: 1.2;
+}
+
+.history-subtitle {
+    margin: 0;
+    color: #a7d5d5;
+    font-size: 15px;
+}
+
+.history-summary {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.history-summary-card {
+    background: rgba(0, 12, 18, 0.75);
+    border: 1px solid rgba(0, 255, 255, 0.14);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.history-summary-value {
+    font-size: 24px;
+    color: #dfffff;
+    font-weight: 700;
+}
+
+.history-summary-label {
+    font-size: 12px;
+    color: #8dc5c5;
+    letter-spacing: 0.04em;
+}
+
+.history-timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-left: 30px;
+}
+
+.history-timeline::before {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: 2px;
+    bottom: 2px;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(0, 255, 255, 0.35), rgba(0, 255, 255, 0.05));
 }
 
 .history-item {
-    background: #0D0D0D;
-    border: 1px solid #ffffff;
-    border-radius: 14px;
-    padding: 20px 24px;
-    margin-bottom: 25px;
+    position: relative;
+}
+
+.history-item::before {
+    content: "";
+    position: absolute;
+    left: -24px;
+    top: 16px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 255, 255, 0.75);
+    background: #001822;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.35);
+}
+
+.history-card {
+    border: 1px solid rgba(0, 255, 255, 0.14);
+    border-radius: 16px;
+    padding: 18px 20px;
+    background: rgba(0, 14, 22, 0.72);
+}
+
+.history-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
 }
 
 .history-date {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 12px;
-    text-align: left;
-    color: #b9b9b9;
+    color: #9ed2d2;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.history-tag {
+    border: 1px solid rgba(255, 210, 120, 0.5);
+    color: #ffd27a;
+    background: rgba(255, 210, 120, 0.12);
+    border-radius: 999px;
+    font-size: 12px;
+    line-height: 1;
+    padding: 6px 9px;
+    white-space: nowrap;
+}
+
+.history-title {
+    margin: 0 0 10px;
+    font-size: 20px;
+    color: #f3ffff;
 }
 
 .history-content {
-    font-size: 16px;
+    margin: 0;
+    color: #c9e5e5;
     line-height: 1.7;
-    text-align: left;
-    color: #ffffff;
+    font-size: 15px;
+}
+
+.history-points {
+    margin: 0;
+    padding-left: 18px;
+    color: #c9e5e5;
+}
+
+.history-points li {
+    margin-bottom: 6px;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+.site-footer {
+    margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+    .history-container {
+        margin-top: 46px;
+    }
+
+    .history-hero {
+        padding: 20px;
+    }
+
+    .history-hero h1 {
+        font-size: 28px;
+    }
+
+    .history-summary-value {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .history-container {
+        gap: 16px;
+        margin-top: 54px;
+    }
+
+    .history-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .history-timeline {
+        padding-left: 22px;
+    }
+
+    .history-timeline::before {
+        left: 7px;
+    }
+
+    .history-item::before {
+        left: -16px;
+    }
+
+    .history-card {
+        padding: 16px;
+    }
+
+    .history-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .history-title {
+        font-size: 18px;
+    }
 }

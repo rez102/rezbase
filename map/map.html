@@ -13,6 +13,7 @@
 <body>
     <div class="layout">
         <aside class="sidebar">
+            <button class="main-sidebar-close-inner" type="button" title="メニューを閉じる">×</button>
             <a href="../index.html" class="logo">
                 <span>Maneater Wiki</span>
             </a>
@@ -30,35 +31,489 @@
                 </a>
             </nav>
         </aside>
+        <div id="sidebar-backdrop" class="sidebar-backdrop hidden"></div>
         <main class="main">
-            <!-- タイプフィルター -->
-            <div class="map-filters">
-                <button class="filter-type-btn active" data-type="landmark">ランドマーク</button>
-                <button class="filter-type-btn active" data-type="nutrient">栄養箱</button>
-                <button class="filter-type-btn active" data-type="plate">ナンバープレート</button>
-                <button id="reset-filters-btn" class="filter-reset-btn">全表示</button>
-            </div>
+            <button id="main-sidebar-open" class="main-sidebar-toggle" title="メニューを開く">≡</button>
+            <button id="main-sidebar-close" class="main-sidebar-close" title="メニューを閉じる">‹</button>
+            <div class="map-container">
+                <!-- モバイル用エリア切り替えバー -->
+                <div id="mobile-area-bar" class="mobile-area-bar">
+                    <div class="mobile-area-name" id="mobile-current-area">全エリアを表示</div>
+                    <button id="mobile-area-switch" class="mobile-area-switch">⇄ 切り替える</button>
+                </div>
 
-            <!-- エリアフィルター -->
-            <div class="map-filters">
-                <button class="filter-area-btn" data-area="フォーティック・バイユー">フォーティック・バイユー</button>
-                <button class="filter-area-btn" data-area="デッド・ホース・レイク">デッド・ホース・レイク</button>
-                <button class="filter-area-btn" data-area="ゴールデン・ショア">ゴールデン・ショア</button>
-                <button class="filter-area-btn" data-area="サファリア・ベイ">サファリア・ベイ</button>
-                <button class="filter-area-btn" data-area="プロスピリティーサンド">プロスピリティーサンド</button>
-                <button class="filter-area-btn" data-area="キャビアキー">キャビアキー</button>
-                <button class="filter-area-btn" data-area="湾岸">湾岸</button>
-                <button class="filter-area-btn" data-area="クローフィッシュ・ベイ">クローフィッシュ・ベイ</button>
+                <!-- モバイル用フィルターボタン -->
+                <div id="mobile-filter-bar" class="mobile-filter-bar">
+                    <button id="mobile-filter-open" class="mobile-filter-open">
+                        <span>マップピンをフィルター</span>
+                    </button>
+                </div>
+
+                <!-- モバイル: 新規マップピン位置選択レイヤー -->
+                <div id="mobile-pin-place-layer" class="mobile-pin-place-layer hidden">
+                    <div class="mobile-pin-place-top">
+                        <button id="mobile-pin-place-close" class="mobile-pin-place-close-btn" type="button">×</button>
+                        <h3>マップピンの位置を選ぶ</h3>
+                        <p>マップをドラッグ/拡大縮小して位置を合わせてください</p>
+                    </div>
+                    <div id="mobile-pin-center-marker" class="mobile-pin-center-marker">+</div>
+                    <div class="mobile-pin-place-bottom">
+                        <button id="mobile-pin-place-ok" class="mobile-pin-place-ok" type="button">OK</button>
+                    </div>
+                </div>
+
+                <button id="toggle-left-sidebar-btn" class="left-sidebar-toggle hidden" title="サイドバーを開く">‹</button>
+                <button id="close-left-sidebar-btn" class="left-sidebar-close" title="サイドバーを閉じる">‹</button>
+                <!-- 左サイドバー（マップ内オーバーレイ） -->
+                <aside class="map-sidebar" id="map-sidebar">
+                    <div class="mobile-filter-sheet-head">
+                        <div class="sheet-grab"></div>
+                        <div class="sheet-title">マップピンをフィルター</div>
+                        <button id="mobile-filter-close" class="sheet-close-btn" type="button">×</button>
+                    </div>
+                    <!-- エリアヘッダー -->
+                    <div class="sidebar-header" id="area-header-btn">
+                        <div class="current-area-info">
+                            <span class="area-label">現在のエリア</span>
+                            <h2 id="current-area-name">全エリアを表示</h2>
+                            <span class="filter-summary" id="active-filter-summary">表示条件: 全エリア / すべてのピン</span>
+                        </div>
+                        <button class="area-switch-btn">⇄ 切り替える</button>
+                    </div>
+
+                    <!-- エリア選択オーバーレイ -->
+                    <div class="area-selection-overlay hidden" id="area-overlay">
+                        <div class="overlay-header">
+                            <h3>エリアを選択</h3>
+                            <button id="close-area-overlay" class="close-btn">×</button>
+                        </div>
+                        <div class="area-list" id="area-filters"></div>
+                    </div>
+
+                    <div class="sidebar-content">
+                        <div class="sidebar-section">
+                            <h3 class="section-title">
+                                <span>収集物</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="collection" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </h3>
+                            <div class="pin-grid" data-section-group="collection"></div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <h3 class="section-title">
+                                <span>クエスト</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="quest-base" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </h3>
+                            <div class="pin-grid quest-grid" data-section-group="quest-base"></div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <h3 class="section-title">
+                                <span>DLCクエスト</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="quest-dlc" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </h3>
+                            <div class="pin-grid quest-grid" data-section-group="quest-dlc"></div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <h3 class="section-title">
+                                <span>その他</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="other" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </h3>
+                            <div class="pin-grid" data-section-group="other"></div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <h3 class="section-title">
+                                <span id="custom-pin-section-title">新規マップピン (0)</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="custom-pins" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                                <button id="custom-pin-sort-btn" class="custom-pin-sort-btn" title="並び替え">作成順</button>
+                            </h3>
+                            <div class="pin-grid" id="custom-pin-list" data-section-group="custom-pins"></div>
+                        </div>
+
+                    </div>
+                </aside>
+
+                <!-- ルート専用サイドバー -->
+                <aside id="route-sidebar" class="map-sidebar hidden">
+                    <div class="sidebar-header">
+                        <!-- 閲覧用ヘッダー -->
+                        <div id="route-browse-header" class="route-header-content">
+                            <div class="route-tabs">
+                                <button class="route-tab active" data-tab="trend">トレンドルート</button>
+                                <button class="route-tab" data-tab="my">マイルート</button>
+                            </div>
+                        </div>
+                        <!-- 作成用ヘッダー -->
+                        <div id="route-create-header" class="route-header-content hidden">
+                            <button id="back-from-create-btn" class="back-btn" title="戻る">
+                                <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                            </button>
+                            <h2 class="creation-title">ルート作成・編集</h2>
+                        </div>
+                        <!-- 詳細用ヘッダー -->
+                        <div id="route-detail-header" class="route-header-content hidden">
+                            <button id="back-to-browse-btn" class="back-btn">
+                                <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                            </button>
+                            <h2 id="detail-route-name" class="creation-title" style="flex:1;">ルート詳細</h2>
+                            <button id="edit-route-btn" class="back-btn hidden" title="編集">
+                                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                        </div>
+                        <button class="close-sidebar-btn" id="close-route-sidebar-btn">
+                            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="sidebar-scroll">
+                        <div id="route-browse-view">
+                            <div class="search-box">
+                                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                                <input type="text" id="route-search-input" placeholder="検索">
+                            </div>
+                            <div id="route-list" class="route-list">
+                                <!-- ルートカードがここに挿入される -->
+                            </div>
+                        </div>
+
+                        <div id="route-create-view" class="hidden">
+                            <div class="creation-header">
+                                <h2>ルート作成</h2>
+                            </div>
+                            <div class="route-map-switch">
+                                <span class="switch-label">マップ切替</span>
+                                <div class="switch-buttons">
+                                    <button id="route-map-base-btn" class="switch-btn">Baseマップ</button>
+                                    <button id="route-map-dlc-btn" class="switch-btn">DLCマップ</button>
+                                </div>
+                            </div>
+                            <div class="creation-content">
+                                <div class="input-group">
+                                    <input type="text" id="route-name-input" placeholder="ルート名を入力" maxlength="30">
+                                </div>
+                                <div class="input-group">
+                                    <textarea id="route-desc-input" placeholder="ルートの紹介をご入力ください" maxlength="300"></textarea>
+                                    <div class="char-count-wrap">
+                                        <span class="char-count"><span id="current-char-count">0</span>/300</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="section-manager">
+                                    <div class="section-title-row">
+                                        <div class="section-label">
+                                            <span class="required-mark">*</span> 区間
+                                        </div>
+                                        <button id="add-section-btn" class="add-btn">追加 +</button>
+                                    </div>
+                                    <div id="sections-container">
+                                        <!-- セクション（区間）がここに挿入される -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 詳細閲覧ビュー -->
+                        <div id="route-detail-view" class="hidden">
+                            <div class="detail-content">
+                                <div id="detail-section-count" class="section-count-info"></div>
+                                <div id="detail-sections-list" class="detail-sections-list">
+                                    <!-- セクション詳細がここに挿入される -->
+                                </div>
+                                <div id="detail-summary-box" class="detail-summary-box">
+                                    <div id="detail-summary-items" class="detail-summary-items"></div>
+                                </div>
+                                <div class="detail-batch-actions">
+                                    <button id="detail-unmark-all-btn" class="detail-batch-btn">すべての標記を取り消す</button>
+                                    <button id="detail-mark-all-btn" class="detail-batch-btn">すべてを標記</button>
+                                </div>
+                                <div id="detail-desc" class="route-description"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-footer">
+                        <div id="browse-footer">
+                            <button id="start-create-route-btn" class="footer-btn create-btn">
+                                <div class="btn-icon">
+                                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"/></svg>
+                                </div>
+                                <span>ルート作成</span>
+                            </button>
+                        </div>
+                        <div id="creation-footer" class="hidden">
+                            <button id="save-route-btn" class="footer-btn ok-btn">OK</button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- 右上アクション -->
+                <div class="map-actions">
+                    <div class="action-wrap-popover">
+                        <button id="toggle-settings-btn" class="action-btn" title="表示・非表示設定">
+                            <img src="../images/map/設定.png" alt="">
+                        </button>
+                        <div id="settings-popover" class="action-popover hidden">
+                            <div class="settings-popover-head">
+                                <span>設定</span>
+                                <button id="settings-popover-close" class="settings-popover-close-btn" type="button">×</button>
+                            </div>
+                            <div class="popover-section">
+                                <span class="popover-title">取得済みピンの表示</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="show-obtained-check" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="popover-section">
+                                <span class="popover-title">ピン操作</span>
+                                <button id="reset-filters-btn" class="filter-reset-btn" style="margin-bottom: 8px;">全てのピンを表示</button>
+                                <button id="reset-all-pins-btn" class="filter-reset-btn warning">ピンを全て未取得に戻す</button>
+                            </div>
+                            <div class="popover-section">
+                                <span class="popover-title">ソース一括</span>
+                                <button id="show-base-only-btn" class="filter-reset-btn source-toggle-btn">Baseのみ表示</button>
+                                <button id="show-dlc-only-btn" class="filter-reset-btn source-toggle-btn">DLCのみ表示</button>
+                                <button id="show-all-sources-btn" class="filter-reset-btn source-toggle-btn">全てのソースを表示</button>
+                            </div>
+                            <div class="popover-section">
+                                <span class="popover-title">マップ背景</span>
+                                <button id="map-overlay-base-btn" class="filter-reset-btn source-toggle-btn">Baseマップ</button>
+                                <button id="map-overlay-dlc-btn" class="filter-reset-btn source-toggle-btn">DLCマップ</button>
+                            </div>
+                            <div class="popover-section auth-popover-section">
+                                <span class="popover-title">同期とログイン</span>
+                                <div id="auth-status-badge" class="auth-status-badge">未ログイン</div>
+                                <div id="auth-sync-caption" class="auth-sync-caption">この端末だけに保存されます</div>
+                                <button id="auth-anon-btn" class="filter-reset-btn auth-action-btn">仮ログイン</button>
+                                <button id="auth-google-btn" class="filter-reset-btn auth-action-btn">Googleでログイン</button>
+                                <button id="auth-signout-btn" class="filter-reset-btn auth-action-btn hidden">ログアウト</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="route-mode-btn" class="action-btn" title="ルート作成モード">
+                        <span class="icon">🛣️</span>
+                    </button>
+                </div>
+
+                <!-- ルート作成用：右側アクション & パネル -->
+                <div id="route-create-actions" class="route-create-actions hidden">
+                    <button id="route-filter-btn" class="route-action-btn" title="フィルター">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2l-7 7v5l-4-2v-3L3 7V5z"/></svg>
+                    </button>
+                    <button id="route-area-btn" class="route-action-btn" title="エリア確認">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 3a7 7 0 110 14 7 7 0 010-14zm0 3a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                    </button>
+
+                    <div id="route-filter-panel" class="route-side-panel hidden">
+                        <div class="route-panel-title">ピンフィルター</div>
+                        <div class="route-filter-section">
+                            <div class="route-filter-title">
+                                <span>収集物</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="route-collection" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div class="route-filter-grid" data-section-group="route-collection"></div>
+                        </div>
+
+                        <div class="route-filter-section">
+                            <div class="route-filter-title">
+                                <span>クエスト</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="route-quest-base" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div class="route-filter-grid" data-section-group="route-quest-base"></div>
+                        </div>
+
+                        <div class="route-filter-section">
+                            <div class="route-filter-title">
+                                <span>DLCクエスト</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="route-quest-dlc" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div class="route-filter-grid" data-section-group="route-quest-dlc"></div>
+                        </div>
+
+                        <div class="route-filter-section">
+                            <div class="route-filter-title">
+                                <span>その他</span>
+                                <label class="toggle-switch-mini">
+                                    <input type="checkbox" class="section-master-toggle" data-section="route-other" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div class="route-filter-grid" data-section-group="route-other"></div>
+                        </div>
+                    </div>
+
+                    <div id="route-area-panel" class="route-side-panel hidden">
+                        <div class="route-panel-title">エリア確認</div>
+                        <div class="route-area-tree" id="route-area-tree"></div>
+                    </div>
+
+                    <div id="route-quickview" class="route-quickview">
+                        <button id="route-quickview-toggle" class="quickview-toggle">▲</button>
+                        <button id="route-quickview-all" class="quickview-all-btn" title="全て表示">ALL</button>
+                        <div id="route-quickview-list" class="quickview-list"></div>
+                    </div>
+                </div>
+
+
+                <!-- バッチモードコントロール（右下オーバーレイ） -->
+                <div id="batch-controls" class="batch-controls hidden">
+                    <span class="batch-count">変更数: <span id="selected-count">0</span></span>
+                    <button id="batch-cancel-btn" class="batch-btn cancel">キャンセル</button>
+                    <button id="batch-ok-btn" class="batch-btn ok">変更を適用</button>
+                </div>
+
+                <!-- カスタムピン作成サイドバー -->
+                <aside id="custom-pin-sidebar" class="custom-pin-sidebar hidden">
+                    <div class="custom-pin-header">
+                        <h3>新規マップピン</h3>
+                        <button id="custom-pin-close-btn" class="close-btn">×</button>
+                    </div>
+                    <div class="custom-pin-body">
+                        <div class="custom-pin-section">
+                            <div class="custom-pin-section-title"><span class="required">*</span> マップピン種目</div>
+                            <div class="custom-pin-icon-grid" id="custom-pin-icon-grid"></div>
+                        </div>
+
+                        <div class="custom-pin-section">
+                            <div class="custom-pin-section-title">ピン名称</div>
+                            <input id="custom-pin-name" type="text" placeholder="例：鉄格子" maxlength="30">
+                        </div>
+
+                        <div class="custom-pin-section">
+                            <div class="custom-pin-section-title">マップピン詳細</div>
+                            <textarea id="custom-pin-detail" maxlength="300" placeholder="マップピン詳細を入力してください"></textarea>
+                            <div class="custom-pin-count"><span id="custom-pin-detail-count">0</span>/300</div>
+                        </div>
+                    </div>
+                    <div class="custom-pin-footer">
+                        <button id="custom-pin-cancel-btn" class="footer-btn cancel-btn hidden">キャンセル</button>
+                        <button id="custom-pin-save-btn" class="footer-btn ok-btn">OK</button>
+                    </div>
+                </aside>
+
+                <!-- ピン一括管理サイドバー -->
+                <aside id="pin-bulk-sidebar" class="custom-pin-sidebar hidden">
+                    <div class="custom-pin-header">
+                        <h3>標記したマップピン</h3>
+                        <button id="pin-bulk-close-btn" class="close-btn">×</button>
+                    </div>
+                    <div class="custom-pin-body" id="pin-bulk-list"></div>
+                </aside>
+
+                <!-- チュートリアル（初回のみ） -->
+                <div id="map-tutorial" class="tutorial-overlay hidden">
+                    <div class="tutorial-dim"></div>
+                    <div class="tutorial-spotlight"></div>
+                    <div class="tutorial-bubble">
+                        <div class="tutorial-text"></div>
+                        <img src="../images/解説.png" alt="" class="tutorial-character">
+                    </div>
+                    <div class="tutorial-actions">
+                        <button id="tutorial-skip-btn" class="tutorial-skip">スキップ</button>
+                        <button id="tutorial-next-btn" class="tutorial-next">次へ</button>
+                    </div>
+                </div>
+
+                <div id="map"></div>
             </div>
-            
-            <div id="map"></div>
             <footer class="site-footer">
                 <p>当サイトは個人が運営する非公式ファンサイトであり、使用されているテキスト・画像等の著作権は Tripwire Interactive および関連する権利者に帰属します。</p>
                 <p>掲載内容に問題がある場合は、お手数ですがご連絡ください。迅速に対応いたします。</p>
             </footer>
         </main>
     </div>
+
+    <!-- Alert Modal -->
+    <div id="route-exit-alert-modal" class="hsr-modal-overlay hidden">
+        <div class="hsr-alert-box">
+            <div class="hsr-alert-corner top-left"></div>
+            <div class="hsr-alert-corner top-right"></div>
+            <div class="hsr-alert-corner bottom-left"></div>
+            <div class="hsr-alert-corner bottom-right"></div>
+            
+            <div class="hsr-alert-content">
+                <p>保存されていない内容があります。離れてもよろしいですか？</p>
+                <div class="hsr-divider">
+                    <div class="hsr-diamond"></div>
+                </div>
+                <div class="hsr-alert-buttons">
+                    <button id="alert-cancel-btn" class="hsr-btn cancel">
+                        <div class="hsr-icon-circ cancel-circ">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                        </div>
+                        <span>キャンセル</span>
+                    </button>
+                    <button id="alert-ok-btn" class="hsr-btn ok">
+                        <div class="hsr-icon-circ ok-circ">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="8"/></svg>
+                        </div>
+                        <span>OK</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cloud-migration-modal" class="hsr-modal-overlay hidden">
+        <div class="hsr-alert-box cloud-migration-box">
+            <div class="hsr-alert-content">
+                <p>この端末に保存されたマップデータが見つかりました</p>
+                <p class="cloud-migration-subtext">クラウドに反映しますか？</p>
+                <div class="hsr-divider">
+                    <div class="hsr-diamond"></div>
+                </div>
+                <div class="hsr-alert-buttons">
+                    <button id="migration-keep-local-btn" class="hsr-btn cancel">
+                        <div class="hsr-icon-circ cancel-circ">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                        </div>
+                        <span>ローカルで続ける</span>
+                    </button>
+                    <button id="migration-to-cloud-btn" class="hsr-btn ok">
+                        <div class="hsr-icon-circ ok-circ">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v10"/><path d="M8 10l4 4 4-4"/><path d="M5 18h14"/></svg>
+                        </div>
+                        <span>クラウドへ反映する</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="map-toast-container" class="map-toast-container" aria-live="polite" aria-atomic="true"></div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth-manager.js"></script>
+    <script src="storage-adapter.js"></script>
     <script src="map.js"></script>
 </body>
 
