@@ -760,48 +760,35 @@ function savePreferences() {
 function updateAuthUi(user = currentAuthUser) {
     const badge = document.getElementById('auth-status-badge');
     const caption = document.getElementById('auth-sync-caption');
-    const anonBtn = document.getElementById('auth-anon-btn');
     const googleBtn = document.getElementById('auth-google-btn');
     const signOutBtn = document.getElementById('auth-signout-btn');
-    if (!badge || !caption || !anonBtn || !googleBtn || !signOutBtn) return;
+    if (!badge || !caption || !googleBtn || !signOutBtn) return;
 
-    badge.classList.remove('auth-status-local', 'auth-status-anon', 'auth-status-google');
+    badge.classList.remove('auth-status-local', 'auth-status-google');
 
     if (!authManager || !authManager.isConfigured) {
         badge.classList.add('auth-status-local');
         badge.innerText = '未ログイン';
         caption.innerText = 'Supabase 未設定のため、この端末だけに保存されます';
-        anonBtn.classList.remove('hidden');
         googleBtn.classList.remove('hidden');
-        anonBtn.disabled = true;
         googleBtn.disabled = true;
         signOutBtn.classList.add('hidden');
         return;
     }
 
-    anonBtn.disabled = false;
     googleBtn.disabled = false;
 
     if (!user) {
         badge.classList.add('auth-status-local');
         badge.innerText = '未ログイン';
         caption.innerText = 'この端末だけに保存されます';
-        anonBtn.classList.remove('hidden');
         googleBtn.classList.remove('hidden');
         signOutBtn.classList.add('hidden');
         return;
     }
 
-    anonBtn.classList.add('hidden');
     googleBtn.classList.add('hidden');
     signOutBtn.classList.remove('hidden');
-
-    if (authManager.isAnonymousUser(user)) {
-        badge.classList.add('auth-status-anon');
-        badge.innerText = '仮ログイン中';
-        caption.innerText = '同期中: 仮アカウントとしてクラウド保存されています';
-        return;
-    }
 
     badge.classList.add('auth-status-google');
     badge.innerText = 'Googleログイン中';
@@ -4181,25 +4168,8 @@ function setupEventListeners() {
         });
     }
 
-    const authAnonBtn = document.getElementById('auth-anon-btn');
     const authGoogleBtn = document.getElementById('auth-google-btn');
     const authSignOutBtn = document.getElementById('auth-signout-btn');
-
-    if (authAnonBtn) {
-        authAnonBtn.addEventListener('click', async () => {
-            if (!authManager || !authManager.isConfigured) {
-                showToast('Supabase の設定が未完了です', 'error');
-                return;
-            }
-            try {
-                await flushUserDataSave();
-                await authManager.signInAnonymously();
-            } catch (error) {
-                console.error('[signInAnonymously]', error);
-                showToast(error && error.message ? error.message : '仮ログインに失敗しました', 'error');
-            }
-        });
-    }
 
     if (authGoogleBtn) {
         authGoogleBtn.addEventListener('click', async () => {

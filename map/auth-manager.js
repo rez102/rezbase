@@ -10,7 +10,7 @@
                 auth: {
                     persistSession: true,
                     autoRefreshToken: true,
-                    detectSessionInUrl: true,
+                    detectSessionInUrl: false,
                     flowType: 'pkce'
                 }
             })
@@ -35,17 +35,10 @@
             return session ? session.user : null;
         }
 
-        async function signInAnonymously() {
-            const authClient = ensureClient();
-            const { data, error } = await authClient.auth.signInAnonymously();
-            if (error) throw error;
-            return data;
-        }
-
         async function signInWithGoogle() {
             const authClient = ensureClient();
-            const redirectTo = typeof appConfig.buildMapPageUrl === 'function'
-                ? appConfig.buildMapPageUrl()
+            const redirectTo = typeof appConfig.buildCallbackPageUrl === 'function'
+                ? appConfig.buildCallbackPageUrl()
                 : global.location.href;
             const { data, error } = await authClient.auth.signInWithOAuth({
                 provider: 'google',
@@ -78,26 +71,6 @@
             });
         }
 
-        function resolveProvider(user) {
-            if (!user) return null;
-            if (user.is_anonymous) return 'anonymous';
-            if (user.app_metadata && user.app_metadata.provider) {
-                return user.app_metadata.provider;
-            }
-            if (Array.isArray(user.identities) && user.identities[0] && user.identities[0].provider) {
-                return user.identities[0].provider;
-            }
-            return null;
-        }
-
-        function isAnonymousUser(user) {
-            return resolveProvider(user) === 'anonymous';
-        }
-
-        function isPermanentUser(user) {
-            return !!user && !isAnonymousUser(user);
-        }
-
         return {
             isConfigured,
             getClient() {
@@ -105,12 +78,9 @@
             },
             getSession,
             getUser,
-            signInAnonymously,
             signInWithGoogle,
             signOut,
-            onAuthStateChange,
-            isAnonymousUser,
-            isPermanentUser
+            onAuthStateChange
         };
     }
 

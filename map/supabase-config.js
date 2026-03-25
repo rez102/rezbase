@@ -42,11 +42,16 @@
         SITE_URL,
         APP_BASE_PATH,
         MAP_PAGE_PATH: existing.MAP_PAGE_PATH || 'map/map.html',
+        CALLBACK_PAGE_PATH: existing.CALLBACK_PAGE_PATH || 'auth/callback.html',
+        AUTH_CALLBACK_SESSION_KEY: existing.AUTH_CALLBACK_SESSION_KEY || 'maneater_auth_callback_session',
         buildAppUrl(relativePath = '') {
             return buildAbsoluteUrl(SITE_URL, relativePath);
         },
         buildMapPageUrl() {
             return buildAbsoluteUrl(SITE_URL, this.MAP_PAGE_PATH);
+        },
+        buildCallbackPageUrl() {
+            return buildAbsoluteUrl(SITE_URL, this.CALLBACK_PAGE_PATH);
         }
     };
 })(window);
