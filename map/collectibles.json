@@ -4,14 +4,18 @@
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 677.25,
-    "lng": 922.3
+    "lng": 922.3,
+    "id": "landmark-fawtick-bayou-01",
+    "legacyId": "landmark-0"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 682.26,
-    "lng": 898.26
+    "lng": 898.26,
+    "id": "nutrient-fawtick-bayou-01",
+    "legacyId": "nutrient-1"
   },
   {
     "type": "landmark",
@@ -20,7 +24,9 @@
     "lat": 430.1,
     "lng": 276.01,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "landmark-plover-island-01",
+    "legacyId": "landmark-2"
   },
   {
     "type": "landmark",
@@ -29,7 +35,9 @@
     "lat": 804.21,
     "lng": 857.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "landmark-plover-island-02",
+    "legacyId": "landmark-3"
   },
   {
     "type": "landmark",
@@ -38,7 +46,9 @@
     "lat": 924.18,
     "lng": 309.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "landmark-plover-island-03",
+    "legacyId": "landmark-4"
   },
   {
     "type": "landmark",
@@ -47,7 +57,9 @@
     "lat": 457.21,
     "lng": 585.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "landmark-plover-island-04",
+    "legacyId": "landmark-5"
   },
   {
     "type": "landmark",
@@ -56,7 +68,9 @@
     "lat": 218.32,
     "lng": 709.04,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "landmark-plover-island-05",
+    "legacyId": "landmark-6"
   },
   {
     "type": "landmark",
@@ -65,7 +79,9 @@
     "lat": 233.21,
     "lng": 439.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "landmark-plover-island-06",
+    "legacyId": "landmark-7"
   },
   {
     "type": "plate",
@@ -74,7 +90,9 @@
     "lat": 643.18,
     "lng": 126.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-01",
+    "legacyId": "plate-8"
   },
   {
     "type": "plate",
@@ -83,7 +101,9 @@
     "lat": 530.19,
     "lng": 418.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-02",
+    "legacyId": "plate-9"
   },
   {
     "type": "plate",
@@ -92,7 +112,9 @@
     "lat": 544.19,
     "lng": 528.04,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-03",
+    "legacyId": "plate-10"
   },
   {
     "type": "plate",
@@ -101,7 +123,9 @@
     "lat": 455.18,
     "lng": 530.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-04",
+    "legacyId": "plate-11"
   },
   {
     "type": "plate",
@@ -110,7 +134,9 @@
     "lat": 534.19,
     "lng": 337.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-05",
+    "legacyId": "plate-12"
   },
   {
     "type": "plate",
@@ -119,7 +145,9 @@
     "lat": 552.19,
     "lng": 832.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-06",
+    "legacyId": "plate-13"
   },
   {
     "type": "plate",
@@ -128,7 +156,9 @@
     "lat": 415.19,
     "lng": 850.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-07",
+    "legacyId": "plate-14"
   },
   {
     "type": "plate",
@@ -137,7 +167,9 @@
     "lat": 274.26,
     "lng": 545.01,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-08",
+    "legacyId": "plate-15"
   },
   {
     "type": "plate",
@@ -146,7 +178,9 @@
     "lat": 282.25,
     "lng": 687.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-09",
+    "legacyId": "plate-16"
   },
   {
     "type": "plate",
@@ -155,7 +189,9 @@
     "lat": 316.24,
     "lng": 422.01,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "plate-plover-island-10",
+    "legacyId": "plate-17"
   },
   {
     "type": "nutrient",
@@ -164,7 +200,9 @@
     "lat": 526.15,
     "lng": 343,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-01",
+    "legacyId": "nutrient-18"
   },
   {
     "type": "nutrient",
@@ -173,7 +211,9 @@
     "lat": 392.2,
     "lng": 373.01,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-02",
+    "legacyId": "nutrient-19"
   },
   {
     "type": "nutrient",
@@ -182,7 +222,9 @@
     "lat": 365.2,
     "lng": 572.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-03",
+    "legacyId": "nutrient-20"
   },
   {
     "type": "nutrient",
@@ -191,7 +233,9 @@
     "lat": 523.13,
     "lng": 614.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-04",
+    "legacyId": "nutrient-21"
   },
   {
     "type": "nutrient",
@@ -200,7 +244,9 @@
     "lat": 486.15,
     "lng": 597.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-05",
+    "legacyId": "nutrient-22"
   },
   {
     "type": "nutrient",
@@ -209,7 +255,9 @@
     "lat": 221.14,
     "lng": 337.04,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-06",
+    "legacyId": "nutrient-23"
   },
   {
     "type": "nutrient",
@@ -218,7 +266,9 @@
     "lat": 250.13,
     "lng": 314.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-07",
+    "legacyId": "nutrient-24"
   },
   {
     "type": "nutrient",
@@ -227,7 +277,9 @@
     "lat": 590.66,
     "lng": 933.26,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-08",
+    "legacyId": "nutrient-25"
   },
   {
     "type": "nutrient",
@@ -236,7 +288,9 @@
     "lat": 810.19,
     "lng": 438.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-09",
+    "legacyId": "nutrient-26"
   },
   {
     "type": "nutrient",
@@ -245,7 +299,9 @@
     "lat": 880.15,
     "lng": 441.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "nutrient-plover-island-10",
+    "legacyId": "nutrient-27"
   },
   {
     "type": "grate",
@@ -254,7 +310,9 @@
     "lat": 808.19,
     "lng": 532.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "grate-plover-island-01",
+    "legacyId": "grate-28"
   },
   {
     "type": "grate",
@@ -263,7 +321,9 @@
     "lat": 621.11,
     "lng": 488.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "grate-plover-island-02",
+    "legacyId": "grate-29"
   },
   {
     "type": "grate",
@@ -272,7 +332,9 @@
     "lat": 511.17,
     "lng": 890.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "grate-plover-island-03",
+    "legacyId": "grate-30"
   },
   {
     "type": "grate",
@@ -281,7 +343,9 @@
     "lat": 230.29,
     "lng": 214.99,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "grate-plover-island-04",
+    "legacyId": "grate-31"
   },
   {
     "type": "grate",
@@ -290,7 +354,9 @@
     "lat": 187.31,
     "lng": 587.01,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "grate-plover-island-05",
+    "legacyId": "grate-32"
   },
   {
     "type": "main-quest",
@@ -299,7 +365,9 @@
     "lat": 635.04,
     "lng": 774.04,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-01",
+    "legacyId": "main-quest-33"
   },
   {
     "type": "main-quest",
@@ -308,7 +376,9 @@
     "lat": 775.98,
     "lng": 446.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-02",
+    "legacyId": "main-quest-34"
   },
   {
     "type": "main-quest",
@@ -317,7 +387,9 @@
     "lat": 691.02,
     "lng": 696.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-03",
+    "legacyId": "main-quest-35"
   },
   {
     "type": "main-quest",
@@ -326,7 +398,9 @@
     "lat": 299.19,
     "lng": 636.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-04",
+    "legacyId": "main-quest-36"
   },
   {
     "type": "main-quest",
@@ -335,7 +409,9 @@
     "lat": 778.98,
     "lng": 161.01,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-05",
+    "legacyId": "main-quest-37"
   },
   {
     "type": "main-quest",
@@ -344,7 +420,9 @@
     "lat": 560.14,
     "lng": 607.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-06",
+    "legacyId": "main-quest-38"
   },
   {
     "type": "main-quest",
@@ -353,7 +431,9 @@
     "lat": 545.14,
     "lng": 536.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-07",
+    "legacyId": "main-quest-39"
   },
   {
     "type": "main-quest",
@@ -362,7 +442,9 @@
     "lat": 366.22,
     "lng": 383.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-08",
+    "legacyId": "main-quest-40"
   },
   {
     "type": "main-quest",
@@ -371,7 +453,9 @@
     "lat": 248.29,
     "lng": 250.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-09",
+    "legacyId": "main-quest-41"
   },
   {
     "type": "main-quest",
@@ -380,7 +464,9 @@
     "lat": 200.31,
     "lng": 246.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-10",
+    "legacyId": "main-quest-42"
   },
   {
     "type": "main-quest",
@@ -389,7 +475,9 @@
     "lat": 440.21,
     "lng": 485.04,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-11",
+    "legacyId": "main-quest-43"
   },
   {
     "type": "main-quest",
@@ -398,7 +486,9 @@
     "lat": 423.21,
     "lng": 483.04,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-12",
+    "legacyId": "main-quest-44"
   },
   {
     "type": "main-quest",
@@ -407,7 +497,9 @@
     "lat": 326.26,
     "lng": 657.05,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-13",
+    "legacyId": "main-quest-45"
   },
   {
     "type": "main-quest",
@@ -416,7 +508,9 @@
     "lat": 462.16,
     "lng": 393.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-14",
+    "legacyId": "main-quest-46"
   },
   {
     "type": "main-quest",
@@ -425,7 +519,9 @@
     "lat": 195.2,
     "lng": 478.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-15",
+    "legacyId": "main-quest-47"
   },
   {
     "type": "manhunt",
@@ -434,7 +530,9 @@
     "lat": 430.1,
     "lng": 208.01,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-plover-island-01",
+    "legacyId": "manhunt-48"
   },
   {
     "type": "time-trial",
@@ -443,7 +541,9 @@
     "lat": 295.18,
     "lng": 566.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-plover-island-01",
+    "legacyId": "time-trial-49"
   },
   {
     "type": "sub-quest",
@@ -452,7 +552,9 @@
     "lat": 126.25,
     "lng": 448.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-plover-island-01",
+    "legacyId": "sub-quest-50"
   },
   {
     "type": "manhunt",
@@ -461,7 +563,9 @@
     "lat": 428.12,
     "lng": 841.04,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-plover-island-02",
+    "legacyId": "manhunt-51"
   },
   {
     "type": "sub-quest",
@@ -470,7 +574,9 @@
     "lat": 300.18,
     "lng": 852.04,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-plover-island-02",
+    "legacyId": "sub-quest-52"
   },
   {
     "type": "main-quest",
@@ -479,7 +585,9 @@
     "lat": 778.12,
     "lng": 759.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-16",
+    "legacyId": "main-quest-53"
   },
   {
     "type": "time-trial",
@@ -488,7 +596,9 @@
     "lat": 840.16,
     "lng": 543.03,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-plover-island-02",
+    "legacyId": "time-trial-54"
   },
   {
     "type": "main-quest",
@@ -497,7 +607,9 @@
     "lat": 893.13,
     "lng": 863.04,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-plover-island-17",
+    "legacyId": "main-quest-55"
   },
   {
     "type": "quest",
@@ -506,7 +618,9 @@
     "lat": 629.14,
     "lng": 131.02,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-plover-island-01",
+    "legacyId": "quest-56"
   },
   {
     "type": "quest",
@@ -515,7 +629,9 @@
     "lat": 269.56,
     "lng": 491.98,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-plover-island-02",
+    "legacyId": "quest-57"
   },
   {
     "type": "quest",
@@ -524,7 +640,9 @@
     "lat": 424.08,
     "lng": 1010.01,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-plover-island-03",
+    "legacyId": "quest-58"
   },
   {
     "type": "quest",
@@ -533,7 +651,9 @@
     "lat": 831.64,
     "lng": 957.13,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-fawtick-bayou-01",
+    "legacyId": "quest-59"
   },
   {
     "type": "quest",
@@ -542,7 +662,9 @@
     "lat": 774.79,
     "lng": 651.26,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-dead-horse-lake-01",
+    "legacyId": "quest-60"
   },
   {
     "type": "quest",
@@ -551,7 +673,9 @@
     "lat": 698.29,
     "lng": 289.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-golden-shores-01",
+    "legacyId": "quest-61"
   },
   {
     "type": "quest",
@@ -560,7 +684,9 @@
     "lat": 360.25,
     "lng": 234.61,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-sapphire-bay-01",
+    "legacyId": "quest-62"
   },
   {
     "type": "quest",
@@ -569,7 +695,9 @@
     "lat": 568.58,
     "lng": 590.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-prosperity-sands-01",
+    "legacyId": "quest-63"
   },
   {
     "type": "quest",
@@ -578,7 +706,9 @@
     "lat": 650.05,
     "lng": 609.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-caviar-key-01",
+    "legacyId": "quest-64"
   },
   {
     "type": "quest",
@@ -587,7 +717,9 @@
     "lat": 221.59,
     "lng": 638.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "quest-gulf-01",
+    "legacyId": "quest-65"
   },
   {
     "type": "main-quest",
@@ -596,7 +728,9 @@
     "lat": 324.07,
     "lng": 607.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-gulf-01",
+    "legacyId": "main-quest-66"
   },
   {
     "type": "main-quest",
@@ -605,7 +739,9 @@
     "lat": 231.61,
     "lng": 481.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-gulf-02",
+    "legacyId": "main-quest-67"
   },
   {
     "type": "main-quest",
@@ -614,7 +750,9 @@
     "lat": 428.55,
     "lng": 885.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-gulf-03",
+    "legacyId": "main-quest-68"
   },
   {
     "type": "main-quest",
@@ -623,25 +761,31 @@
     "lat": 411.06,
     "lng": 1036.52,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-gulf-04",
+    "legacyId": "main-quest-69"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
-    "lat": 325.00,
+    "lat": 325,
     "lng": 693.61,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-gulf-05",
+    "legacyId": "main-quest-70"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
-    "lat": 347.00,
+    "lat": 347,
     "lng": 765.06,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-gulf-06",
+    "legacyId": "main-quest-71"
   },
   {
     "type": "main-quest",
@@ -650,7 +794,9 @@
     "lat": 450.26,
     "lng": 865.83,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-gulf-07",
+    "legacyId": "main-quest-72"
   },
   {
     "type": "main-quest",
@@ -659,7 +805,9 @@
     "lat": 526.27,
     "lng": 827.32,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-caviar-key-01",
+    "legacyId": "main-quest-73"
   },
   {
     "type": "main-quest",
@@ -668,7 +816,9 @@
     "lat": 355.74,
     "lng": 1020.77,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-gulf-08",
+    "legacyId": "main-quest-74"
   },
   {
     "type": "main-quest",
@@ -677,7 +827,9 @@
     "lat": 211.12,
     "lng": 291.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-sapphire-bay-01",
+    "legacyId": "main-quest-75"
   },
   {
     "type": "main-quest",
@@ -686,7 +838,9 @@
     "lat": 218.12,
     "lng": 145.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-sapphire-bay-02",
+    "legacyId": "main-quest-76"
   },
   {
     "type": "main-quest",
@@ -695,7 +849,9 @@
     "lat": 393.54,
     "lng": 307.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-sapphire-bay-03",
+    "legacyId": "main-quest-77"
   },
   {
     "type": "main-quest",
@@ -704,7 +860,9 @@
     "lat": 373.55,
     "lng": 148.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-sapphire-bay-04",
+    "legacyId": "main-quest-78"
   },
   {
     "type": "main-quest",
@@ -713,7 +871,9 @@
     "lat": 599.09,
     "lng": 256.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-golden-shores-01",
+    "legacyId": "main-quest-79"
   },
   {
     "type": "main-quest",
@@ -722,7 +882,9 @@
     "lat": 646.07,
     "lng": 259.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-golden-shores-02",
+    "legacyId": "main-quest-80"
   },
   {
     "type": "main-quest",
@@ -731,7 +893,9 @@
     "lat": 682.56,
     "lng": 281.52,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-golden-shores-03",
+    "legacyId": "main-quest-81"
   },
   {
     "type": "main-quest",
@@ -740,7 +904,9 @@
     "lat": 762.02,
     "lng": 337.52,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-dead-horse-lake-01",
+    "legacyId": "main-quest-82"
   },
   {
     "type": "main-quest",
@@ -749,7 +915,9 @@
     "lat": 776.51,
     "lng": 469.53,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-dead-horse-lake-02",
+    "legacyId": "main-quest-83"
   },
   {
     "type": "main-quest",
@@ -758,7 +926,9 @@
     "lat": 740.03,
     "lng": 432.02,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-dead-horse-lake-03",
+    "legacyId": "main-quest-84"
   },
   {
     "type": "main-quest",
@@ -767,7 +937,9 @@
     "lat": 673.12,
     "lng": 597.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-caviar-key-02",
+    "legacyId": "main-quest-85"
   },
   {
     "type": "main-quest",
@@ -776,7 +948,9 @@
     "lat": 570.17,
     "lng": 632.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-caviar-key-03",
+    "legacyId": "main-quest-86"
   },
   {
     "type": "main-quest",
@@ -785,7 +959,9 @@
     "lat": 504.09,
     "lng": 621.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "mainquest-prosperity-sands-01",
+    "legacyId": "main-quest-87"
   },
   {
     "type": "sub-quest",
@@ -794,7 +970,9 @@
     "lat": 220.94,
     "lng": 351.52,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-sapphire-bay-01",
+    "legacyId": "sub-quest-88"
   },
   {
     "type": "sub-quest",
@@ -803,7 +981,9 @@
     "lat": 372.49,
     "lng": 187.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-sapphire-bay-02",
+    "legacyId": "sub-quest-89"
   },
   {
     "type": "sub-quest",
@@ -812,7 +992,9 @@
     "lat": 651.05,
     "lng": 207.94,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-golden-shores-01",
+    "legacyId": "sub-quest-90"
   },
   {
     "type": "sub-quest",
@@ -821,7 +1003,9 @@
     "lat": 582.53,
     "lng": 397.45,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-golden-shores-02",
+    "legacyId": "sub-quest-91"
   },
   {
     "type": "sub-quest",
@@ -830,7 +1014,9 @@
     "lat": 755.95,
     "lng": 372.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-dead-horse-lake-01",
+    "legacyId": "sub-quest-92"
   },
   {
     "type": "sub-quest",
@@ -839,7 +1025,9 @@
     "lat": 838.95,
     "lng": 458.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-dead-horse-lake-02",
+    "legacyId": "sub-quest-93"
   },
   {
     "type": "sub-quest",
@@ -848,7 +1036,9 @@
     "lat": 491.93,
     "lng": 512.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-prosperity-sands-01",
+    "legacyId": "sub-quest-94"
   },
   {
     "type": "sub-quest",
@@ -857,7 +1047,9 @@
     "lat": 396.46,
     "lng": 624.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "subquest-prosperity-sands-02",
+    "legacyId": "sub-quest-95"
   },
   {
     "type": "manhunt",
@@ -866,7 +1058,9 @@
     "lat": 315.96,
     "lng": 351.52,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-sapphire-bay-01",
+    "legacyId": "manhunt-96"
   },
   {
     "type": "manhunt",
@@ -875,7 +1069,9 @@
     "lat": 327.43,
     "lng": 149.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-sapphire-bay-02",
+    "legacyId": "manhunt-97"
   },
   {
     "type": "manhunt",
@@ -884,7 +1080,9 @@
     "lat": 594.51,
     "lng": 212.02,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-golden-shores-01",
+    "legacyId": "manhunt-98"
   },
   {
     "type": "manhunt",
@@ -893,7 +1091,9 @@
     "lat": 676.95,
     "lng": 331.52,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-golden-shores-02",
+    "legacyId": "manhunt-99"
   },
   {
     "type": "manhunt",
@@ -902,7 +1102,9 @@
     "lat": 864.49,
     "lng": 426.26,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-dead-horse-lake-01",
+    "legacyId": "manhunt-100"
   },
   {
     "type": "manhunt",
@@ -911,7 +1113,9 @@
     "lat": 687.96,
     "lng": 515.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-dead-horse-lake-02",
+    "legacyId": "manhunt-101"
   },
   {
     "type": "manhunt",
@@ -920,7 +1124,9 @@
     "lat": 502.9,
     "lng": 491.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-prosperity-sands-01",
+    "legacyId": "manhunt-102"
   },
   {
     "type": "manhunt",
@@ -929,7 +1135,9 @@
     "lat": 630.45,
     "lng": 561.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "manhunt-prosperity-sands-02",
+    "legacyId": "manhunt-103"
   },
   {
     "type": "time-trial",
@@ -938,7 +1146,9 @@
     "lat": 233.93,
     "lng": 265.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-sapphire-bay-01",
+    "legacyId": "time-trial-104"
   },
   {
     "type": "time-trial",
@@ -947,7 +1157,9 @@
     "lat": 377.96,
     "lng": 273.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-sapphire-bay-02",
+    "legacyId": "time-trial-105"
   },
   {
     "type": "time-trial",
@@ -956,7 +1168,9 @@
     "lat": 548.47,
     "lng": 234.52,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-golden-shores-01",
+    "legacyId": "time-trial-106"
   },
   {
     "type": "time-trial",
@@ -965,7 +1179,9 @@
     "lat": 569.46,
     "lng": 336.02,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-golden-shores-02",
+    "legacyId": "time-trial-107"
   },
   {
     "type": "time-trial",
@@ -974,7 +1190,9 @@
     "lat": 674.46,
     "lng": 426.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-dead-horse-lake-01",
+    "legacyId": "time-trial-108"
   },
   {
     "type": "time-trial",
@@ -983,7 +1201,9 @@
     "lat": 772.95,
     "lng": 495.52,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-dead-horse-lake-02",
+    "legacyId": "time-trial-109"
   },
   {
     "type": "time-trial",
@@ -992,7 +1212,9 @@
     "lat": 588.95,
     "lng": 601.01,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-prosperity-sands-01",
+    "legacyId": "time-trial-110"
   },
   {
     "type": "time-trial",
@@ -1001,7 +1223,9 @@
     "lat": 354.94,
     "lng": 595.51,
     "map": "base",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "timetrial-prosperity-sands-02",
+    "legacyId": "time-trial-111"
   },
   {
     "type": "cave",
@@ -1010,3135 +1234,4031 @@
     "lat": 301.56,
     "lng": 636.51,
     "map": "dlc",
-    "source": "dlc"
+    "source": "dlc",
+    "id": "cave-plover-island-01",
+    "legacyId": "cave-112"
   },
   {
     "type": "landmark",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 728.99,
-    "lng": 900.01
+    "lng": 900.01,
+    "id": "landmark-fawtick-bayou-02",
+    "legacyId": "landmark-113"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 754.23,
-    "lng": 909.25
+    "lng": 909.25,
+    "id": "nutrient-fawtick-bayou-02",
+    "legacyId": "nutrient-114"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 759.48,
-    "lng": 855.28
+    "lng": 855.28,
+    "id": "nutrient-fawtick-bayou-03",
+    "legacyId": "nutrient-115"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 777.47,
-    "lng": 852.03
+    "lng": 852.03,
+    "id": "nutrient-fawtick-bayou-04",
+    "legacyId": "nutrient-116"
   },
   {
     "type": "landmark",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 788.22,
-    "lng": 868.77
+    "lng": 868.77,
+    "id": "landmark-fawtick-bayou-03",
+    "legacyId": "landmark-117"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 791.47,
-    "lng": 788.31
+    "lng": 788.31,
+    "id": "plate-fawtick-bayou-01",
+    "legacyId": "plate-118"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 779.72,
-    "lng": 771.32
+    "lng": 771.32,
+    "id": "nutrient-fawtick-bayou-05",
+    "legacyId": "nutrient-119"
   },
   {
     "type": "landmark",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 789.72,
-    "lng": 762.32
+    "lng": 762.32,
+    "id": "landmark-fawtick-bayou-04",
+    "legacyId": "landmark-120"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 802.71,
-    "lng": 733.08
+    "lng": 733.08,
+    "id": "nutrient-fawtick-bayou-06",
+    "legacyId": "nutrient-121"
   },
   {
     "type": "landmark",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 815.21,
-    "lng": 734.33
+    "lng": 734.33,
+    "id": "landmark-fawtick-bayou-05",
+    "legacyId": "landmark-122"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 820.7,
-    "lng": 749.83
+    "lng": 749.83,
+    "id": "nutrient-fawtick-bayou-07",
+    "legacyId": "nutrient-123"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 810.21,
-    "lng": 752.08
+    "lng": 752.08,
+    "id": "plate-fawtick-bayou-02",
+    "legacyId": "plate-124"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 818.45,
-    "lng": 781.81
+    "lng": 781.81,
+    "id": "nutrient-fawtick-bayou-08",
+    "legacyId": "nutrient-125"
   },
   {
     "type": "landmark",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 851.69,
-    "lng": 803.8
+    "lng": 803.8,
+    "id": "landmark-fawtick-bayou-06",
+    "legacyId": "landmark-126"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 835.95,
-    "lng": 831.54
+    "lng": 831.54,
+    "id": "nutrient-fawtick-bayou-09",
+    "legacyId": "nutrient-127"
   },
   {
     "type": "landmark",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 840.94,
-    "lng": 840.79
+    "lng": 840.79,
+    "id": "landmark-fawtick-bayou-07",
+    "legacyId": "landmark-128"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 837.95,
-    "lng": 864.52
+    "lng": 864.52,
+    "id": "nutrient-fawtick-bayou-10",
+    "legacyId": "nutrient-129"
   },
   {
     "type": "landmark",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 855.44,
-    "lng": 865.02
+    "lng": 865.02,
+    "id": "landmark-fawtick-bayou-08",
+    "legacyId": "landmark-130"
   },
   {
     "type": "landmark",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 880.68,
-    "lng": 889.26
+    "lng": 889.26,
+    "id": "landmark-fawtick-bayou-09",
+    "legacyId": "landmark-131"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 895.92,
-    "lng": 903.01
+    "lng": 903.01,
+    "id": "plate-fawtick-bayou-03",
+    "legacyId": "plate-132"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 706.31,
-    "lng": 877.72
+    "lng": 877.72,
+    "id": "plate-fawtick-bayou-04",
+    "legacyId": "plate-133"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 686.32,
-    "lng": 829.74
+    "lng": 829.74,
+    "id": "nutrient-fawtick-bayou-11",
+    "legacyId": "nutrient-134"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 733.05,
-    "lng": 850.98
+    "lng": 850.98,
+    "id": "plate-fawtick-bayou-05",
+    "legacyId": "plate-135"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 721.06,
-    "lng": 784.51
+    "lng": 784.51,
+    "id": "plate-fawtick-bayou-06",
+    "legacyId": "plate-136"
   },
   {
     "type": "landmark",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 703.32,
-    "lng": 764.52
+    "lng": 764.52,
+    "id": "landmark-fawtick-bayou-10",
+    "legacyId": "landmark-137"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 812.02,
-    "lng": 886.96
+    "lng": 886.96,
+    "id": "nutrient-fawtick-bayou-12",
+    "legacyId": "nutrient-138"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 827.26,
-    "lng": 928.69
+    "lng": 928.69,
+    "id": "plate-fawtick-bayou-07",
+    "legacyId": "plate-139"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 844,
-    "lng": 916.95
+    "lng": 916.95,
+    "id": "nutrient-fawtick-bayou-13",
+    "legacyId": "nutrient-140"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 879.99,
-    "lng": 754.52
+    "lng": 754.52,
+    "id": "plate-fawtick-bayou-08",
+    "legacyId": "plate-141"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 880.49,
-    "lng": 743.78
+    "lng": 743.78,
+    "id": "nutrient-fawtick-bayou-14",
+    "legacyId": "nutrient-142"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 851.75,
-    "lng": 733.03
+    "lng": 733.03,
+    "id": "plate-fawtick-bayou-09",
+    "legacyId": "plate-143"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 861.25,
-    "lng": 750.28
+    "lng": 750.28,
+    "id": "nutrient-fawtick-bayou-15",
+    "legacyId": "nutrient-144"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 755.54,
-    "lng": 745.28
+    "lng": 745.28,
+    "id": "nutrient-fawtick-bayou-16",
+    "legacyId": "nutrient-145"
   },
   {
     "type": "nutrient",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 762.04,
-    "lng": 793.01
+    "lng": 793.01,
+    "id": "nutrient-fawtick-bayou-17",
+    "legacyId": "nutrient-146"
   },
   {
     "type": "plate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 730.55,
-    "lng": 746.28
+    "lng": 746.28,
+    "id": "plate-fawtick-bayou-10",
+    "legacyId": "plate-147"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 749.52,
-    "lng": 658.21
+    "lng": 658.21,
+    "id": "plate-dead-horse-lake-01",
+    "legacyId": "plate-148"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 738.78,
-    "lng": 642.97
+    "lng": 642.97,
+    "id": "plate-dead-horse-lake-02",
+    "legacyId": "plate-149"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 717.54,
-    "lng": 656.46
+    "lng": 656.46,
+    "id": "nutrient-dead-horse-lake-01",
+    "legacyId": "nutrient-150"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 738.53,
-    "lng": 615.98
+    "lng": 615.98,
+    "id": "nutrient-dead-horse-lake-02",
+    "legacyId": "nutrient-151"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 780.76,
-    "lng": 615.48
+    "lng": 615.48,
+    "id": "nutrient-dead-horse-lake-03",
+    "legacyId": "nutrient-152"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 784.26,
-    "lng": 617.23
+    "lng": 617.23,
+    "id": "landmark-dead-horse-lake-01",
+    "legacyId": "landmark-153"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 823.49,
-    "lng": 614.97
+    "lng": 614.97,
+    "id": "plate-dead-horse-lake-03",
+    "legacyId": "plate-154"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 830.74,
-    "lng": 646.72
+    "lng": 646.72,
+    "id": "nutrient-dead-horse-lake-04",
+    "legacyId": "nutrient-155"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 706.01,
-    "lng": 483.28
+    "lng": 483.28,
+    "id": "plate-dead-horse-lake-04",
+    "legacyId": "plate-156"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 792.54,
-    "lng": 560.73
+    "lng": 560.73,
+    "id": "landmark-dead-horse-lake-02",
+    "legacyId": "landmark-157"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 813.53,
-    "lng": 563.48
+    "lng": 563.48,
+    "id": "plate-dead-horse-lake-05",
+    "legacyId": "plate-158"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 820.28,
-    "lng": 569.97
+    "lng": 569.97,
+    "id": "nutrient-dead-horse-lake-05",
+    "legacyId": "nutrient-159"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 806.54,
-    "lng": 516.25
+    "lng": 516.25,
+    "id": "landmark-dead-horse-lake-03",
+    "legacyId": "landmark-160"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 830.53,
-    "lng": 526.49
+    "lng": 526.49,
+    "id": "plate-dead-horse-lake-06",
+    "legacyId": "plate-161"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 842.52,
-    "lng": 500.51
+    "lng": 500.51,
+    "id": "nutrient-dead-horse-lake-06",
+    "legacyId": "nutrient-162"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 872.01,
-    "lng": 482.51
+    "lng": 482.51,
+    "id": "landmark-dead-horse-lake-04",
+    "legacyId": "landmark-163"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 900.25,
-    "lng": 496.76
+    "lng": 496.76,
+    "id": "landmark-dead-horse-lake-05",
+    "legacyId": "landmark-164"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 918.24,
-    "lng": 486.51
+    "lng": 486.51,
+    "id": "nutrient-dead-horse-lake-07",
+    "legacyId": "nutrient-165"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 898.25,
-    "lng": 455.78
+    "lng": 455.78,
+    "id": "plate-dead-horse-lake-07",
+    "legacyId": "plate-166"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 883,
-    "lng": 437.29
+    "lng": 437.29,
+    "id": "nutrient-dead-horse-lake-08",
+    "legacyId": "nutrient-167"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 839.77,
-    "lng": 637.03
+    "lng": 637.03,
+    "id": "nutrient-dead-horse-lake-09",
+    "legacyId": "nutrient-168"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 823.28,
-    "lng": 388.56
+    "lng": 388.56,
+    "id": "plate-dead-horse-lake-08",
+    "legacyId": "plate-169"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 806.8,
-    "lng": 362.47
+    "lng": 362.47,
+    "id": "landmark-dead-horse-lake-06",
+    "legacyId": "landmark-170"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 821.29,
-    "lng": 344.73
+    "lng": 344.73,
+    "id": "nutrient-dead-horse-lake-10",
+    "legacyId": "nutrient-171"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 777.56,
-    "lng": 355.23
+    "lng": 355.23,
+    "id": "plate-dead-horse-lake-09",
+    "legacyId": "plate-172"
   },
   {
     "type": "plate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 792.25,
-    "lng": 419.97
+    "lng": 419.97,
+    "id": "plate-dead-horse-lake-10",
+    "legacyId": "plate-173"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 707.79,
-    "lng": 376.97
+    "lng": 376.97,
+    "id": "landmark-dead-horse-lake-07",
+    "legacyId": "landmark-174"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 699.05,
-    "lng": 371.72
+    "lng": 371.72,
+    "id": "nutrient-dead-horse-lake-11",
+    "legacyId": "nutrient-175"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 657.81,
-    "lng": 451.69
+    "lng": 451.69,
+    "id": "landmark-dead-horse-lake-08",
+    "legacyId": "landmark-176"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 691.05,
-    "lng": 490.17
+    "lng": 490.17,
+    "id": "landmark-dead-horse-lake-09",
+    "legacyId": "landmark-177"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 733.29,
-    "lng": 481.22
+    "lng": 481.22,
+    "id": "nutrient-dead-horse-lake-12",
+    "legacyId": "nutrient-178"
   },
   {
     "type": "landmark",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 759.03,
-    "lng": 490.96
+    "lng": 490.96,
+    "id": "landmark-dead-horse-lake-10",
+    "legacyId": "landmark-179"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 769.28,
-    "lng": 474.97
+    "lng": 474.97,
+    "id": "nutrient-dead-horse-lake-13",
+    "legacyId": "nutrient-180"
   },
   {
     "type": "nutrient",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 844.77,
-    "lng": 408.53
+    "lng": 408.53,
+    "id": "nutrient-dead-horse-lake-14",
+    "legacyId": "nutrient-181"
   },
   {
     "type": "floodgate",
     "areaId": "floodgates",
     "areaLabel": "水門",
     "lat": 714.75,
-    "lng": 582.79
+    "lng": 582.79,
+    "id": "floodgate-floodgates-01",
+    "legacyId": "floodgate-182"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 721.79,
-    "lng": 282.47
+    "lng": 282.47,
+    "id": "plate-golden-shores-01",
+    "legacyId": "plate-183"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 696.55,
-    "lng": 221.47
+    "lng": 221.47,
+    "id": "nutrient-golden-shores-01",
+    "legacyId": "nutrient-184"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 680.8,
-    "lng": 196.23
+    "lng": 196.23,
+    "id": "nutrient-golden-shores-02",
+    "legacyId": "nutrient-185"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 677.8,
-    "lng": 212.97
+    "lng": 212.97,
+    "id": "plate-golden-shores-02",
+    "legacyId": "plate-186"
   },
   {
     "type": "landmark",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 669.81,
-    "lng": 242.21
+    "lng": 242.21,
+    "id": "landmark-golden-shores-01",
+    "legacyId": "landmark-187"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 665.56,
-    "lng": 227.96
+    "lng": 227.96,
+    "id": "nutrient-golden-shores-03",
+    "legacyId": "nutrient-188"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 671.56,
-    "lng": 254.2
+    "lng": 254.2,
+    "id": "plate-golden-shores-03",
+    "legacyId": "plate-189"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 656.06,
-    "lng": 212.47
+    "lng": 212.47,
+    "id": "nutrient-golden-shores-04",
+    "legacyId": "nutrient-190"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 656.06,
-    "lng": 297.18
+    "lng": 297.18,
+    "id": "nutrient-golden-shores-05",
+    "legacyId": "nutrient-191"
   },
   {
     "type": "landmark",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 644.32,
-    "lng": 294.43
+    "lng": 294.43,
+    "id": "landmark-golden-shores-02",
+    "legacyId": "landmark-192"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 637.32,
-    "lng": 236.71
+    "lng": 236.71,
+    "id": "nutrient-golden-shores-06",
+    "legacyId": "nutrient-193"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 644.57,
-    "lng": 323.92
+    "lng": 323.92,
+    "id": "nutrient-golden-shores-07",
+    "legacyId": "nutrient-194"
   },
   {
     "type": "landmark",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 629.57,
-    "lng": 221.22
+    "lng": 221.22,
+    "id": "landmark-golden-shores-03",
+    "legacyId": "landmark-195"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 633.07,
-    "lng": 214.22
+    "lng": 214.22,
+    "id": "nutrient-golden-shores-08",
+    "legacyId": "nutrient-196"
   },
   {
     "type": "landmark",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 616.58,
-    "lng": 217.47
+    "lng": 217.47,
+    "id": "landmark-golden-shores-04",
+    "legacyId": "landmark-197"
   },
   {
     "type": "landmark",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 623.58,
-    "lng": 192.98
+    "lng": 192.98,
+    "id": "landmark-golden-shores-05",
+    "legacyId": "landmark-198"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 609.58,
-    "lng": 240.21
+    "lng": 240.21,
+    "id": "plate-golden-shores-04",
+    "legacyId": "plate-199"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 616.58,
-    "lng": 280.94
+    "lng": 280.94,
+    "id": "nutrient-golden-shores-09",
+    "legacyId": "nutrient-200"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 614.58,
-    "lng": 312.68
+    "lng": 312.68,
+    "id": "nutrient-golden-shores-10",
+    "legacyId": "nutrient-201"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 624.08,
-    "lng": 342.41
+    "lng": 342.41,
+    "id": "plate-golden-shores-05",
+    "legacyId": "plate-202"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 638.79,
-    "lng": 367.46
+    "lng": 367.46,
+    "id": "nutrient-golden-shores-11",
+    "legacyId": "nutrient-203"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 610.55,
-    "lng": 358.46
+    "lng": 358.46,
+    "id": "nutrient-golden-shores-12",
+    "legacyId": "nutrient-204"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 603.05,
-    "lng": 287
+    "lng": 287,
+    "id": "plate-golden-shores-06",
+    "legacyId": "plate-205"
   },
   {
     "type": "landmark",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 590.06,
-    "lng": 271.5
+    "lng": 271.5,
+    "id": "landmark-golden-shores-06",
+    "legacyId": "landmark-206"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 598.06,
-    "lng": 253.76
+    "lng": 253.76,
+    "id": "nutrient-golden-shores-13",
+    "legacyId": "nutrient-207"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 575.31,
-    "lng": 170.31
+    "lng": 170.31,
+    "id": "plate-golden-shores-07",
+    "legacyId": "plate-208"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 574.56,
-    "lng": 159.31
+    "lng": 159.31,
+    "id": "nutrient-golden-shores-14",
+    "legacyId": "nutrient-209"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 589.3,
-    "lng": 377.71
+    "lng": 377.71,
+    "id": "plate-golden-shores-08",
+    "legacyId": "plate-210"
   },
   {
     "type": "landmark",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 585.31,
-    "lng": 409.45
+    "lng": 409.45,
+    "id": "landmark-golden-shores-07",
+    "legacyId": "landmark-211"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 569.55,
-    "lng": 315.7
+    "lng": 315.7,
+    "id": "plate-golden-shores-09",
+    "legacyId": "plate-212"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 556.3,
-    "lng": 340.19
+    "lng": 340.19,
+    "id": "nutrient-golden-shores-15",
+    "legacyId": "nutrient-213"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 543.5,
-    "lng": 305.55
+    "lng": 305.55,
+    "id": "nutrient-golden-shores-16",
+    "legacyId": "nutrient-214"
   },
   {
     "type": "plate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 540.56,
-    "lng": 274.72
+    "lng": 274.72,
+    "id": "plate-golden-shores-10",
+    "legacyId": "plate-215"
   },
   {
     "type": "nutrient",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 547.55,
-    "lng": 260.48
+    "lng": 260.48,
+    "id": "nutrient-golden-shores-17",
+    "legacyId": "nutrient-216"
   },
   {
     "type": "landmark",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 497.08,
-    "lng": 237.49
+    "lng": 237.49,
+    "id": "landmark-golden-shores-08",
+    "legacyId": "landmark-217"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 486.29,
-    "lng": 262.21
+    "lng": 262.21,
+    "id": "nutrient-sapphire-bay-01",
+    "legacyId": "nutrient-218"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 468.8,
-    "lng": 263.21
+    "lng": 263.21,
+    "id": "nutrient-sapphire-bay-02",
+    "legacyId": "nutrient-219"
   },
   {
     "type": "landmark",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 458.81,
-    "lng": 269.95
+    "lng": 269.95,
+    "id": "landmark-sapphire-bay-01",
+    "legacyId": "landmark-220"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 448.56,
-    "lng": 244.46
+    "lng": 244.46,
+    "id": "plate-sapphire-bay-01",
+    "legacyId": "plate-221"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 413.56,
-    "lng": 261.46
+    "lng": 261.46,
+    "id": "plate-sapphire-bay-02",
+    "legacyId": "plate-222"
   },
   {
     "type": "landmark",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 385.3,
-    "lng": 280.72
+    "lng": 280.72,
+    "id": "landmark-sapphire-bay-02",
+    "legacyId": "landmark-223"
   },
   {
     "type": "landmark",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 400.3,
-    "lng": 326.69
+    "lng": 326.69,
+    "id": "landmark-sapphire-bay-03",
+    "legacyId": "landmark-224"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 365.56,
-    "lng": 321.2
+    "lng": 321.2,
+    "id": "plate-sapphire-bay-03",
+    "legacyId": "plate-225"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 352.82,
-    "lng": 288.71
+    "lng": 288.71,
+    "id": "nutrient-sapphire-bay-03",
+    "legacyId": "nutrient-226"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 347.82,
-    "lng": 286.71
+    "lng": 286.71,
+    "id": "plate-sapphire-bay-04",
+    "legacyId": "plate-227"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 375.81,
-    "lng": 362.18
+    "lng": 362.18,
+    "id": "nutrient-sapphire-bay-04",
+    "legacyId": "nutrient-228"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 402,
-    "lng": 242.27
+    "lng": 242.27,
+    "id": "nutrient-sapphire-bay-05",
+    "legacyId": "nutrient-229"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 404.04,
-    "lng": 138.22
+    "lng": 138.22,
+    "id": "nutrient-sapphire-bay-06",
+    "legacyId": "nutrient-230"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 420.03,
-    "lng": 141.97
+    "lng": 141.97,
+    "id": "nutrient-sapphire-bay-07",
+    "legacyId": "nutrient-231"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 400.79,
-    "lng": 169.96
+    "lng": 169.96,
+    "id": "plate-sapphire-bay-05",
+    "legacyId": "plate-232"
   },
   {
     "type": "landmark",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 336.32,
-    "lng": 157.46
+    "lng": 157.46,
+    "id": "landmark-sapphire-bay-04",
+    "legacyId": "landmark-233"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 327.07,
-    "lng": 148.47
+    "lng": 148.47,
+    "id": "plate-sapphire-bay-06",
+    "legacyId": "plate-234"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 326.82,
-    "lng": 134.72
+    "lng": 134.72,
+    "id": "nutrient-sapphire-bay-08",
+    "legacyId": "nutrient-235"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 335.32,
-    "lng": 148.97
+    "lng": 148.97,
+    "id": "nutrient-sapphire-bay-09",
+    "legacyId": "nutrient-236"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 330.57,
-    "lng": 162.71
+    "lng": 162.71,
+    "id": "nutrient-sapphire-bay-10",
+    "legacyId": "nutrient-237"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 341.06,
-    "lng": 205.2
+    "lng": 205.2,
+    "id": "nutrient-sapphire-bay-11",
+    "legacyId": "nutrient-238"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 360.05,
-    "lng": 225.94
+    "lng": 225.94,
+    "id": "nutrient-sapphire-bay-12",
+    "legacyId": "nutrient-239"
   },
   {
     "type": "landmark",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 322.07,
-    "lng": 232.68
+    "lng": 232.68,
+    "id": "landmark-sapphire-bay-05",
+    "legacyId": "landmark-240"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 303.83,
-    "lng": 248.68
+    "lng": 248.68,
+    "id": "plate-sapphire-bay-07",
+    "legacyId": "plate-241"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 293.83,
-    "lng": 244.93
+    "lng": 244.93,
+    "id": "nutrient-sapphire-bay-13",
+    "legacyId": "nutrient-242"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 274.34,
-    "lng": 222.44
+    "lng": 222.44,
+    "id": "plate-sapphire-bay-08",
+    "legacyId": "plate-243"
   },
   {
     "type": "landmark",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 260.85,
-    "lng": 231.18
+    "lng": 231.18,
+    "id": "landmark-sapphire-bay-06",
+    "legacyId": "landmark-244"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 263.54,
-    "lng": 254.3
+    "lng": 254.3,
+    "id": "nutrient-sapphire-bay-14",
+    "legacyId": "nutrient-245"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 238.8,
-    "lng": 182
+    "lng": 182,
+    "id": "plate-sapphire-bay-09",
+    "legacyId": "plate-246"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 213.32,
-    "lng": 153.01
+    "lng": 153.01,
+    "id": "nutrient-sapphire-bay-15",
+    "legacyId": "nutrient-247"
   },
   {
     "type": "landmark",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 204.82,
-    "lng": 205.74
+    "lng": 205.74,
+    "id": "landmark-sapphire-bay-07",
+    "legacyId": "landmark-248"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 198.57,
-    "lng": 248.72
+    "lng": 248.72,
+    "id": "nutrient-sapphire-bay-16",
+    "legacyId": "nutrient-249"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 174.55,
-    "lng": 237.51
+    "lng": 237.51,
+    "id": "nutrient-sapphire-bay-17",
+    "legacyId": "nutrient-250"
   },
   {
     "type": "landmark",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 211.03,
-    "lng": 292.73
+    "lng": 292.73,
+    "id": "landmark-sapphire-bay-08",
+    "legacyId": "landmark-251"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 241.02,
-    "lng": 313.21
+    "lng": 313.21,
+    "id": "nutrient-sapphire-bay-18",
+    "legacyId": "nutrient-252"
   },
   {
     "type": "plate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 291.26,
-    "lng": 355.94
+    "lng": 355.94,
+    "id": "plate-sapphire-bay-10",
+    "legacyId": "plate-253"
   },
   {
     "type": "nutrient",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 297,
-    "lng": 313.71
+    "lng": 313.71,
+    "id": "nutrient-sapphire-bay-19",
+    "legacyId": "nutrient-254"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 489.01,
-    "lng": 526.21
+    "lng": 526.21,
+    "id": "landmark-prosperity-sands-01",
+    "legacyId": "landmark-255"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 484.26,
-    "lng": 512.96
+    "lng": 512.96,
+    "id": "plate-prosperity-sands-01",
+    "legacyId": "plate-256"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 527.24,
-    "lng": 471.73
+    "lng": 471.73,
+    "id": "landmark-prosperity-sands-02",
+    "legacyId": "landmark-257"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 507,
-    "lng": 445.24
+    "lng": 445.24,
+    "id": "landmark-prosperity-sands-03",
+    "legacyId": "landmark-258"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 484.76,
-    "lng": 480.48
+    "lng": 480.48,
+    "id": "landmark-prosperity-sands-04",
+    "legacyId": "landmark-259"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 535.99,
-    "lng": 562.94
+    "lng": 562.94,
+    "id": "nutrient-prosperity-sands-01",
+    "legacyId": "nutrient-260"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 552.01,
-    "lng": 475.78
+    "lng": 475.78,
+    "id": "nutrient-prosperity-sands-02",
+    "legacyId": "nutrient-261"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 573.22,
-    "lng": 501.22
+    "lng": 501.22,
+    "id": "nutrient-prosperity-sands-03",
+    "legacyId": "nutrient-262"
   },
   {
     "type": "floodgate",
     "areaId": "floodgates",
     "areaLabel": "水門",
     "lat": 548.27,
-    "lng": 423.54
+    "lng": 423.54,
+    "id": "floodgate-floodgates-02",
+    "legacyId": "floodgate-263"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 573.97,
-    "lng": 522.46
+    "lng": 522.46,
+    "id": "landmark-prosperity-sands-05",
+    "legacyId": "landmark-264"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 606.96,
-    "lng": 536.95
+    "lng": 536.95,
+    "id": "plate-prosperity-sands-02",
+    "legacyId": "plate-265"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 602.21,
-    "lng": 563.69
+    "lng": 563.69,
+    "id": "plate-prosperity-sands-03",
+    "legacyId": "plate-266"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 595.96,
-    "lng": 564.69
+    "lng": 564.69,
+    "id": "landmark-prosperity-sands-06",
+    "legacyId": "landmark-267"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 622.7,
-    "lng": 576.93
+    "lng": 576.93,
+    "id": "landmark-prosperity-sands-07",
+    "legacyId": "landmark-268"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 562.23,
-    "lng": 561.94
+    "lng": 561.94,
+    "id": "plate-prosperity-sands-04",
+    "legacyId": "plate-269"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 574.22,
-    "lng": 587.18
+    "lng": 587.18,
+    "id": "nutrient-prosperity-sands-04",
+    "legacyId": "nutrient-270"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 538.72,
-    "lng": 609.46
+    "lng": 609.46,
+    "id": "nutrient-prosperity-sands-05",
+    "legacyId": "nutrient-271"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 514.71,
-    "lng": 610.21
+    "lng": 610.21,
+    "id": "plate-prosperity-sands-05",
+    "legacyId": "plate-272"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 464.95,
-    "lng": 639.7
+    "lng": 639.7,
+    "id": "plate-prosperity-sands-06",
+    "legacyId": "plate-273"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 452.19,
-    "lng": 571.23
+    "lng": 571.23,
+    "id": "plate-prosperity-sands-07",
+    "legacyId": "plate-274"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 435.94,
-    "lng": 622.95
+    "lng": 622.95,
+    "id": "landmark-prosperity-sands-08",
+    "legacyId": "landmark-275"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 564.52,
-    "lng": 488.28
+    "lng": 488.28,
+    "id": "plate-prosperity-sands-08",
+    "legacyId": "plate-276"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 429.19,
-    "lng": 495.51
+    "lng": 495.51,
+    "id": "nutrient-prosperity-sands-06",
+    "legacyId": "nutrient-277"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 375.42,
-    "lng": 522
+    "lng": 522,
+    "id": "plate-prosperity-sands-09",
+    "legacyId": "plate-278"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 377.42,
-    "lng": 553.49
+    "lng": 553.49,
+    "id": "landmark-prosperity-sands-09",
+    "legacyId": "landmark-279"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 349.42,
-    "lng": 540.99
+    "lng": 540.99,
+    "id": "nutrient-prosperity-sands-07",
+    "legacyId": "nutrient-280"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 328.91,
-    "lng": 514.25
+    "lng": 514.25,
+    "id": "nutrient-prosperity-sands-08",
+    "legacyId": "nutrient-281"
   },
   {
     "type": "landmark",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 320.41,
-    "lng": 489.51
+    "lng": 489.51,
+    "id": "landmark-prosperity-sands-10",
+    "legacyId": "landmark-282"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 306.65,
-    "lng": 471.52
+    "lng": 471.52,
+    "id": "nutrient-prosperity-sands-09",
+    "legacyId": "nutrient-283"
   },
   {
     "type": "plate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 323.91,
-    "lng": 432.04
+    "lng": 432.04,
+    "id": "plate-prosperity-sands-10",
+    "legacyId": "plate-284"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 352.7,
-    "lng": 591.45
+    "lng": 591.45,
+    "id": "nutrient-prosperity-sands-10",
+    "legacyId": "nutrient-285"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 355.45,
-    "lng": 582.46
+    "lng": 582.46,
+    "id": "nutrient-prosperity-sands-11",
+    "legacyId": "nutrient-286"
   },
   {
     "type": "nutrient",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 383.96,
-    "lng": 584.46
+    "lng": 584.46,
+    "id": "nutrient-prosperity-sands-12",
+    "legacyId": "nutrient-287"
   },
   {
     "type": "landmark",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 703.75,
-    "lng": 614.71
+    "lng": 614.71,
+    "id": "landmark-caviar-key-01",
+    "legacyId": "landmark-288"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 660.74,
-    "lng": 635.2
+    "lng": 635.2,
+    "id": "plate-caviar-key-01",
+    "legacyId": "plate-289"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 668.24,
-    "lng": 665.44
+    "lng": 665.44,
+    "id": "nutrient-caviar-key-01",
+    "legacyId": "nutrient-290"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 651.49,
-    "lng": 703.92
+    "lng": 703.92,
+    "id": "nutrient-caviar-key-02",
+    "legacyId": "nutrient-291"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 636.98,
-    "lng": 681.18
+    "lng": 681.18,
+    "id": "plate-caviar-key-02",
+    "legacyId": "plate-292"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 624.73,
-    "lng": 659.19
+    "lng": 659.19,
+    "id": "nutrient-caviar-key-03",
+    "legacyId": "nutrient-293"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 637.71,
-    "lng": 612.22
+    "lng": 612.22,
+    "id": "nutrient-caviar-key-04",
+    "legacyId": "nutrient-294"
   },
   {
     "type": "landmark",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 603.45,
-    "lng": 642.45
+    "lng": 642.45,
+    "id": "landmark-caviar-key-02",
+    "legacyId": "landmark-295"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 586.21,
-    "lng": 661.21
+    "lng": 661.21,
+    "id": "plate-caviar-key-03",
+    "legacyId": "plate-296"
   },
   {
     "type": "landmark",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 628.72,
-    "lng": 756.17
+    "lng": 756.17,
+    "id": "landmark-caviar-key-03",
+    "legacyId": "landmark-297"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 595.46,
-    "lng": 705.44
+    "lng": 705.44,
+    "id": "plate-caviar-key-04",
+    "legacyId": "plate-298"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 601.21,
-    "lng": 738.93
+    "lng": 738.93,
+    "id": "nutrient-caviar-key-05",
+    "legacyId": "nutrient-299"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 576.2,
-    "lng": 762.91
+    "lng": 762.91,
+    "id": "plate-caviar-key-05",
+    "legacyId": "plate-300"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 557.45,
-    "lng": 794.9
+    "lng": 794.9,
+    "id": "nutrient-caviar-key-06",
+    "legacyId": "nutrient-301"
   },
   {
     "type": "landmark",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 523.94,
-    "lng": 725.93
+    "lng": 725.93,
+    "id": "landmark-caviar-key-04",
+    "legacyId": "landmark-302"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 525.44,
-    "lng": 695.7
+    "lng": 695.7,
+    "id": "nutrient-caviar-key-07",
+    "legacyId": "nutrient-303"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 517.44,
-    "lng": 695.45
+    "lng": 695.45,
+    "id": "plate-caviar-key-06",
+    "legacyId": "plate-304"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 524.69,
-    "lng": 650.97
+    "lng": 650.97,
+    "id": "plate-caviar-key-07",
+    "legacyId": "plate-305"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 486.97,
-    "lng": 695.96
+    "lng": 695.96,
+    "id": "nutrient-caviar-key-08",
+    "legacyId": "nutrient-306"
   },
   {
     "type": "landmark",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 474.22,
-    "lng": 700.2
+    "lng": 700.2,
+    "id": "landmark-caviar-key-05",
+    "legacyId": "landmark-307"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 470.22,
-    "lng": 745.18
+    "lng": 745.18,
+    "id": "nutrient-caviar-key-09",
+    "legacyId": "nutrient-308"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 440.46,
-    "lng": 721.94
+    "lng": 721.94,
+    "id": "plate-caviar-key-08",
+    "legacyId": "plate-309"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 427.7,
-    "lng": 656.72
+    "lng": 656.72,
+    "id": "nutrient-caviar-key-10",
+    "legacyId": "nutrient-310"
   },
   {
     "type": "landmark",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 464.72,
-    "lng": 780.18
+    "lng": 780.18,
+    "id": "landmark-caviar-key-06",
+    "legacyId": "landmark-311"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 515.22,
-    "lng": 839.96
+    "lng": 839.96,
+    "id": "nutrient-caviar-key-11",
+    "legacyId": "nutrient-312"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 507.97,
-    "lng": 901.68
+    "lng": 901.68,
+    "id": "plate-caviar-key-09",
+    "legacyId": "plate-313"
   },
   {
     "type": "landmark",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 517.72,
-    "lng": 936.42
+    "lng": 936.42,
+    "id": "landmark-caviar-key-07",
+    "legacyId": "landmark-314"
   },
   {
     "type": "landmark",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 563.5,
-    "lng": 738.54
+    "lng": 738.54,
+    "id": "landmark-caviar-key-08",
+    "legacyId": "landmark-315"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 588.01,
-    "lng": 738.56
+    "lng": 738.56,
+    "id": "nutrient-caviar-key-12",
+    "legacyId": "nutrient-316"
   },
   {
     "type": "nutrient",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 548.77,
-    "lng": 693.55
+    "lng": 693.55,
+    "id": "nutrient-caviar-key-13",
+    "legacyId": "nutrient-317"
   },
   {
     "type": "plate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 670.51,
-    "lng": 686.28
+    "lng": 686.28,
+    "id": "plate-caviar-key-10",
+    "legacyId": "plate-318"
   },
   {
     "type": "floodgate",
     "areaId": "floodgates",
     "areaLabel": "水門",
     "lat": 670.76,
-    "lng": 736.81
+    "lng": 736.81,
+    "id": "floodgate-floodgates-03",
+    "legacyId": "floodgate-319"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 371.43,
-    "lng": 751.52
+    "lng": 751.52,
+    "id": "nutrient-gulf-01",
+    "legacyId": "nutrient-320"
   },
   {
     "type": "landmark",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 385.46,
-    "lng": 681.25
+    "lng": 681.25,
+    "id": "landmark-gulf-01",
+    "legacyId": "landmark-321"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 376.96,
-    "lng": 665.25
+    "lng": 665.25,
+    "id": "nutrient-gulf-02",
+    "legacyId": "nutrient-322"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 367.71,
-    "lng": 681.259
+    "lng": 681.259,
+    "id": "plate-gulf-01",
+    "legacyId": "plate-323"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 346.45,
-    "lng": 665.5
+    "lng": 665.5,
+    "id": "plate-gulf-02",
+    "legacyId": "plate-324"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 250.44,
-    "lng": 422.99
+    "lng": 422.99,
+    "id": "nutrient-gulf-03",
+    "legacyId": "nutrient-325"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 266.7,
-    "lng": 424.74
+    "lng": 424.74,
+    "id": "nutrient-gulf-04",
+    "legacyId": "nutrient-326"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 263.7,
-    "lng": 457.25
+    "lng": 457.25,
+    "id": "nutrient-gulf-05",
+    "legacyId": "nutrient-327"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 219.89,
-    "lng": 379.99
+    "lng": 379.99,
+    "id": "nutrient-gulf-06",
+    "legacyId": "nutrient-328"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 191.38,
-    "lng": 371.99
+    "lng": 371.99,
+    "id": "plate-gulf-03",
+    "legacyId": "plate-329"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 163.37,
-    "lng": 384.99
+    "lng": 384.99,
+    "id": "nutrient-gulf-07",
+    "legacyId": "nutrient-330"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 183.38,
-    "lng": 406.49
+    "lng": 406.49,
+    "id": "nutrient-gulf-08",
+    "legacyId": "nutrient-331"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 199.38,
-    "lng": 455
+    "lng": 455,
+    "id": "plate-gulf-04",
+    "legacyId": "plate-332"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 221.39,
-    "lng": 475.5
+    "lng": 475.5,
+    "id": "nutrient-gulf-09",
+    "legacyId": "nutrient-333"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 168.88,
-    "lng": 471.5
+    "lng": 471.5,
+    "id": "nutrient-gulf-10",
+    "legacyId": "nutrient-334"
   },
   {
     "type": "landmark",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 192.38,
-    "lng": 483.5
+    "lng": 483.5,
+    "id": "landmark-gulf-02",
+    "legacyId": "landmark-335"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 207.89,
-    "lng": 500.5
+    "lng": 500.5,
+    "id": "nutrient-gulf-11",
+    "legacyId": "nutrient-336"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 266.4,
-    "lng": 515
+    "lng": 515,
+    "id": "nutrient-gulf-12",
+    "legacyId": "nutrient-337"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 252.9,
-    "lng": 531.01
+    "lng": 531.01,
+    "id": "nutrient-gulf-13",
+    "legacyId": "nutrient-338"
   },
   {
     "type": "landmark",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 227.39,
-    "lng": 517
+    "lng": 517,
+    "id": "landmark-gulf-03",
+    "legacyId": "landmark-339"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 272.41,
-    "lng": 537.01
+    "lng": 537.01,
+    "id": "plate-gulf-05",
+    "legacyId": "plate-340"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 267.9,
-    "lng": 575.51
+    "lng": 575.51,
+    "id": "plate-gulf-06",
+    "legacyId": "plate-341"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 213.89,
-    "lng": 560.51
+    "lng": 560.51,
+    "id": "plate-gulf-07",
+    "legacyId": "plate-342"
   },
   {
     "type": "landmark",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 311.92,
-    "lng": 582.51
+    "lng": 582.51,
+    "id": "landmark-gulf-04",
+    "legacyId": "landmark-343"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 305.9,
-    "lng": 611.51
+    "lng": 611.51,
+    "id": "nutrient-gulf-14",
+    "legacyId": "nutrient-344"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 256.89,
-    "lng": 605.01
+    "lng": 605.01,
+    "id": "nutrient-gulf-15",
+    "legacyId": "nutrient-345"
   },
   {
     "type": "landmark",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 432.22,
-    "lng": 840.75
+    "lng": 840.75,
+    "id": "landmark-gulf-05",
+    "legacyId": "landmark-346"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 434.72,
-    "lng": 824.5
+    "lng": 824.5,
+    "id": "nutrient-gulf-16",
+    "legacyId": "nutrient-347"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 473.98,
-    "lng": 912.5
+    "lng": 912.5,
+    "id": "nutrient-gulf-17",
+    "legacyId": "nutrient-348"
   },
   {
     "type": "landmark",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 469.48,
-    "lng": 918.51
+    "lng": 918.51,
+    "id": "landmark-gulf-06",
+    "legacyId": "landmark-349"
   },
   {
     "type": "landmark",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 424.5,
-    "lng": 902.51
+    "lng": 902.51,
+    "id": "landmark-gulf-07",
+    "legacyId": "landmark-350"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 416.28,
-    "lng": 878.29
+    "lng": 878.29,
+    "id": "nutrient-gulf-18",
+    "legacyId": "nutrient-351"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 378.95,
-    "lng": 857.01
+    "lng": 857.01,
+    "id": "plate-gulf-08",
+    "legacyId": "plate-352"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 460.45,
-    "lng": 945.51
+    "lng": 945.51,
+    "id": "nutrient-gulf-19",
+    "legacyId": "nutrient-353"
   },
   {
     "type": "landmark",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 382.43,
-    "lng": 949.51
+    "lng": 949.51,
+    "id": "landmark-gulf-08",
+    "legacyId": "landmark-354"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 437.445,
-    "lng": 963.01
+    "lng": 963.01,
+    "id": "plate-gulf-09",
+    "legacyId": "plate-355"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 437.44,
-    "lng": 977.51
+    "lng": 977.51,
+    "id": "nutrient-gulf-20",
+    "legacyId": "nutrient-356"
   },
   {
     "type": "landmark",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 502.46,
-    "lng": 1055.02
+    "lng": 1055.02,
+    "id": "landmark-gulf-09",
+    "legacyId": "landmark-357"
   },
   {
     "type": "nutrient",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 490.96,
-    "lng": 1044.02
+    "lng": 1044.02,
+    "id": "nutrient-gulf-21",
+    "legacyId": "nutrient-358"
   },
   {
     "type": "plate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 471.95,
-    "lng": 1086.52
+    "lng": 1086.52,
+    "id": "plate-gulf-10",
+    "legacyId": "plate-359"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 707.73,
-    "lng": 963.25
+    "lng": 963.25,
+    "id": "plate-crawfish-bay-01",
+    "legacyId": "plate-360"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 768.49,
-    "lng": 969
+    "lng": 969,
+    "id": "plate-crawfish-bay-02",
+    "legacyId": "plate-361"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 755.74,
-    "lng": 993
+    "lng": 993,
+    "id": "nutrient-crawfish-bay-01",
+    "legacyId": "nutrient-362"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 738.73,
-    "lng": 1010.25
+    "lng": 1010.25,
+    "id": "nutrient-crawfish-bay-02",
+    "legacyId": "nutrient-363"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 728.73,
-    "lng": 993.75
+    "lng": 993.75,
+    "id": "plate-crawfish-bay-03",
+    "legacyId": "plate-364"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 718.48,
-    "lng": 987.5
+    "lng": 987.5,
+    "id": "nutrient-crawfish-bay-03",
+    "legacyId": "nutrient-365"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 694.22,
-    "lng": 983.25
+    "lng": 983.25,
+    "id": "nutrient-crawfish-bay-04",
+    "legacyId": "nutrient-366"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 686.97,
-    "lng": 994
+    "lng": 994,
+    "id": "plate-crawfish-bay-04",
+    "legacyId": "plate-367"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 677.47,
-    "lng": 1029.26
+    "lng": 1029.26,
+    "id": "plate-crawfish-bay-05",
+    "legacyId": "plate-368"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 653.96,
-    "lng": 985.75
+    "lng": 985.75,
+    "id": "plate-crawfish-bay-06",
+    "legacyId": "plate-369"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 654.71,
-    "lng": 1005
+    "lng": 1005,
+    "id": "nutrient-crawfish-bay-05",
+    "legacyId": "nutrient-370"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 644.96,
-    "lng": 1026.76
+    "lng": 1026.76,
+    "id": "plate-crawfish-bay-07",
+    "legacyId": "plate-371"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 681.97,
-    "lng": 1051.26
+    "lng": 1051.26,
+    "id": "nutrient-crawfish-bay-06",
+    "legacyId": "nutrient-372"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 620.21,
-    "lng": 1037
+    "lng": 1037,
+    "id": "nutrient-crawfish-bay-07",
+    "legacyId": "nutrient-373"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 643.46,
-    "lng": 1063.01
+    "lng": 1063.01,
+    "id": "nutrient-crawfish-bay-08",
+    "legacyId": "nutrient-374"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 611.45,
-    "lng": 1060.76
+    "lng": 1060.76,
+    "id": "plate-crawfish-bay-08",
+    "legacyId": "plate-375"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 591.45,
-    "lng": 1016.25
+    "lng": 1016.25,
+    "id": "plate-crawfish-bay-09",
+    "legacyId": "plate-376"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 592.95,
-    "lng": 986.75
+    "lng": 986.75,
+    "id": "nutrient-crawfish-bay-09",
+    "legacyId": "nutrient-377"
   },
   {
     "type": "plate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 575.94,
-    "lng": 971.75
+    "lng": 971.75,
+    "id": "plate-crawfish-bay-10",
+    "legacyId": "plate-378"
   },
   {
     "type": "nutrient",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 667.26,
-    "lng": 980.04
+    "lng": 980.04,
+    "id": "nutrient-crawfish-bay-10",
+    "legacyId": "nutrient-379"
   },
   {
     "type": "main-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 703.02,
-    "lng": 932.13
+    "lng": 932.13,
+    "id": "mainquest-fawtick-bayou-01",
+    "legacyId": "main-quest-380"
   },
   {
     "type": "main-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 694.52,
-    "lng": 919.88
+    "lng": 919.88,
+    "id": "mainquest-fawtick-bayou-02",
+    "legacyId": "main-quest-381"
   },
   {
     "type": "main-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 688.27,
-    "lng": 839.12
+    "lng": 839.12,
+    "id": "mainquest-fawtick-bayou-03",
+    "legacyId": "main-quest-382"
   },
   {
     "type": "main-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 744.12,
-    "lng": 888.13
+    "lng": 888.13,
+    "id": "mainquest-fawtick-bayou-04",
+    "legacyId": "main-quest-383"
   },
   {
     "type": "main-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 782.02,
-    "lng": 789.5
+    "lng": 789.5,
+    "id": "mainquest-fawtick-bayou-05",
+    "legacyId": "main-quest-384"
   },
   {
     "type": "main-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 821.4,
-    "lng": 924.25
+    "lng": 924.25,
+    "id": "mainquest-fawtick-bayou-06",
+    "legacyId": "main-quest-385"
   },
   {
     "type": "main-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 820.89,
-    "lng": 870.88
+    "lng": 870.88,
+    "id": "mainquest-fawtick-bayou-07",
+    "legacyId": "main-quest-386"
   },
   {
     "type": "sub-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 723.55,
-    "lng": 760.25
+    "lng": 760.25,
+    "id": "subquest-fawtick-bayou-01",
+    "legacyId": "sub-quest-387"
   },
   {
     "type": "sub-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 823.75,
-    "lng": 736.75
+    "lng": 736.75,
+    "id": "subquest-fawtick-bayou-02",
+    "legacyId": "sub-quest-388"
   },
   {
     "type": "sub-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 779.79,
-    "lng": 836.01
+    "lng": 836.01,
+    "id": "subquest-fawtick-bayou-03",
+    "legacyId": "sub-quest-389"
   },
   {
     "type": "sub-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 830.02,
-    "lng": 852.76
+    "lng": 852.76,
+    "id": "subquest-fawtick-bayou-04",
+    "legacyId": "sub-quest-390"
   },
   {
     "type": "grate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 849.78,
-    "lng": 909.26
+    "lng": 909.26,
+    "id": "grate-fawtick-bayou-01",
+    "legacyId": "grate-391"
   },
   {
     "type": "grate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 846.98,
-    "lng": 763.98
+    "lng": 763.98,
+    "id": "grate-fawtick-bayou-02",
+    "legacyId": "grate-392"
   },
   {
     "type": "grate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 838.48,
-    "lng": 733.73
+    "lng": 733.73,
+    "id": "grate-fawtick-bayou-03",
+    "legacyId": "grate-393"
   },
   {
     "type": "grate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 819.49,
-    "lng": 763.48
+    "lng": 763.48,
+    "id": "grate-fawtick-bayou-04",
+    "legacyId": "grate-394"
   },
   {
     "type": "grate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 788.5,
-    "lng": 719.72
+    "lng": 719.72,
+    "id": "grate-fawtick-bayou-05",
+    "legacyId": "grate-395"
   },
   {
     "type": "grate",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 759.76,
-    "lng": 784.73
+    "lng": 784.73,
+    "id": "grate-fawtick-bayou-06",
+    "legacyId": "grate-396"
   },
   {
     "type": "main-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 788.79,
-    "lng": 610.75
+    "lng": 610.75,
+    "id": "mainquest-dead-horse-lake-04",
+    "legacyId": "main-quest-397"
   },
   {
     "type": "main-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 769.54,
-    "lng": 660.75
+    "lng": 660.75,
+    "id": "mainquest-dead-horse-lake-05",
+    "legacyId": "main-quest-398"
   },
   {
     "type": "main-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 821.52,
-    "lng": 654
+    "lng": 654,
+    "id": "mainquest-dead-horse-lake-06",
+    "legacyId": "main-quest-399"
   },
   {
     "type": "main-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 805.78,
-    "lng": 531.76
+    "lng": 531.76,
+    "id": "mainquest-dead-horse-lake-07",
+    "legacyId": "main-quest-400"
   },
   {
     "type": "main-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 895.01,
-    "lng": 460.51
+    "lng": 460.51,
+    "id": "mainquest-dead-horse-lake-08",
+    "legacyId": "main-quest-401"
   },
   {
     "type": "main-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 831.54,
-    "lng": 385
+    "lng": 385,
+    "id": "mainquest-dead-horse-lake-09",
+    "legacyId": "main-quest-402"
   },
   {
     "type": "main-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 731.33,
-    "lng": 452.26
+    "lng": 452.26,
+    "id": "mainquest-dead-horse-lake-10",
+    "legacyId": "main-quest-403"
   },
   {
     "type": "main-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 730.08,
-    "lng": 465.51
+    "lng": 465.51,
+    "id": "mainquest-dead-horse-lake-11",
+    "legacyId": "main-quest-404"
   },
   {
     "type": "sub-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 760.05,
-    "lng": 613.01
+    "lng": 613.01,
+    "id": "subquest-dead-horse-lake-03",
+    "legacyId": "sub-quest-405"
   },
   {
     "type": "sub-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 858.28,
-    "lng": 507.51
+    "lng": 507.51,
+    "id": "subquest-dead-horse-lake-04",
+    "legacyId": "sub-quest-406"
   },
   {
     "type": "sub-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 817.29,
-    "lng": 434.51
+    "lng": 434.51,
+    "id": "subquest-dead-horse-lake-05",
+    "legacyId": "sub-quest-407"
   },
   {
     "type": "sub-quest",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 733.54,
-    "lng": 423.76
+    "lng": 423.76,
+    "id": "subquest-dead-horse-lake-06",
+    "legacyId": "sub-quest-408"
   },
   {
     "type": "manhunt",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 830,
-    "lng": 478.51
+    "lng": 478.51,
+    "id": "manhunt-dead-horse-lake-03",
+    "legacyId": "manhunt-409"
   },
   {
     "type": "manhunt",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 815.51,
-    "lng": 352.5
+    "lng": 352.5,
+    "id": "manhunt-dead-horse-lake-04",
+    "legacyId": "manhunt-410"
   },
   {
     "type": "manhunt",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 708.28,
-    "lng": 371.25
+    "lng": 371.25,
+    "id": "manhunt-dead-horse-lake-05",
+    "legacyId": "manhunt-411"
   },
   {
     "type": "manhunt",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 656.02,
-    "lng": 450
+    "lng": 450,
+    "id": "manhunt-dead-horse-lake-06",
+    "legacyId": "manhunt-412"
   },
   {
     "type": "grate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 800.03,
-    "lng": 666.26
+    "lng": 666.26,
+    "id": "grate-dead-horse-lake-01",
+    "legacyId": "grate-413"
   },
   {
     "type": "grate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 795.54,
-    "lng": 661.01
+    "lng": 661.01,
+    "id": "grate-dead-horse-lake-02",
+    "legacyId": "grate-414"
   },
   {
     "type": "grate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 732.79,
-    "lng": 656.01
+    "lng": 656.01,
+    "id": "grate-dead-horse-lake-03",
+    "legacyId": "grate-415"
   },
   {
     "type": "grate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 720.3,
-    "lng": 646.26
+    "lng": 646.26,
+    "id": "grate-dead-horse-lake-04",
+    "legacyId": "grate-416"
   },
   {
     "type": "grate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 753.03,
-    "lng": 612.51
+    "lng": 612.51,
+    "id": "grate-dead-horse-lake-05",
+    "legacyId": "grate-417"
   },
   {
     "type": "grate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 900.47,
-    "lng": 480.5
+    "lng": 480.5,
+    "id": "grate-dead-horse-lake-06",
+    "legacyId": "grate-418"
   },
   {
     "type": "grate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 815.79,
-    "lng": 425.26
+    "lng": 425.26,
+    "id": "grate-dead-horse-lake-07",
+    "legacyId": "grate-419"
   },
   {
     "type": "grate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 812.54,
-    "lng": 370.75
+    "lng": 370.75,
+    "id": "grate-dead-horse-lake-08",
+    "legacyId": "grate-420"
   },
   {
     "type": "grate",
     "areaId": "dead-horse-lake",
     "areaLabel": "デッド・ホース・レイク",
     "lat": 832.78,
-    "lng": 382.75
+    "lng": 382.75,
+    "id": "grate-dead-horse-lake-09",
+    "legacyId": "grate-421"
   },
   {
     "type": "main-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 606.06,
-    "lng": 393.26
+    "lng": 393.26,
+    "id": "mainquest-golden-shores-04",
+    "legacyId": "main-quest-422"
   },
   {
     "type": "main-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 604.29,
-    "lng": 327.01
+    "lng": 327.01,
+    "id": "mainquest-golden-shores-05",
+    "legacyId": "main-quest-423"
   },
   {
     "type": "main-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 687.5,
-    "lng": 311.51
+    "lng": 311.51,
+    "id": "mainquest-golden-shores-06",
+    "legacyId": "main-quest-424"
   },
   {
     "type": "main-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 669.51,
-    "lng": 264.25
+    "lng": 264.25,
+    "id": "mainquest-golden-shores-07",
+    "legacyId": "main-quest-425"
   },
   {
     "type": "main-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 650.02,
-    "lng": 269
+    "lng": 269,
+    "id": "mainquest-golden-shores-08",
+    "legacyId": "main-quest-426"
   },
   {
     "type": "main-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 651.39,
-    "lng": 213.5
+    "lng": 213.5,
+    "id": "mainquest-golden-shores-09",
+    "legacyId": "main-quest-427"
   },
   {
     "type": "main-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 575.67,
-    "lng": 214.25
+    "lng": 214.25,
+    "id": "mainquest-golden-shores-10",
+    "legacyId": "main-quest-428"
   },
   {
     "type": "main-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 647.54,
-    "lng": 260.76
+    "lng": 260.76,
+    "id": "mainquest-golden-shores-11",
+    "legacyId": "main-quest-429"
   },
   {
     "type": "sub-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 688.52,
-    "lng": 214.26
+    "lng": 214.26,
+    "id": "subquest-golden-shores-03",
+    "legacyId": "sub-quest-430"
   },
   {
     "type": "sub-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 600.79,
-    "lng": 257.51
+    "lng": 257.51,
+    "id": "subquest-golden-shores-04",
+    "legacyId": "sub-quest-431"
   },
   {
     "type": "sub-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 545.84,
-    "lng": 233.76
+    "lng": 233.76,
+    "id": "subquest-golden-shores-05",
+    "legacyId": "sub-quest-432"
   },
   {
     "type": "sub-quest",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 611.56,
-    "lng": 347.01
+    "lng": 347.01,
+    "id": "subquest-golden-shores-06",
+    "legacyId": "sub-quest-433"
   },
   {
     "type": "manhunt",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 702.01,
-    "lng": 262.26
+    "lng": 262.26,
+    "id": "manhunt-golden-shores-03",
+    "legacyId": "manhunt-434"
   },
   {
     "type": "manhunt",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 644.53,
-    "lng": 341.26
+    "lng": 341.26,
+    "id": "manhunt-golden-shores-04",
+    "legacyId": "manhunt-435"
   },
   {
     "type": "manhunt",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 579.56,
-    "lng": 264.5
+    "lng": 264.5,
+    "id": "manhunt-golden-shores-05",
+    "legacyId": "manhunt-436"
   },
   {
     "type": "manhunt",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 559.82,
-    "lng": 313.25
+    "lng": 313.25,
+    "id": "manhunt-golden-shores-06",
+    "legacyId": "manhunt-437"
   },
   {
     "type": "grate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 641.05,
-    "lng": 218.01
+    "lng": 218.01,
+    "id": "grate-golden-shores-01",
+    "legacyId": "grate-438"
   },
   {
     "type": "grate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 682.28,
-    "lng": 222.26
+    "lng": 222.26,
+    "id": "grate-golden-shores-02",
+    "legacyId": "grate-439"
   },
   {
     "type": "grate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 598.04,
-    "lng": 198.26
+    "lng": 198.26,
+    "id": "grate-golden-shores-03",
+    "legacyId": "grate-440"
   },
   {
     "type": "grate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 604.79,
-    "lng": 164.26
+    "lng": 164.26,
+    "id": "grate-golden-shores-04",
+    "legacyId": "grate-441"
   },
   {
     "type": "grate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 627.03,
-    "lng": 249.01
+    "lng": 249.01,
+    "id": "grate-golden-shores-05",
+    "legacyId": "grate-442"
   },
   {
     "type": "grate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 616.04,
-    "lng": 271.76
+    "lng": 271.76,
+    "id": "grate-golden-shores-06",
+    "legacyId": "grate-443"
   },
   {
     "type": "grate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 617.79,
-    "lng": 293.01
+    "lng": 293.01,
+    "id": "grate-golden-shores-07",
+    "legacyId": "grate-444"
   },
   {
     "type": "grate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 637.28,
-    "lng": 350.76
+    "lng": 350.76,
+    "id": "grate-golden-shores-08",
+    "legacyId": "grate-445"
   },
   {
     "type": "grate",
     "areaId": "golden-shores",
     "areaLabel": "ゴールデン・ショア",
     "lat": 616.04,
-    "lng": 368.26
+    "lng": 368.26,
+    "id": "grate-golden-shores-09",
+    "legacyId": "grate-446"
   },
   {
     "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 345.79,
-    "lng": 281.01
+    "lng": 281.01,
+    "id": "mainquest-sapphire-bay-05",
+    "legacyId": "main-quest-447"
   },
   {
     "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 410.52,
-    "lng": 88.01
+    "lng": 88.01,
+    "id": "mainquest-sapphire-bay-06",
+    "legacyId": "main-quest-448"
   },
   {
     "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 327.54,
-    "lng": 113.26
+    "lng": 113.26,
+    "id": "mainquest-sapphire-bay-07",
+    "legacyId": "main-quest-449"
   },
   {
     "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 357.07,
-    "lng": 180.51
+    "lng": 180.51,
+    "id": "mainquest-sapphire-bay-08",
+    "legacyId": "main-quest-450"
   },
   {
     "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 318.09,
-    "lng": 193.01
+    "lng": 193.01,
+    "id": "mainquest-sapphire-bay-09",
+    "legacyId": "main-quest-451"
   },
   {
     "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 272.61,
-    "lng": 156.51
+    "lng": 156.51,
+    "id": "mainquest-sapphire-bay-10",
+    "legacyId": "main-quest-452"
   },
   {
     "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 337.58,
-    "lng": 250.52
+    "lng": 250.52,
+    "id": "mainquest-sapphire-bay-11",
+    "legacyId": "main-quest-453"
   },
   {
     "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 179.1,
-    "lng": 208.51
+    "lng": 208.51,
+    "id": "mainquest-sapphire-bay-12",
+    "legacyId": "main-quest-454"
   },
   {
     "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 276.56,
-    "lng": 364.02
+    "lng": 364.02,
+    "id": "mainquest-sapphire-bay-13",
+    "legacyId": "main-quest-455"
   },
   {
     "type": "sub-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 380.01,
-    "lng": 116.51
+    "lng": 116.51,
+    "id": "subquest-sapphire-bay-03",
+    "legacyId": "sub-quest-456"
   },
   {
     "type": "sub-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 382.01,
-    "lng": 226.02
+    "lng": 226.02,
+    "id": "subquest-sapphire-bay-04",
+    "legacyId": "sub-quest-457"
   },
   {
     "type": "sub-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 225.58,
-    "lng": 322.52
+    "lng": 322.52,
+    "id": "subquest-sapphire-bay-05",
+    "legacyId": "sub-quest-458"
   },
   {
     "type": "sub-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 123.12,
-    "lng": 274.52
+    "lng": 274.52,
+    "id": "subquest-sapphire-bay-06",
+    "legacyId": "sub-quest-459"
   },
   {
     "type": "manhunt",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 289.08,
-    "lng": 246.01
+    "lng": 246.01,
+    "id": "manhunt-sapphire-bay-03",
+    "legacyId": "manhunt-460"
   },
   {
     "type": "manhunt",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 233.6,
-    "lng": 219.51
+    "lng": 219.51,
+    "id": "manhunt-sapphire-bay-04",
+    "legacyId": "manhunt-461"
   },
   {
     "type": "manhunt",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 398.07,
-    "lng": 155.51
+    "lng": 155.51,
+    "id": "manhunt-sapphire-bay-05",
+    "legacyId": "manhunt-462"
   },
   {
     "type": "manhunt",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 432.56,
-    "lng": 274.52
+    "lng": 274.52,
+    "id": "manhunt-sapphire-bay-06",
+    "legacyId": "manhunt-463"
   },
   {
     "type": "grate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 405.57,
-    "lng": 178
+    "lng": 178,
+    "id": "grate-sapphire-bay-01",
+    "legacyId": "grate-464"
   },
   {
     "type": "grate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 390.29,
-    "lng": 109.51
+    "lng": 109.51,
+    "id": "grate-sapphire-bay-02",
+    "legacyId": "grate-465"
   },
   {
     "type": "grate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 356.8,
-    "lng": 155.26
+    "lng": 155.26,
+    "id": "grate-sapphire-bay-03",
+    "legacyId": "grate-466"
   },
   {
     "type": "grate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 324.07,
-    "lng": 257.76
+    "lng": 257.76,
+    "id": "grate-sapphire-bay-04",
+    "legacyId": "grate-467"
   },
   {
     "type": "grate",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 362.38,
-    "lng": 342.75
+    "lng": 342.75,
+    "id": "grate-sapphire-bay-05",
+    "legacyId": "grate-468"
   },
   {
     "type": "main-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 524.5,
-    "lng": 447.26
+    "lng": 447.26,
+    "id": "mainquest-prosperity-sands-02",
+    "legacyId": "main-quest-469"
   },
   {
     "type": "main-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 476.53,
-    "lng": 477.26
+    "lng": 477.26,
+    "id": "mainquest-prosperity-sands-03",
+    "legacyId": "main-quest-470"
   },
   {
     "type": "main-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 504.01,
-    "lng": 520.26
+    "lng": 520.26,
+    "id": "mainquest-prosperity-sands-04",
+    "legacyId": "main-quest-471"
   },
   {
     "type": "main-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 522.53,
-    "lng": 631.26
+    "lng": 631.26,
+    "id": "mainquest-prosperity-sands-05",
+    "legacyId": "main-quest-472"
   },
   {
     "type": "main-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 351.22,
-    "lng": 533.04
+    "lng": 533.04,
+    "id": "mainquest-prosperity-sands-06",
+    "legacyId": "main-quest-473"
   },
   {
     "type": "main-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 338.22,
-    "lng": 473.08
+    "lng": 473.08,
+    "id": "mainquest-prosperity-sands-07",
+    "legacyId": "main-quest-474"
   },
   {
     "type": "main-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 417.52,
-    "lng": 587.76
+    "lng": 587.76,
+    "id": "mainquest-prosperity-sands-08",
+    "legacyId": "main-quest-475"
   },
   {
     "type": "main-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 418.77,
-    "lng": 572.01
+    "lng": 572.01,
+    "id": "mainquest-prosperity-sands-09",
+    "legacyId": "main-quest-476"
   },
   {
     "type": "sub-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 592.78,
-    "lng": 527.01
+    "lng": 527.01,
+    "id": "subquest-prosperity-sands-03",
+    "legacyId": "sub-quest-477"
   },
   {
     "type": "sub-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 565.52,
-    "lng": 607.51
+    "lng": 607.51,
+    "id": "subquest-prosperity-sands-04",
+    "legacyId": "sub-quest-478"
   },
   {
     "type": "sub-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 441.83,
-    "lng": 629.01
+    "lng": 629.01,
+    "id": "subquest-prosperity-sands-05",
+    "legacyId": "sub-quest-479"
   },
   {
     "type": "sub-quest",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 407.59,
-    "lng": 528
+    "lng": 528,
+    "id": "subquest-prosperity-sands-06",
+    "legacyId": "sub-quest-480"
   },
   {
     "type": "manhunt",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 524.51,
-    "lng": 509.01
+    "lng": 509.01,
+    "id": "manhunt-prosperity-sands-03",
+    "legacyId": "manhunt-481"
   },
   {
     "type": "manhunt",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 444.05,
-    "lng": 571.02
+    "lng": 571.02,
+    "id": "manhunt-prosperity-sands-04",
+    "legacyId": "manhunt-482"
   },
   {
     "type": "manhunt",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 532.5,
-    "lng": 614.01
+    "lng": 614.01,
+    "id": "manhunt-prosperity-sands-05",
+    "legacyId": "manhunt-483"
   },
   {
     "type": "manhunt",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 597.77,
-    "lng": 562.76
+    "lng": 562.76,
+    "id": "manhunt-prosperity-sands-06",
+    "legacyId": "manhunt-484"
   },
   {
     "type": "grate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 530.54,
-    "lng": 466.01
+    "lng": 466.01,
+    "id": "grate-prosperity-sands-01",
+    "legacyId": "grate-485"
   },
   {
     "type": "grate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 551.53,
-    "lng": 534.01
+    "lng": 534.01,
+    "id": "grate-prosperity-sands-02",
+    "legacyId": "grate-486"
   },
   {
     "type": "grate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 569.28,
-    "lng": 560.01
+    "lng": 560.01,
+    "id": "grate-prosperity-sands-03",
+    "legacyId": "grate-487"
   },
   {
     "type": "grate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 514.3,
-    "lng": 616.26
+    "lng": 616.26,
+    "id": "grate-prosperity-sands-04",
+    "legacyId": "grate-488"
   },
   {
     "type": "grate",
     "areaId": "prosperity-sands",
     "areaLabel": "プロスピリティー・サンド",
     "lat": 378.29,
-    "lng": 564.76
+    "lng": 564.76,
+    "id": "grate-prosperity-sands-05",
+    "legacyId": "grate-489"
   },
   {
     "type": "main-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 667.52,
-    "lng": 644.01
+    "lng": 644.01,
+    "id": "mainquest-caviar-key-04",
+    "legacyId": "main-quest-490"
   },
   {
     "type": "main-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 620.29,
-    "lng": 733.26
+    "lng": 733.26,
+    "id": "mainquest-caviar-key-05",
+    "legacyId": "main-quest-491"
   },
   {
     "type": "main-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 586.06,
-    "lng": 706.26
+    "lng": 706.26,
+    "id": "mainquest-caviar-key-06",
+    "legacyId": "main-quest-492"
   },
   {
     "type": "main-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 552.53,
-    "lng": 782.76
+    "lng": 782.76,
+    "id": "mainquest-caviar-key-07",
+    "legacyId": "main-quest-493"
   },
   {
     "type": "main-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 478.29,
-    "lng": 703.26
+    "lng": 703.26,
+    "id": "mainquest-caviar-key-08",
+    "legacyId": "main-quest-494"
   },
   {
     "type": "main-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 467.55,
-    "lng": 710.01
+    "lng": 710.01,
+    "id": "mainquest-caviar-key-09",
+    "legacyId": "main-quest-495"
   },
   {
     "type": "main-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 453.78,
-    "lng": 797.01
+    "lng": 797.01,
+    "id": "mainquest-caviar-key-10",
+    "legacyId": "main-quest-496"
   },
   {
     "type": "sub-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 641.03,
-    "lng": 671.01
+    "lng": 671.01,
+    "id": "subquest-caviar-key-01",
+    "legacyId": "sub-quest-497"
   },
   {
     "type": "sub-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 686.28,
-    "lng": 621.26
+    "lng": 621.26,
+    "id": "subquest-caviar-key-02",
+    "legacyId": "sub-quest-498"
   },
   {
     "type": "sub-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 633.26,
-    "lng": 737.01
+    "lng": 737.01,
+    "id": "subquest-caviar-key-03",
+    "legacyId": "sub-quest-499"
   },
   {
     "type": "sub-quest",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 509.09,
-    "lng": 823.12
+    "lng": 823.12,
+    "id": "subquest-caviar-key-04",
+    "legacyId": "sub-quest-500"
   },
   {
     "type": "manhunt",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 642.53,
-    "lng": 613.5
+    "lng": 613.5,
+    "id": "manhunt-caviar-key-01",
+    "legacyId": "manhunt-501"
   },
   {
     "type": "manhunt",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 679.02,
-    "lng": 672.01
+    "lng": 672.01,
+    "id": "manhunt-caviar-key-02",
+    "legacyId": "manhunt-502"
   },
   {
     "type": "manhunt",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 603.53,
-    "lng": 743.76
+    "lng": 743.76,
+    "id": "manhunt-caviar-key-03",
+    "legacyId": "manhunt-503"
   },
   {
     "type": "manhunt",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 514.31,
-    "lng": 901.26
+    "lng": 901.26,
+    "id": "manhunt-caviar-key-04",
+    "legacyId": "manhunt-504"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 642.78,
-    "lng": 596.26
+    "lng": 596.26,
+    "id": "grate-caviar-key-01",
+    "legacyId": "grate-505"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 634.53,
-    "lng": 623.51
+    "lng": 623.51,
+    "id": "grate-caviar-key-02",
+    "legacyId": "grate-506"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 633.03,
-    "lng": 665.26
+    "lng": 665.26,
+    "id": "grate-caviar-key-03",
+    "legacyId": "grate-507"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 579.81,
-    "lng": 703.76
+    "lng": 703.76,
+    "id": "grate-caviar-key-04",
+    "legacyId": "grate-508"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 528.33,
-    "lng": 668.51
+    "lng": 668.51,
+    "id": "grate-caviar-key-05",
+    "legacyId": "grate-509"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 593.8,
-    "lng": 743.76
+    "lng": 743.76,
+    "id": "grate-caviar-key-06",
+    "legacyId": "grate-510"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 538.07,
-    "lng": 770.51
+    "lng": 770.51,
+    "id": "grate-caviar-key-07",
+    "legacyId": "grate-511"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 478.79,
-    "lng": 723.76
+    "lng": 723.76,
+    "id": "grate-caviar-key-08",
+    "legacyId": "grate-512"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 463.05,
-    "lng": 689.25
+    "lng": 689.25,
+    "id": "grate-caviar-key-09",
+    "legacyId": "grate-513"
   },
   {
     "type": "grate",
     "areaId": "caviar-key",
     "areaLabel": "キャビアキー",
     "lat": 472.04,
-    "lng": 898.51
+    "lng": 898.51,
+    "id": "grate-caviar-key-10",
+    "legacyId": "grate-514"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 389.04,
-    "lng": 735.5
+    "lng": 735.5,
+    "id": "mainquest-gulf-09",
+    "legacyId": "main-quest-515"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 379.07,
-    "lng": 764.01
+    "lng": 764.01,
+    "id": "mainquest-gulf-10",
+    "legacyId": "main-quest-516"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 356.08,
-    "lng": 783.51
+    "lng": 783.51,
+    "id": "mainquest-gulf-11",
+    "legacyId": "main-quest-517"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 390.57,
-    "lng": 880.52
+    "lng": 880.52,
+    "id": "mainquest-gulf-12",
+    "legacyId": "main-quest-518"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 427.55,
-    "lng": 1071.53
+    "lng": 1071.53,
+    "id": "mainquest-gulf-13",
+    "legacyId": "main-quest-519"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 258.57,
-    "lng": 570.02
+    "lng": 570.02,
+    "id": "mainquest-gulf-14",
+    "legacyId": "main-quest-520"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 228.09,
-    "lng": 632.02
+    "lng": 632.02,
+    "id": "mainquest-gulf-15",
+    "legacyId": "main-quest-521"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 235.59,
-    "lng": 637.02
+    "lng": 637.02,
+    "id": "mainquest-gulf-16",
+    "legacyId": "main-quest-522"
   },
   {
     "type": "main-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 342.04,
-    "lng": 657.52
+    "lng": 657.52,
+    "id": "mainquest-gulf-17",
+    "legacyId": "main-quest-523"
   },
   {
     "type": "sub-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 371.03,
-    "lng": 729.03
+    "lng": 729.03,
+    "id": "subquest-gulf-01",
+    "legacyId": "sub-quest-524"
   },
   {
     "type": "sub-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 149.48,
-    "lng": 405.42
+    "lng": 405.42,
+    "id": "subquest-gulf-02",
+    "legacyId": "sub-quest-525"
   },
   {
     "type": "sub-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 215.95,
-    "lng": 528.92
+    "lng": 528.92,
+    "id": "subquest-gulf-03",
+    "legacyId": "sub-quest-526"
   },
   {
     "type": "sub-quest",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 454.54,
-    "lng": 967.4
+    "lng": 967.4,
+    "id": "subquest-gulf-04",
+    "legacyId": "sub-quest-527"
   },
   {
     "type": "manhunt",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 472.53,
-    "lng": 920.39
+    "lng": 920.39,
+    "id": "manhunt-gulf-01",
+    "legacyId": "manhunt-528"
   },
   {
     "type": "manhunt",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 369.59,
-    "lng": 691.01
+    "lng": 691.01,
+    "id": "manhunt-gulf-02",
+    "legacyId": "manhunt-529"
   },
   {
     "type": "manhunt",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 297.12,
-    "lng": 558.5
+    "lng": 558.5,
+    "id": "manhunt-gulf-03",
+    "legacyId": "manhunt-530"
   },
   {
     "type": "manhunt",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 186.67,
-    "lng": 548.5
+    "lng": 548.5,
+    "id": "manhunt-gulf-04",
+    "legacyId": "manhunt-531"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 319.5,
-    "lng": 582.07
+    "lng": 582.07,
+    "id": "grate-gulf-01",
+    "legacyId": "grate-532"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 339.53,
-    "lng": 616.01
+    "lng": 616.01,
+    "id": "grate-gulf-02",
+    "legacyId": "grate-533"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 247.09,
-    "lng": 538.51
+    "lng": 538.51,
+    "id": "grate-gulf-03",
+    "legacyId": "grate-534"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 207.1,
-    "lng": 514.51
+    "lng": 514.51,
+    "id": "grate-gulf-04",
+    "legacyId": "grate-535"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 255.08,
-    "lng": 471.51
+    "lng": 471.51,
+    "id": "grate-gulf-05",
+    "legacyId": "grate-536"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 210.05,
-    "lng": 371.51
+    "lng": 371.51,
+    "id": "grate-gulf-06",
+    "legacyId": "grate-537"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 224.04,
-    "lng": 393.01
+    "lng": 393.01,
+    "id": "grate-gulf-07",
+    "legacyId": "grate-538"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 181.56,
-    "lng": 460.02
+    "lng": 460.02,
+    "id": "grate-gulf-08",
+    "legacyId": "grate-539"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 476.56,
-    "lng": 962.51
+    "lng": 962.51,
+    "id": "grate-gulf-09",
+    "legacyId": "grate-540"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 487.06,
-    "lng": 1013.01
+    "lng": 1013.01,
+    "id": "grate-gulf-10",
+    "legacyId": "grate-541"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 443.08,
-    "lng": 989.01
+    "lng": 989.01,
+    "id": "grate-gulf-11",
+    "legacyId": "grate-542"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 444.77,
-    "lng": 1013.07
+    "lng": 1013.07,
+    "id": "grate-gulf-12",
+    "legacyId": "grate-543"
   },
   {
     "type": "grate",
     "areaId": "gulf",
     "areaLabel": "湾岸",
     "lat": 433.58,
-    "lng": 1045.01
+    "lng": 1045.01,
+    "id": "grate-gulf-13",
+    "legacyId": "grate-544"
   },
   {
     "type": "grate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 720.03,
-    "lng": 946.76
+    "lng": 946.76,
+    "id": "grate-crawfish-bay-01",
+    "legacyId": "grate-545"
   },
   {
     "type": "grate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 688.3,
-    "lng": 1019.51
+    "lng": 1019.51,
+    "id": "grate-crawfish-bay-02",
+    "legacyId": "grate-546"
   },
   {
     "type": "grate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 638.07,
-    "lng": 1046.01
+    "lng": 1046.01,
+    "id": "grate-crawfish-bay-03",
+    "legacyId": "grate-547"
   },
   {
     "type": "grate",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 585.81,
-    "lng": 1018.01
+    "lng": 1018.01,
+    "id": "grate-crawfish-bay-04",
+    "legacyId": "grate-548"
   },
   {
     "type": "main-quest",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 719.78,
-    "lng": 993.27
+    "lng": 993.27,
+    "id": "mainquest-crawfish-bay-01",
+    "legacyId": "main-quest-549"
   },
   {
     "type": "main-quest",
     "areaId": "crawfish-bay",
     "areaLabel": "クローフィッシュ・ベイ",
     "lat": 751.55,
-    "lng": 1034.54
+    "lng": 1034.54,
+    "id": "mainquest-crawfish-bay-02",
+    "legacyId": "main-quest-550"
   },
   {
     "type": "main-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
     "lat": 714.77,
-    "lng": 897.53
+    "lng": 897.53,
+    "id": "mainquest-fawtick-bayou-08",
+    "legacyId": "main-quest-551"
   },
   {
     "type": "cave",
     "areaId": "caves",
     "areaLabel": "洞窟",
     "lat": 714.04,
-    "lng": 902.05
+    "lng": 902.05,
+    "id": "cave-caves-01",
+    "legacyId": "cave-552"
   },
   {
     "type": "cave",
     "areaId": "caves",
     "areaLabel": "洞窟",
     "lat": 698.8,
-    "lng": 969.81
+    "lng": 969.81,
+    "id": "cave-caves-02",
+    "legacyId": "cave-553"
   },
   {
     "type": "cave",
     "areaId": "caves",
     "areaLabel": "洞窟",
     "lat": 624.77,
-    "lng": 730.05
+    "lng": 730.05,
+    "id": "cave-caves-03",
+    "legacyId": "cave-554"
   },
   {
     "type": "cave",
     "areaId": "caves",
     "areaLabel": "洞窟",
     "lat": 801.01,
-    "lng": 534.79
+    "lng": 534.79,
+    "id": "cave-caves-04",
+    "legacyId": "cave-555"
   },
   {
     "type": "cave",
     "areaId": "caves",
     "areaLabel": "洞窟",
     "lat": 596.27,
-    "lng": 326.04
+    "lng": 326.04,
+    "id": "cave-caves-05",
+    "legacyId": "cave-556"
   },
   {
     "type": "cave",
     "areaId": "caves",
     "areaLabel": "洞窟",
     "lat": 501.27,
-    "lng": 527.79
+    "lng": 527.79,
+    "id": "cave-caves-06",
+    "legacyId": "cave-557"
   },
   {
     "type": "cave",
     "areaId": "caves",
     "areaLabel": "洞窟",
     "lat": 316.77,
-    "lng": 198.29
+    "lng": 198.29,
+    "id": "cave-caves-07",
+    "legacyId": "cave-558"
   },
   {
     "type": "cave",
     "areaId": "caves",
     "areaLabel": "洞窟",
     "lat": 393.04,
-    "lng": 743.78
+    "lng": 743.78,
+    "id": "cave-caves-08",
+    "legacyId": "cave-559"
   }
 ]

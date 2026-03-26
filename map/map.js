@@ -417,6 +417,9 @@ let rawCollectibles = [];
 let myRoutes = [];
 let creatingRoute = createDefaultRoute();
 let activeSectionIndex = 0;
+let routePinInsertIndex = null;
+let openPinActionSectionIndex = null;
+let openPinActionIndex = null;
 let routeIsModified = false;
 let routePolylines = [];
 let routePreviewMarkers = [];
@@ -460,6 +463,7 @@ let pendingSavePromise = Promise.resolve();
 let isAppReady = false;
 let currentAuthUser = null;
 let latestUserDataSnapshot = null;
+let pendingCollectibleIdMigrationSave = false;
 
 // トレンドルート（作者作成）のサンプルデータ
 const trendRoutes = [
@@ -483,43 +487,122 @@ const trendRoutes = [
     //         }
     //     ]
     // },
-    {
-        id: 'trend-any-dlc-only-standard',
-        name: 'Any% DLC Only Standard',
-        description: '',
-        sections: [
-            { name: '区間1', pins: ['cave-559', 'main-quest-70', 'main-quest-71', 'main-quest-72', 'main-quest-73', 'main-quest-74'] },
-            { name: '区間2', pins: ['main-quest-35', 'main-quest-38', 'main-quest-36', 'main-quest-40', 'main-quest-42', 'main-quest-46', 'main-quest-44', 'main-quest-45', 'main-quest-33', 'cave-112'] },
-            { name: '区間3', pins: ['cave-112', 'main-quest-34', 'main-quest-39', 'main-quest-43', 'main-quest-47', 'main-quest-41', 'main-quest-37', 'cave-112'] },
-            { name: '区間4', pins: ['cave-112', '1774505416069', 'main-quest-53', 'main-quest-55'] },
-            { name: '区間5', pins: ['cave-559', 'main-quest-66', 'main-quest-67', 'main-quest-75', 'main-quest-76', 'cave-558'] },
-            { name: '区間6', pins: ['cave-558', 'main-quest-77', 'main-quest-78', 'cave-556'] },
-            { name: '区間7', pins: ['cave-556', 'main-quest-79', 'main-quest-80', 'main-quest-81', 'main-quest-82'] },
-            { name: '区間8', pins: ['main-quest-82', 'main-quest-83', 'main-quest-84', 'main-quest-85'] },
-            { name: '区間9', pins: ['main-quest-85', 'main-quest-86', 'main-quest-87'] },
-            { name: '区間10', pins: ['main-quest-87', 'main-quest-68', 'main-quest-69'] }
-        ],
-        customPins: [
-            {
-                id: '1774505416069',
-                lat: 365.6078127255142,
-                lng: 760.8146339990082,
-                map: 'dlc',
-                type: 'infamy-1',
-                title: 'DLC悪名ランク5のクエストが出るまで',
-                detail: '',
-                userId: null,
-                obtained: false,
-                createdAt: '2026-03-26T06:10:16.069Z',
-                updatedAt: '2026-03-26T06:31:53.294Z',
-                visibility: true
-            }
-        ]
-    }
 ];
 
 // ID 割り当てと統合
 const collectibles = [];
+const collectibleById = new Map();
+const collectibleLegacyIdMap = new Map();
+const loggedLegacyCollectibleIds = new Set();
+
+function resolveCollectibleReferenceId(pinId, { logLegacyUse = false } = {}) {
+    if (!pinId) return pinId;
+    const resolvedId = collectibleLegacyIdMap.get(pinId) || pinId;
+    if (logLegacyUse && resolvedId !== pinId && !loggedLegacyCollectibleIds.has(pinId)) {
+        console.warn('[collectibles] Legacy pin id resolved to fixed id:', pinId, '->', resolvedId);
+        loggedLegacyCollectibleIds.add(pinId);
+    }
+    return resolvedId;
+}
+
+function getCollectibleById(pinId, options = {}) {
+    const resolvedId = resolveCollectibleReferenceId(pinId, options);
+    return collectibleById.get(resolvedId) || null;
+}
+
+function migrateStoredPinIdList(pinIds = []) {
+    if (!Array.isArray(pinIds)) {
+        return { pinIds: [], changed: false };
+    }
+
+    let changed = false;
+    const migrated = pinIds.map(pinId => {
+        const nextPinId = resolveCollectibleReferenceId(pinId, { logLegacyUse: true });
+        if (nextPinId !== pinId) changed = true;
+        return nextPinId;
+    });
+
+    if (!changed) {
+        return { pinIds, changed: false };
+    }
+
+    return {
+        pinIds: [...new Set(migrated)],
+        changed: true
+    };
+}
+
+function migrateStoredRoutes(routes = []) {
+    if (!Array.isArray(routes)) {
+        return { routes: [], changed: false };
+    }
+
+    let changed = false;
+    const nextRoutes = routes.map(route => {
+        if (!route || !Array.isArray(route.sections)) return route;
+
+        let routeChanged = false;
+        const nextSections = route.sections.map(section => {
+            if (!section || !Array.isArray(section.pins)) return section;
+
+            let sectionChanged = false;
+            const nextPins = section.pins.map(pinId => {
+                const nextPinId = resolveCollectibleReferenceId(pinId, { logLegacyUse: true });
+                if (nextPinId !== pinId) {
+                    sectionChanged = true;
+                    changed = true;
+                }
+                return nextPinId;
+            });
+
+            if (!sectionChanged) return section;
+            routeChanged = true;
+            return {
+                ...section,
+                pins: nextPins
+            };
+        });
+
+        if (!routeChanged) return route;
+        return {
+            ...route,
+            sections: nextSections
+        };
+    });
+
+    return {
+        routes: changed ? nextRoutes : routes,
+        changed
+    };
+}
+
+function migrateCollectibleReferencesInUserData(data = {}) {
+    let changed = false;
+    let nextData = data;
+
+    const obtainedResult = migrateStoredPinIdList(data.obtainedPins);
+    if (obtainedResult.changed) {
+        nextData = {
+            ...nextData,
+            obtainedPins: obtainedResult.pinIds
+        };
+        changed = true;
+    }
+
+    const routesResult = migrateStoredRoutes(data.routes);
+    if (routesResult.changed) {
+        nextData = {
+            ...nextData,
+            routes: routesResult.routes
+        };
+        changed = true;
+    }
+
+    return {
+        data: nextData,
+        changed
+    };
+}
 
 function getPinMeta(type) {
     return PIN_META[type] || { label: type, shortLabel: type, sources: ['base'], order: 999 };
@@ -864,7 +947,10 @@ function showAuthCallbackErrorIfNeeded() {
 
 function applyLoadedUserData(data) {
     const normalized = getNormalizedUserData(data || {});
-    const preferences = normalized.preferences || {};
+    const migrated = migrateCollectibleReferencesInUserData(normalized);
+    const normalizedData = migrated.data;
+    pendingCollectibleIdMigrationSave = migrated.changed;
+    const preferences = normalizedData.preferences || {};
     const activeSources = preferences.activeSources && preferences.activeSources.length
         ? preferences.activeSources
         : ['base', 'dlc'];
@@ -887,12 +973,12 @@ function applyLoadedUserData(data) {
         setActiveDlcTypes(new Set(dlcTypes));
         setShowObtained(preferences.showObtained !== false);
         setShowCustomPins(preferences.showCustomPins !== false);
-        setObtainedPinSet(new Set(normalized.obtainedPins || []));
-        customPins = Array.isArray(normalized.customPins) ? JSON.parse(JSON.stringify(normalized.customPins)) : [];
-        myRoutes = Array.isArray(normalized.routes) ? JSON.parse(JSON.stringify(normalized.routes)) : [];
+        setObtainedPinSet(new Set(normalizedData.obtainedPins || []));
+        customPins = Array.isArray(normalizedData.customPins) ? JSON.parse(JSON.stringify(normalizedData.customPins)) : [];
+        myRoutes = Array.isArray(normalizedData.routes) ? JSON.parse(JSON.stringify(normalizedData.routes)) : [];
         syncRouteMirrorState();
-        pinnedRoutes = new Set(normalized.pinnedRoutes || []);
-        setCustomPinObtainedSet(new Set(normalized.customPinObtained || []));
+        pinnedRoutes = new Set(normalizedData.pinnedRoutes || []);
+        setCustomPinObtainedSet(new Set(normalizedData.customPinObtained || []));
         const storedVisibility = preferences.customPinVisibility && preferences.customPinVisibility.length
             ? preferences.customPinVisibility
             : customPins.filter(pin => pin.visibility !== false).map(pin => pin.id);
@@ -907,6 +993,21 @@ function applyLoadedUserData(data) {
         latestUserDataSnapshot = createUserDataSnapshot();
     } finally {
         suppressPersistence = false;
+    }
+}
+
+async function persistCollectibleIdMigrationIfNeeded() {
+    if (!pendingCollectibleIdMigrationSave || !storageController) {
+        return;
+    }
+
+    pendingCollectibleIdMigrationSave = false;
+
+    try {
+        await queueUserDataSave({ immediate: true });
+        showToast('旧ピンIDを固定IDへ移行しました', 'info');
+    } catch (error) {
+        console.error('[collectible-id-migration]', error);
     }
 }
 
@@ -966,6 +1067,7 @@ async function initializePersistence() {
     }
 
     applyLoadedUserData(loadedData);
+    await persistCollectibleIdMigrationIfNeeded();
     showAuthCallbackErrorIfNeeded();
     clearAuthCallbackQuery();
 
@@ -1006,6 +1108,7 @@ async function handleAuthStateChange(event, session) {
         }
 
         applyLoadedUserData(loadedData);
+        await persistCollectibleIdMigrationIfNeeded();
         if (isAppReady) {
             syncUiFromLoadedData();
         }
@@ -1022,9 +1125,18 @@ function normalizeCollectible(rawItem, index) {
     const map = normalizeOverlayMode(
         rawItem.map || areaMeta.map || (source === 'dlc' && areaMeta.source === 'dlc' ? 'dlc' : 'base')
     );
+    const fallbackId = rawItem.legacyId || `${rawItem.type}-${index}`;
+    let resolvedId = rawItem.id;
+    if (!resolvedId) {
+        // All collectibles should define a fixed id in collectibles.json.
+        // This fallback only exists for backward compatibility with old data.
+        resolvedId = fallbackId;
+        console.warn('[collectibles] Missing fixed id. Fallback id was used:', resolvedId, rawItem);
+    }
     return {
         ...rawItem,
-        id: rawItem.id || `${rawItem.type}-${index}`,
+        id: resolvedId,
+        legacyId: fallbackId,
         name: rawItem.name || pinMeta.label,
         source,
         map,
@@ -1036,8 +1148,23 @@ function normalizeCollectible(rawItem, index) {
 
 function buildCollectibles(raw) {
     collectibles.length = 0;
+    collectibleById.clear();
+    collectibleLegacyIdMap.clear();
     raw.forEach((item, index) => {
-        collectibles.push(normalizeCollectible(item, index));
+        const normalized = normalizeCollectible(item, index);
+        collectibles.push(normalized);
+
+        if (collectibleById.has(normalized.id)) {
+            console.warn('[collectibles] Duplicate fixed id detected:', normalized.id, normalized);
+        }
+        collectibleById.set(normalized.id, normalized);
+
+        if (normalized.legacyId && normalized.legacyId !== normalized.id) {
+            if (collectibleLegacyIdMap.has(normalized.legacyId)) {
+                console.warn('[collectibles] Duplicate legacy id detected:', normalized.legacyId, normalized);
+            }
+            collectibleLegacyIdMap.set(normalized.legacyId, normalized.id);
+        }
     });
 }
 
@@ -1585,14 +1712,14 @@ function updateCustomPinCount() {
 }
 
 function getRoutePinMeta(pinId, route = null) {
-    const mData = markers.find(m => m.item.id === pinId);
-    if (mData && mData.item) {
+    const collectible = getCollectibleById(pinId);
+    if (collectible) {
         return {
-            name: mData.item.name,
-            type: mData.item.type,
-            iconUrl: (icons[mData.item.type] && icons[mData.item.type].options && icons[mData.item.type].options.iconUrl) || '',
-            map: mData.item.map,
-            latlng: mData.marker.getLatLng()
+            name: collectible.name,
+            type: collectible.type,
+            iconUrl: (icons[collectible.type] && icons[collectible.type].options && icons[collectible.type].options.iconUrl) || '',
+            map: collectible.map,
+            latlng: L.latLng(collectible.lat, collectible.lng)
         };
     }
     const routeCustomPin = getRouteScopedCustomPin(pinId, route);
@@ -2010,19 +2137,20 @@ function applyFilter() {
 
 // 取得済み切り替え
 window.toggleObtainedFromPopup = function(id) {
-    if (obtainedPins.has(id)) {
-        obtainedPins.delete(id);
+    const resolvedId = resolveCollectibleReferenceId(id, { logLegacyUse: true });
+    if (obtainedPins.has(resolvedId)) {
+        obtainedPins.delete(resolvedId);
     } else {
-        obtainedPins.add(id);
+        obtainedPins.add(resolvedId);
     }
     saveObtained();
-    const target = markers.find(m => m.item.id === id);
+    const target = markers.find(m => m.item.id === resolvedId);
     if (target) {
-        updateMarkerAppearance(target.marker, id);
+        updateMarkerAppearance(target.marker, resolvedId);
         const btn = target.marker.getPopup().getElement().querySelector('.obtained-toggle');
         if (btn) {
             btn.classList.toggle('active');
-            btn.innerText = obtainedPins.has(id) ? '✓ 取得済み' : '取得済みにする';
+            btn.innerText = obtainedPins.has(resolvedId) ? '✓ 取得済み' : '取得済みにする';
         }
     }
     refreshMapDisplay();
@@ -2466,7 +2594,7 @@ function showRouteDetail(route) {
     list.innerHTML = '';
 
     const allRoutePins = new Set();
-    route.sections.forEach(s => s.pins.forEach(pid => allRoutePins.add(pid)));
+    route.sections.forEach(s => s.pins.forEach(pid => allRoutePins.add(resolveCollectibleReferenceId(pid))));
     const allPinIds = [...allRoutePins];
     focusedRoutePins = allRoutePins;
     refreshMapDisplay();
@@ -2644,8 +2772,9 @@ function batchMarkSection(pinIds, status, route = currentDetailedRoute) {
             syncCustomPinRecord(id);
             return;
         }
-        if (status) obtainedPins.add(id);
-        else obtainedPins.delete(id);
+        const resolvedId = resolveCollectibleReferenceId(id, { logLegacyUse: true });
+        if (status) obtainedPins.add(resolvedId);
+        else obtainedPins.delete(resolvedId);
     });
     saveCustomPins();
     saveObtained();
@@ -2746,6 +2875,8 @@ function enterCreateMode() {
     // 初期化（新規作成時は区間を折りたたみ状態でスタート）
     creatingRoute = createDefaultRoute();
     activeSectionIndex = 0;
+    routePinInsertIndex = null;
+    clearOpenPinActionMenu();
     routeIsModified = false;
     updateCreationUI();
 
@@ -2791,6 +2922,8 @@ function startEditingRoute() {
     creatingRoute.sections.forEach(section => section.collapsed = true);
 
     activeSectionIndex = 0;
+    routePinInsertIndex = null;
+    clearOpenPinActionMenu();
 
     setRouteView('create');
     const routeSidebarEl = document.getElementById('route-sidebar');
@@ -2843,6 +2976,8 @@ function exitCreateMode() {
     document.getElementById('creation-footer').classList.add('hidden');
     const mapActions = document.querySelector('.map-actions');
     if (mapActions) mapActions.classList.remove('hidden');
+    routePinInsertIndex = null;
+    clearOpenPinActionMenu();
     clearRouteVisuals();
 
     // マーカーのクリック挙動を戻す
@@ -2878,6 +3013,8 @@ function addSection(options = {}) {
         : Math.min(activeSectionIndex + 1, creatingRoute.sections.length);
     creatingRoute.sections.splice(insertIndex, 0, { name: `区間${nextNum}`, pins: [] });
     activeSectionIndex = insertIndex;
+    routePinInsertIndex = null;
+    clearOpenPinActionMenu();
     routeIsModified = true;
     updateCreationUI();
 
@@ -2895,6 +3032,8 @@ function removeSection(idx) {
     if (activeSectionIndex >= creatingRoute.sections.length) {
         activeSectionIndex = creatingRoute.sections.length - 1;
     }
+    routePinInsertIndex = null;
+    clearOpenPinActionMenu();
     routeIsModified = true;
     updateCreationUI();
 
@@ -2983,6 +3122,8 @@ function moveSection(fromIndex, toIndex) {
         activeSectionIndex += 1;
     }
 
+    routePinInsertIndex = null;
+    clearOpenPinActionMenu();
     routeIsModified = true;
     updateCreationUI();
     updateCreationVisuals();
@@ -2991,18 +3132,87 @@ function moveSection(fromIndex, toIndex) {
 function toggleSectionCollapse(idx) {
     if (creatingRoute.sections[idx]) {
         creatingRoute.sections[idx].collapsed = !creatingRoute.sections[idx].collapsed;
+        clearOpenPinActionMenu();
         updateCreationUI();
     }
 }
 
+function clearOpenPinActionMenu() {
+    openPinActionSectionIndex = null;
+    openPinActionIndex = null;
+}
+
+function isPinActionMenuOpen(sIdx, pIdx) {
+    return openPinActionSectionIndex === sIdx && openPinActionIndex === pIdx;
+}
+
+function selectRoutePinInsertPosition(sIdx, insertIndex) {
+    activeSectionIndex = sIdx;
+    routePinInsertIndex = insertIndex;
+    clearOpenPinActionMenu();
+    clearRouteHoverPreview();
+    updateCreationUI();
+}
+
+function createInsertIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'pin-insert-indicator active';
+    indicator.innerText = 'ここに追加されます';
+    return indicator;
+}
+
+function getRoutePinInsertTargetIndex(section) {
+    if (!section || !Number.isInteger(routePinInsertIndex)) return null;
+    return Math.max(0, Math.min(routePinInsertIndex, section.pins.length));
+}
+
+function canInsertRoutePinAt(section, pinId, insertIndex) {
+    if (!section || !Array.isArray(section.pins)) return false;
+    const boundedIndex = Math.max(0, Math.min(insertIndex, section.pins.length));
+    const prevPinId = boundedIndex > 0 ? section.pins[boundedIndex - 1] : null;
+    const nextPinId = boundedIndex < section.pins.length ? section.pins[boundedIndex] : null;
+    return prevPinId !== pinId && nextPinId !== pinId;
+}
+
+function movePinInSection(sIdx, fromIdx, toIdx) {
+    const section = creatingRoute.sections[sIdx];
+    if (!section || !Array.isArray(section.pins)) return;
+    if (fromIdx === toIdx || fromIdx < 0 || fromIdx >= section.pins.length) return;
+
+    const nextPins = [...section.pins];
+    const [pinId] = nextPins.splice(fromIdx, 1);
+    const boundedIndex = Math.max(0, Math.min(toIdx, nextPins.length));
+    if (boundedIndex === fromIdx) return;
+
+    const prevPinId = boundedIndex > 0 ? nextPins[boundedIndex - 1] : null;
+    const nextPinId = boundedIndex < nextPins.length ? nextPins[boundedIndex] : null;
+    if (prevPinId === pinId || nextPinId === pinId) return;
+
+    nextPins.splice(boundedIndex, 0, pinId);
+    section.pins = nextPins;
+    activeSectionIndex = sIdx;
+    routePinInsertIndex = null;
+    clearOpenPinActionMenu();
+    routeIsModified = true;
+    clearRouteHoverPreview();
+    updateCreationUI();
+    updateCreationVisuals();
+}
+
 function addPinToRoute(pinId) {
     if (currentRouteView !== 'create') return;
-    
+
+    const resolvedPinId = resolveCollectibleReferenceId(pinId);
     const section = creatingRoute.sections[activeSectionIndex];
-    // 同じ区間に連続して同じピンは入れない
-    if (section.pins[section.pins.length - 1] === pinId) return;
-    
-    section.pins.push(pinId);
+    if (!section || !Array.isArray(section.pins)) return;
+
+    const insertIndex = getRoutePinInsertTargetIndex(section);
+    const targetIndex = insertIndex === null ? section.pins.length : insertIndex;
+    if (!canInsertRoutePinAt(section, resolvedPinId, targetIndex)) return;
+
+    section.pins.splice(targetIndex, 0, resolvedPinId);
+    routePinInsertIndex = null;
+    clearOpenPinActionMenu();
     routeIsModified = true;
     clearRouteHoverPreview();
     updateCreationUI();
@@ -3012,7 +3222,10 @@ function addPinToRoute(pinId) {
 
 function removePinFromRoute(sIdx, pIdx) {
     creatingRoute.sections[sIdx].pins.splice(pIdx, 1);
+    routePinInsertIndex = null;
+    clearOpenPinActionMenu();
     routeIsModified = true;
+    clearRouteHoverPreview();
     updateCreationUI();
     updateCreationVisuals();
 }
@@ -3055,6 +3268,8 @@ function updateCreationUI() {
         card.className = `section-card ${isActive ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`;
         card.addEventListener('click', () => {
             activeSectionIndex = sIdx;
+            routePinInsertIndex = null;
+            clearOpenPinActionMenu();
             updateCreationUI();
         });
 
@@ -3159,13 +3374,25 @@ function updateCreationUI() {
         if (section.pins.length === 0) {
             const empty = document.createElement('div');
             empty.className = 'empty-pin-msg';
-            empty.innerText = 'マップからマップピンを選んでください';
+            empty.innerText = '追加したいマップピンを地図上で選択してください';
             pinList.appendChild(empty);
         } else {
             section.pins.forEach((pinId, pIdx) => {
+                const isActionOpen = isPinActionMenuOpen(sIdx, pIdx);
                 const meta = getRoutePinMeta(pinId, creatingRoute);
+                const isInsertAbove = activeSectionIndex === sIdx && routePinInsertIndex === pIdx;
+                const isInsertBelow = activeSectionIndex === sIdx
+                    && pIdx === section.pins.length - 1
+                    && routePinInsertIndex === pIdx + 1;
                 const pinItem = document.createElement('div');
                 pinItem.className = 'pin-item';
+
+                if (isInsertAbove) {
+                    pinItem.appendChild(createInsertIndicator());
+                }
+
+                const pinMain = document.createElement('div');
+                pinMain.className = 'pin-item-main';
 
                 const order = document.createElement('div');
                 order.className = 'pin-order';
@@ -3180,16 +3407,58 @@ function updateCreationUI() {
                 name.className = 'pin-name';
                 name.innerText = meta ? meta.name : '不明なピン';
 
-                const deletePinBtn = document.createElement('button');
-                deletePinBtn.type = 'button';
-                deletePinBtn.className = 'delete-pin-btn';
-                deletePinBtn.innerText = '×';
-                deletePinBtn.addEventListener('click', (event) => {
+                const menuToggleBtn = document.createElement('button');
+                menuToggleBtn.type = 'button';
+                menuToggleBtn.className = 'pin-item-menu-toggle';
+                menuToggleBtn.innerText = '⋯';
+                menuToggleBtn.title = isActionOpen ? '操作メニューを閉じる' : '操作メニューを開く';
+                menuToggleBtn.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    removePinFromRoute(sIdx, pIdx);
+                    activeSectionIndex = sIdx;
+                    routePinInsertIndex = null;
+                    if (isActionOpen) {
+                        clearOpenPinActionMenu();
+                    } else {
+                        openPinActionSectionIndex = sIdx;
+                        openPinActionIndex = pIdx;
+                    }
+                    updateCreationUI();
                 });
 
-                pinItem.append(order, icon, name, deletePinBtn);
+                pinMain.append(order, icon, name, menuToggleBtn);
+                pinItem.appendChild(pinMain);
+
+                const actions = document.createElement('div');
+                actions.className = `pin-item-actions ${isActionOpen ? 'open' : ''}`;
+
+                if (isActionOpen) {
+                    const createActionBtn = (label, className, handler, disabled = false) => {
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = `pin-item-action-btn ${className}`.trim();
+                        button.innerText = label;
+                        button.disabled = disabled;
+                        button.addEventListener('click', (event) => {
+                            event.stopPropagation();
+                            handler();
+                        });
+                        return button;
+                    };
+
+                    actions.append(
+                        createActionBtn('上へ移動', '', () => movePinInSection(sIdx, pIdx, pIdx - 1), pIdx === 0),
+                        createActionBtn('下へ移動', '', () => movePinInSection(sIdx, pIdx, pIdx + 1), pIdx === section.pins.length - 1),
+                        createActionBtn('削除', 'danger', () => removePinFromRoute(sIdx, pIdx)),
+                        createActionBtn('この上に挿入', '', () => selectRoutePinInsertPosition(sIdx, pIdx)),
+                        createActionBtn('この下に挿入', '', () => selectRoutePinInsertPosition(sIdx, pIdx + 1))
+                    );
+                    pinItem.appendChild(actions);
+                }
+
+                if (isInsertBelow) {
+                    pinItem.appendChild(createInsertIndicator());
+                }
+
                 pinList.appendChild(pinItem);
             });
         }
@@ -4355,10 +4624,26 @@ function clearRouteHoverPreview() {
 function showRouteHoverPreview(targetPinId) {
     const section = creatingRoute.sections[activeSectionIndex];
     if (!section || !section.pins || section.pins.length === 0) return;
-    const lastPinId = section.pins[section.pins.length - 1];
-    if (lastPinId === targetPinId) return;
-    const fromMeta = getRoutePinMeta(lastPinId, creatingRoute);
-    const toMeta = getRoutePinMeta(targetPinId, creatingRoute);
+
+    const resolvedTargetPinId = resolveCollectibleReferenceId(targetPinId);
+    const insertIndex = getRoutePinInsertTargetIndex(section);
+    const targetIndex = insertIndex === null ? section.pins.length : insertIndex;
+
+    let fromPinId = null;
+    let toPinId = null;
+
+    if (targetIndex <= 0) {
+        fromPinId = resolvedTargetPinId;
+        toPinId = section.pins[0];
+    } else {
+        fromPinId = section.pins[targetIndex - 1];
+        toPinId = resolvedTargetPinId;
+    }
+
+    if (!fromPinId || !toPinId || fromPinId === toPinId) return;
+
+    const fromMeta = getRoutePinMeta(fromPinId, creatingRoute);
+    const toMeta = getRoutePinMeta(toPinId, creatingRoute);
     if (!fromMeta || !toMeta) return;
     clearRouteHoverPreview();
     const previewColor = getSectionColor(activeSectionIndex);
