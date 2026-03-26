@@ -627,6 +627,51 @@
   },
   {
     "type": "main-quest",
+    "areaId": "gulf",
+    "areaLabel": "湾岸",
+    "lat": 325.00,
+    "lng": 693.61,
+    "map": "base",
+    "source": "dlc"
+  },
+  {
+    "type": "main-quest",
+    "areaId": "gulf",
+    "areaLabel": "湾岸",
+    "lat": 347.00,
+    "lng": 765.06,
+    "map": "base",
+    "source": "dlc"
+  },
+  {
+    "type": "main-quest",
+    "areaId": "gulf",
+    "areaLabel": "湾岸",
+    "lat": 450.26,
+    "lng": 865.83,
+    "map": "base",
+    "source": "dlc"
+  },
+  {
+    "type": "main-quest",
+    "areaId": "caviar-key",
+    "areaLabel": "キャビアキー",
+    "lat": 526.27,
+    "lng": 827.32,
+    "map": "base",
+    "source": "dlc"
+  },
+  {
+    "type": "main-quest",
+    "areaId": "gulf",
+    "areaLabel": "湾岸",
+    "lat": 355.74,
+    "lng": 1020.77,
+    "map": "base",
+    "source": "dlc"
+  },
+  {
+    "type": "main-quest",
     "areaId": "sapphire-bay",
     "areaLabel": "サファリア・ベイ",
     "lat": 211.12,
