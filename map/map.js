@@ -219,6 +219,15 @@ const USER_DATA_KEYS = {
     preferences: 'preferences'
 };
 
+const LIMITS = {
+    customPins: 100,
+    myRoutes: 50,
+    routeName: 50,
+    routeDescription: 500,
+    customPinTitle: 30,
+    customPinDetail: 300
+};
+
 function createDefaultRoute() {
     return {
         id: null,
@@ -806,6 +815,38 @@ function showToast(message, type = 'info') {
         toast.classList.remove('visible');
         window.setTimeout(() => toast.remove(), 220);
     }, 3200);
+}
+
+function validateCustomPinInput({ title, detail }) {
+    if (customPins.length >= LIMITS.customPins) {
+        return 'カスタムピンは100個までです';
+    }
+    if (!title) {
+        return 'ピン名称を入力してください。';
+    }
+    if (title.length > LIMITS.customPinTitle) {
+        return 'カスタムピンタイトルは30文字以内で入力してください';
+    }
+    if (detail.length > LIMITS.customPinDetail) {
+        return 'カスタムピン説明は300文字以内で入力してください';
+    }
+    return null;
+}
+
+function validateRouteInput({ name, description, isNewRoute }) {
+    if (!name) {
+        return 'ルート名を入力してください';
+    }
+    if (isNewRoute && myRoutes.length >= LIMITS.myRoutes) {
+        return 'ルートは50本まで保存できます';
+    }
+    if (name.length > LIMITS.routeName) {
+        return 'ルート名は50文字以内で入力してください';
+    }
+    if (description.length > LIMITS.routeDescription) {
+        return 'ルート説明は500文字以内で入力してください';
+    }
+    return null;
 }
 
 function handleCloudSaveError(error) {
@@ -3554,7 +3595,11 @@ function initTutorial() {
         },
         { selector: '#toggle-settings-btn', text: 'ここを押すと設定を変更できるぞ!' },
         { selector: '#route-mode-btn', text: 'ここを押すとルートモードに切り替わるぞ!' },
-        { selector: '.leaflet-control.custom-pin-control .custom-pin-btn', text: 'ここを押すとカスタムピンを追加できるぞ!' }
+        {
+            selector: '.leaflet-control.custom-pin-control .custom-pin-btn',
+            mobileSelector: '#mobile-custom-pin-open',
+            text: 'ここを押すとカスタムピンを追加できるぞ!'
+        }
     ];
 
     const bubble = overlay.querySelector('.tutorial-bubble');
@@ -3598,9 +3643,10 @@ function initTutorial() {
             actions.classList.remove('top-aligned');
 
             const actionsHeight = actions.offsetHeight || 56;
+            const mobileBottomUiOffset = 128;
             const targetBottom = offsetTop + rect.height;
             const shouldPlaceActionsTop = targetBottom >= mapRect.height - (actionsHeight + 32);
-            const bottomReserved = shouldPlaceActionsTop ? 16 : actionsHeight + 24;
+            const bottomReserved = shouldPlaceActionsTop ? 16 : actionsHeight + mobileBottomUiOffset;
             const bubbleHeight = bubble.offsetHeight || 0;
             const belowTop = offsetTop + rect.height + 14;
             const aboveTop = offsetTop - bubbleHeight - 14;
@@ -3668,17 +3714,26 @@ function initTutorial() {
 
 
 function saveMyRoute() {
-    const name = document.getElementById('route-name-input').value.trim();
-    const desc = document.getElementById('route-desc-input').value.trim();
-    
-    if (!name) {
-        alert('ルート名を入力してください');
+    const nameInput = document.getElementById('route-name-input');
+    const descInput = document.getElementById('route-desc-input');
+    const rawName = nameInput ? nameInput.value : '';
+    const rawDesc = descInput ? descInput.value : '';
+    const name = rawName.trim();
+    const desc = rawDesc.trim();
+
+    const routeValidationError = validateRouteInput({
+        name,
+        description: desc,
+        isNewRoute: !creatingRoute.id
+    });
+    if (routeValidationError) {
+        showToast(routeValidationError, 'error');
         return;
     }
 
     const totalPins = creatingRoute.sections.reduce((sum, s) => sum + s.pins.length, 0);
     if (totalPins < 1) {
-        alert('ピンを少なくとも1つ追加してください');
+        showToast('ピンを少なくとも1つ追加してください', 'error');
         return;
     }
 
@@ -3867,12 +3922,18 @@ function setupEventListeners() {
         customPinSaveBtn.addEventListener('click', () => {
             const nameInput = document.getElementById('custom-pin-name');
             const name = nameInput ? nameInput.value.trim() : '';
+            const detailInput = document.getElementById('custom-pin-detail');
+            const detail = detailInput ? detailInput.value.trim() : '';
             if (!customPinDraft) {
-                alert('マップ上をクリックして座標を選んでください。');
+                showToast('マップ上をクリックして座標を選んでください。', 'error');
                 return;
             }
-            if (!name) {
-                alert('ピン名称を入力してください。');
+            const customPinValidationError = validateCustomPinInput({
+                title: name,
+                detail
+            });
+            if (customPinValidationError) {
+                showToast(customPinValidationError, 'error');
                 return;
             }
             const now = new Date().toISOString();
@@ -3889,10 +3950,7 @@ function setupEventListeners() {
                 visibility: true,
                 obtained: false,
                 userId: null,
-                detail: (() => {
-                    const detailInput = document.getElementById('custom-pin-detail');
-                    return detailInput ? detailInput.value.trim() : '';
-                })()
+                detail
             };
             customPins.push(newPin);
             customPinById.set(newPin.id, newPin);
@@ -4354,6 +4412,7 @@ function setupEventListeners() {
     const mobileAreaName = document.getElementById('mobile-current-area');
     const areaHeaderBtn2 = document.getElementById('area-header-btn');
     const mobileFilterOpen = document.getElementById('mobile-filter-open');
+    const mobileCustomPinOpen = document.getElementById('mobile-custom-pin-open');
     const mobileFilterClose = document.getElementById('mobile-filter-close');
     const sidebarBackdrop = document.getElementById('sidebar-backdrop');
     const openMobileFilterPanel = () => {
@@ -4395,6 +4454,13 @@ function setupEventListeners() {
             } else {
                 openMobileFilterPanel();
             }
+        });
+    }
+
+    if (mobileCustomPinOpen) {
+        mobileCustomPinOpen.addEventListener('click', () => {
+            closeMobileFilterPanel();
+            toggleCustomPinSidebar(true);
         });
     }
 
