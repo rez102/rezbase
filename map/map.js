@@ -487,6 +487,50 @@ const trendRoutes = [
     //         }
     //     ]
     // },
+    {
+        id: 'trend-any-base-game-standard',
+        name: 'Any% Base game Standard',
+        description: '',
+        sections: [
+            { name: 'チュートリアル', pins: ['mainquest-crawfish-bay-02', 'mainquest-crawfish-bay-01'] },
+            { name: '洞窟まで', pins: ['mainquest-fawtick-bayou-01', 'mainquest-fawtick-bayou-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
+            { name: 'フォーティック・バイユー北部', pins: ['cave-caves-01', 'landmark-fawtick-bayou-02', 'nutrient-fawtick-bayou-02', 'mainquest-fawtick-bayou-04', 'nutrient-fawtick-bayou-03', 'nutrient-fawtick-bayou-04', 'landmark-fawtick-bayou-03', 'nutrient-fawtick-bayou-05', 'landmark-fawtick-bayou-04', 'nutrient-fawtick-bayou-06', 'landmark-fawtick-bayou-05', 'nutrient-fawtick-bayou-08', 'landmark-fawtick-bayou-06', 'nutrient-fawtick-bayou-09', 'landmark-fawtick-bayou-07', 'nutrient-fawtick-bayou-10', 'landmark-fawtick-bayou-08', 'landmark-fawtick-bayou-09', 'cave-caves-01'] },
+            { name: 'フォーティックバイユー南部', pins: ['cave-caves-01', 'plate-fawtick-bayou-04', 'mainquest-fawtick-bayou-03', 'nutrient-fawtick-bayou-11', 'plate-fawtick-bayou-06', 'landmark-fawtick-bayou-10', 'floodgate-floodgates-03', 'mainquest-caviar-key-05'] },
+            { name: 'エピソード3：プロスピリティーサンドの洞窟まで', pins: ['cave-caves-03', 'nutrient-caviar-key-02', 'plate-caviar-key-10', 'nutrient-caviar-key-01', 'grate-caviar-key-02', 'nutrient-caviar-key-04', 'grate-caviar-key-01', 'landmark-prosperity-sands-07', 'landmark-prosperity-sands-06', 'plate-prosperity-sands-03', 'nutrient-prosperity-sands-01', 'mainquest-prosperity-sands-04'] },
+            { name: 'ゴールデン・ショアの洞窟まで', pins: ['cave-caves-06', 'landmark-prosperity-sands-02', 'landmark-prosperity-sands-03', 'floodgate-floodgates-02', 'landmark-golden-shores-07', 'nutrient-golden-shores-15', 'plate-golden-shores-09', 'mainquest-golden-shores-05', 'cave-caves-06'] },
+            { name: 'プロスピリティーサンドのランドマークめぐり', pins: ['cave-caves-06', 'landmark-prosperity-sands-01', 'landmark-prosperity-sands-04', 'landmark-prosperity-sands-10', 'landmark-prosperity-sands-09', 'landmark-prosperity-sands-08', 'cave-caves-06'] },
+            { name: 'デッドホースレイクの水門まで', pins: ['cave-caves-06', 'landmark-prosperity-sands-05', 'floodgate-floodgates-01'] },
+            { name: 'デッドホースレイクの洞窟まで', pins: ['floodgate-floodgates-01', 'landmark-dead-horse-lake-09', 'landmark-dead-horse-lake-08', 'nutrient-dead-horse-lake-12', 'landmark-dead-horse-lake-10', 'landmark-dead-horse-lake-03', 'mainquest-dead-horse-lake-07'] },
+            { name: 'デッドホースレイク東部', pins: ['cave-caves-04', 'landmark-dead-horse-lake-02', 'nutrient-dead-horse-lake-05', 'nutrient-dead-horse-lake-09', 'mainquest-dead-horse-lake-06', 'grate-dead-horse-lake-02', 'landmark-dead-horse-lake-01', 'nutrient-dead-horse-lake-03', 'mainquest-dead-horse-lake-04', 'cave-caves-04'] },
+            { name: 'デッドホースレイク西部', pins: ['cave-caves-04', 'nutrient-dead-horse-lake-06', 'landmark-dead-horse-lake-04', 'landmark-dead-horse-lake-05', 'mainquest-dead-horse-lake-08', '1774438439092', 'grate-dead-horse-lake-07', 'plate-dead-horse-lake-08', 'mainquest-dead-horse-lake-09', 'grate-dead-horse-lake-08', 'landmark-dead-horse-lake-06', 'plate-dead-horse-lake-09', 'landmark-dead-horse-lake-07', 'nutrient-dead-horse-lake-11', 'cave-caves-04'] },
+            { name: 'デッドホースレイクの頂点捕食者戦', pins: ['cave-caves-04', 'mainquest-dead-horse-lake-05', 'cave-caves-04'] },
+            { name: 'デッドホースレイク終了まで', pins: ['cave-caves-04', 'manhunt-dead-horse-lake-03', '1774438480957', 'nutrient-dead-horse-lake-13', 'mainquest-dead-horse-lake-11', 'mainquest-dead-horse-lake-10'] },
+            { name: 'フォーティック・バイユーの洞窟まで', pins: ['mainquest-dead-horse-lake-10', 'cave-caves-01'] },
+            { name: 'フォーティック・バイユーその2', pins: ['cave-caves-01', 'mainquest-fawtick-bayou-05', 'nutrient-fawtick-bayou-12', 'mainquest-fawtick-bayou-06', 'mainquest-fawtick-bayou-07'] },
+            { name: 'ゴールデン・ショアの洞窟へ', pins: ['mainquest-fawtick-bayou-07', 'cave-caves-05'] },
+            { name: 'ゴールデン・ショア', pins: ['cave-caves-05', 'plate-golden-shores-06', 'landmark-golden-shores-06', 'nutrient-golden-shores-13', 'mainquest-golden-shores-10', 'nutrient-golden-shores-08', 'landmark-golden-shores-03', 'grate-golden-shores-01', 'nutrient-golden-shores-06', 'nutrient-golden-shores-04', 'mainquest-golden-shores-09', 'grate-golden-shores-01', 'nutrient-golden-shores-03', 'landmark-golden-shores-01', 'mainquest-golden-shores-07', 'mainquest-golden-shores-06', 'nutrient-golden-shores-07', 'plate-golden-shores-05', 'nutrient-golden-shores-12', 'plate-golden-shores-08', 'mainquest-golden-shores-04', 'cave-caves-05'] },
+            { name: 'ゴールデン・ショアの捕食者戦', pins: ['cave-caves-05', 'nutrient-golden-shores-10', 'mainquest-golden-shores-08', 'mainquest-golden-shores-11'] },
+            { name: 'サファイアベイの洞窟まで', pins: ['mainquest-golden-shores-11', 'nutrient-golden-shores-17', 'nutrient-sapphire-bay-01', 'nutrient-sapphire-bay-02', 'landmark-sapphire-bay-01', 'landmark-sapphire-bay-03', 'landmark-sapphire-bay-02', 'nutrient-sapphire-bay-05', 'nutrient-sapphire-bay-12', 'mainquest-sapphire-bay-09'] },
+            { name: 'サファイアベイ北部', pins: ['cave-caves-07', 'landmark-sapphire-bay-04', 'nutrient-sapphire-bay-08', 'mainquest-sapphire-bay-07', 'mainquest-sapphire-bay-06', 'grate-sapphire-bay-02', 'nutrient-sapphire-bay-06', 'nutrient-sapphire-bay-07', 'cave-caves-07'] },
+            { name: 'サファイアベイ南部', pins: ['cave-caves-07', 'plate-sapphire-bay-08', 'landmark-sapphire-bay-06', 'landmark-sapphire-bay-07', 'mainquest-sapphire-bay-12', 'nutrient-sapphire-bay-17', 'nutrient-sapphire-bay-16', 'landmark-sapphire-bay-08', 'mainquest-sapphire-bay-13', 'nutrient-sapphire-bay-19', 'nutrient-sapphire-bay-03', 'mainquest-sapphire-bay-05', 'landmark-sapphire-bay-05', 'mainquest-sapphire-bay-11', 'mainquest-sapphire-bay-08', 'mainquest-sapphire-bay-10'] },
+            { name: 'プロスピリティーサンドの洞窟へ', pins: ['mainquest-sapphire-bay-10', 'cave-caves-06'] },
+            { name: 'プロスピリティーサンド南部～湾岸西部', pins: ['cave-caves-06', 'nutrient-prosperity-sands-06', 'mainquest-prosperity-sands-06', 'nutrient-prosperity-sands-07', 'nutrient-prosperity-sands-08', 'mainquest-prosperity-sands-07', 'nutrient-prosperity-sands-09', 'grate-gulf-05', 'nutrient-gulf-05', 'nutrient-gulf-04', 'nutrient-gulf-03', 'grate-gulf-07', 'plate-gulf-03', 'grate-gulf-06', 'nutrient-gulf-06', 'cave-caves-06'] },
+            { name: 'プロスピリティーサンド西部', pins: ['cave-caves-06', 'mainquest-prosperity-sands-03', 'mainquest-prosperity-sands-02', 'cave-caves-06'] },
+            { name: 'プロスピリティーサンド終了まで', pins: ['cave-caves-06', 'grate-prosperity-sands-03', 'plate-prosperity-sands-04', 'nutrient-prosperity-sands-04', 'subquest-prosperity-sands-04', 'nutrient-prosperity-sands-05', 'plate-prosperity-sands-05', 'grate-prosperity-sands-04', 'mainquest-prosperity-sands-05', 'plate-caviar-key-07', 'mainquest-prosperity-sands-09', 'mainquest-prosperity-sands-08'] },
+            { name: 'キャビアキーの洞窟へ', pins: ['mainquest-prosperity-sands-08', 'cave-caves-03'] },
+            { name: 'キャビアキー前半', pins: ['cave-caves-03', 'landmark-caviar-key-03', 'grate-caviar-key-06', 'nutrient-caviar-key-12', 'nutrient-caviar-key-05', 'grate-caviar-key-06', 'mainquest-caviar-key-07', 'nutrient-caviar-key-06', 'landmark-caviar-key-08', 'plate-caviar-key-04', 'landmark-caviar-key-02', 'plate-caviar-key-01', 'mainquest-caviar-key-04', 'landmark-caviar-key-01', 'cave-caves-03'] },
+            { name: 'キャビアキー後半', pins: ['cave-caves-03', 'mainquest-caviar-key-06', 'grate-caviar-key-04', 'nutrient-caviar-key-13', 'nutrient-caviar-key-07', 'plate-caviar-key-06', 'nutrient-caviar-key-08', 'landmark-caviar-key-05', 'mainquest-caviar-key-09', 'mainquest-caviar-key-08', '1774438939681', 'plate-caviar-key-08', 'landmark-caviar-key-06', 'mainquest-caviar-key-10', 'mainquest-gulf-09'] },
+            { name: '湾岸中部', pins: ['cave-caves-08', 'landmark-gulf-01', 'nutrient-gulf-02', 'plate-gulf-01', 'plate-gulf-02', 'nutrient-gulf-14', 'landmark-gulf-04', 'plate-gulf-06', 'mainquest-gulf-14', 'mainquest-gulf-15', 'cave-caves-08'] },
+            { name: '湾岸東部', pins: ['cave-caves-08', 'nutrient-gulf-01', 'mainquest-gulf-10', 'plate-gulf-08', 'mainquest-gulf-12', 'nutrient-gulf-18', 'landmark-gulf-07', 'grate-caviar-key-10', 'nutrient-gulf-17', 'manhunt-gulf-01', 'landmark-gulf-06', 'nutrient-gulf-19', 'plate-gulf-09', 'nutrient-gulf-20', 'grate-gulf-12', 'mainquest-gulf-13', 'cave-caves-08'] },
+            { name: '湾岸の頂点捕食者戦', pins: ['cave-caves-08', 'mainquest-gulf-17', 'cave-caves-08'] },
+            { name: 'ラスボス戦', pins: ['cave-caves-08', 'mainquest-gulf-11', 'mainquest-gulf-16'] }
+        ],
+        customPins: [
+            { id: '1774438439092', lat: 876.7642354666698, lng: 459.71767537328384, map: 'base', name: '悪名ランク3まで', type: 'infamy-1', title: '悪名ランク3まで', detail: '', userId: null, obtained: false, createdAt: '2026-03-25T11:33:59.092Z', updatedAt: '2026-03-26T12:26:05.224Z', visibility: true },
+            { id: '1774438480957', lat: 818.776900845104, lng: 464.4578063500829, map: 'base', name: '悪名ランク5まで', type: 'infamy-1', title: '悪名ランク5まで', detail: '', userId: null, obtained: false, createdAt: '2026-03-25T11:34:40.957Z', updatedAt: '2026-03-26T12:26:05.224Z', visibility: true },
+            { id: '1774438939681', lat: 478.0184747049061, lng: 711.6519533999383, map: 'base', name: '悪名ランク6まで', type: 'infamy-1', title: '悪名ランク6まで', detail: '', userId: null, obtained: false, createdAt: '2026-03-25T11:42:19.681Z', updatedAt: '2026-03-26T12:26:05.224Z', visibility: true }
+        ]
+    },
 ];
 
 // ID 割り当てと統合
