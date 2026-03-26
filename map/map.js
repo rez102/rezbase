@@ -166,6 +166,7 @@ const PIN_META = {
         category: 'other',
         sources: ['base'],
         order: 9,
+        hiddenInBulk: true,
         customSelectable: true,
         leaflet: { iconUrl: '../images/map/悪名ランク1.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -10] }
     },
@@ -585,6 +586,39 @@ const trendRoutes = [
             { id: '1774495703636', lat: 232.52485973039768, lng: 202.6946476524816, map: 'base', type: 'infamy-1', title: '悪名ランク7まで', detail: '', userId: null, obtained: false, createdAt: '2026-03-26T03:28:23.636Z', updatedAt: '2026-03-26T05:04:23.430Z', visibility: true },
             { id: '1774496908078', lat: 319.77784289804544, lng: 463.71145359778757, map: 'base', type: 'infamy-1', title: '悪名ランク8まで', detail: '', userId: null, obtained: false, createdAt: '2026-03-26T03:48:28.078Z', updatedAt: '2026-03-26T05:04:23.430Z', visibility: true },
             { id: '1774497662302', lat: 477.768370032357, lng: 717.7035154704303, map: 'base', type: 'infamy-1', title: '悪名ランク10まで', detail: '', userId: null, obtained: false, createdAt: '2026-03-26T04:01:02.302Z', updatedAt: '2026-03-26T05:04:23.430Z', visibility: true }
+        ]
+    },
+    {
+        id: 'trend-any-dlc-only-standard',
+        name: 'Any% DLC Only Standard',
+        description: '',
+        sections: [
+            { name: '区間1', pins: ['cave-559', 'main-quest-70', 'main-quest-71', 'main-quest-72', 'main-quest-73', 'main-quest-74'] },
+            { name: '区間2', pins: ['main-quest-35', 'main-quest-38', 'main-quest-36', 'main-quest-40', 'main-quest-42', 'main-quest-46', 'main-quest-44', 'main-quest-45', 'main-quest-33', 'cave-112'] },
+            { name: '区間3', pins: ['cave-112', 'main-quest-34', 'main-quest-39', 'main-quest-43', 'main-quest-47', 'main-quest-41', 'main-quest-37', 'cave-112'] },
+            { name: '区間4', pins: ['cave-112', '1774505416069', 'main-quest-53', 'main-quest-55'] },
+            { name: '区間5', pins: ['cave-559', 'main-quest-66', 'main-quest-67', 'main-quest-75', 'main-quest-76', 'cave-558'] },
+            { name: '区間6', pins: ['cave-558', 'main-quest-77', 'main-quest-78', 'cave-556'] },
+            { name: '区間7', pins: ['cave-556', 'main-quest-79', 'main-quest-80', 'main-quest-81', 'main-quest-82'] },
+            { name: '区間8', pins: ['main-quest-82', 'main-quest-83', 'main-quest-84', 'main-quest-85'] },
+            { name: '区間9', pins: ['main-quest-85', 'main-quest-86', 'main-quest-87'] },
+            { name: '区間10', pins: ['main-quest-87', 'main-quest-68', 'main-quest-69'] }
+        ],
+        customPins: [
+            {
+                id: '1774505416069',
+                lat: 365.6078127255142,
+                lng: 760.8146339990082,
+                map: 'dlc',
+                type: 'infamy-1',
+                title: 'DLC悪名ランク5のクエストが出るまで',
+                detail: '',
+                userId: null,
+                obtained: false,
+                createdAt: '2026-03-26T06:10:16.069Z',
+                updatedAt: '2026-03-26T06:31:53.294Z',
+                visibility: true
+            }
         ]
     }
 ];
@@ -1671,6 +1705,7 @@ function getRoutePinMeta(pinId, route = null) {
         return {
             name: getCustomPinTitle(routeCustomPin),
             type: routeCustomPin.type,
+            isCustom: true,
             iconUrl: (icons[routeCustomPin.type] && icons[routeCustomPin.type].options && icons[routeCustomPin.type].options.iconUrl)
                 || (customPinIcon.options && customPinIcon.options.iconUrl)
                 || '',
@@ -1683,12 +1718,18 @@ function getRoutePinMeta(pinId, route = null) {
         return {
             name: getCustomPinTitle(cpin),
             type: cpin.type,
+            isCustom: true,
             iconUrl: (icons[cpin.type] && icons[cpin.type].options && icons[cpin.type].options.iconUrl) || (customPinIcon.options && customPinIcon.options.iconUrl) || '',
             map: cpin.map || mapOverlayMode,
             latlng: L.latLng(cpin.lat, cpin.lng)
         };
     }
     return null;
+}
+
+function getRoutePinSummaryType(meta) {
+    if (!meta || !meta.type) return null;
+    return meta.isCustom ? 'custom' : meta.type;
 }
 
 function buildRouteScopedCustomPinPopup(pin) {
@@ -2538,8 +2579,9 @@ function showRouteDetail(route) {
     const summaryCounts = {};
     allPinIds.forEach(pid => {
         const meta = getRoutePinMeta(pid, route);
-        if (!meta || !meta.type) return;
-        summaryCounts[meta.type] = (summaryCounts[meta.type] || 0) + 1;
+        const summaryType = getRoutePinSummaryType(meta);
+        if (!summaryType) return;
+        summaryCounts[summaryType] = (summaryCounts[summaryType] || 0) + 1;
     });
     const summaryItems = document.getElementById('detail-summary-items');
     if (summaryItems) {
@@ -2560,7 +2602,8 @@ function showRouteDetail(route) {
         const counts = {};
         section.pins.forEach(pid => {
             const meta = getRoutePinMeta(pid, route);
-            if (meta) counts[meta.type] = (counts[meta.type] || 0) + 1;
+            const summaryType = getRoutePinSummaryType(meta);
+            if (summaryType) counts[summaryType] = (counts[summaryType] || 0) + 1;
         });
 
         const head = document.createElement('div');
