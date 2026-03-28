@@ -692,6 +692,59 @@ const trendRoutes = [
             { id: '1774688957863', lat: 809.0211438549068, lng: 433.24041703544253, map: 'base', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: true, createdAt: '2026-03-28T09:09:17.863Z', updatedAt: '2026-03-28T10:23:04.610Z', visibility: true }
         ]
     },
+    {
+        id: 'trend-100-dlc-only-standard',
+        name: '100% DLC Only Standard',
+        description: '',
+        sections: [
+            { name: '区間1', pins: ['cave-caves-08', 'mainquest-gulf-05', 'mainquest-gulf-06', 'mainquest-gulf-07', 'mainquest-caviar-key-01', 'mainquest-gulf-08'] },
+            { name: '区間2', pins: ['landmark-plover-island-02', 'mainquest-plover-island-16', 'mainquest-plover-island-04'] },
+            { name: '区間3', pins: ['cave-plover-island-01', 'nutrient-plover-island-03', 'nutrient-plover-island-02', 'mainquest-plover-island-08', 'mainquest-plover-island-10', '1774603005698', 'mainquest-plover-island-14', 'mainquest-plover-island-12', 'mainquest-plover-island-13', 'nutrient-plover-island-04', 'mainquest-plover-island-06', 'mainquest-plover-island-01', 'nutrient-plover-island-08'] },
+            { name: '区間4', pins: ['nutrient-plover-island-08', 'grate-plover-island-03', 'nutrient-plover-island-03', 'landmark-plover-island-04', 'nutrient-plover-island-05', 'cave-plover-island-01'] },
+            { name: '区間5', pins: ['cave-plover-island-01', 'mainquest-plover-island-02', 'nutrient-plover-island-10', 'grate-plover-island-01', 'nutrient-plover-island-09', 'grate-plover-island-01'] },
+            { name: '区間6', pins: ['grate-plover-island-01', 'mainquest-plover-island-07', 'plate-plover-island-03', 'plate-plover-island-04', 'mainquest-plover-island-11'] },
+            { name: '区間7', pins: ['mainquest-plover-island-11', 'plate-plover-island-06', 'quest-plover-island-03', 'landmark-plover-island-05', 'plate-plover-island-09', '1774687227858', 'mainquest-plover-island-15', 'landmark-plover-island-06', 'plate-plover-island-10', 'nutrient-plover-island-06'] },
+            { name: '区間8', pins: ['nutrient-plover-island-06', 'grate-plover-island-04', 'nutrient-plover-island-07', 'grate-plover-island-04', 'mainquest-plover-island-09', 'landmark-plover-island-01', 'manhunt-plover-island-01', 'plate-plover-island-05', 'quest-plover-island-01', 'plate-plover-island-01', 'mainquest-plover-island-05', 'cave-plover-island-01'] },
+            { name: '区間9', pins: ['cave-plover-island-01', 'manhunt-plover-island-02', 'plate-plover-island-07', '1774687517302', 'subquest-plover-island-02', 'mainquest-plover-island-03'] },
+            { name: '区間10', pins: ['mainquest-plover-island-03', 'timetrial-plover-island-02', 'landmark-plover-island-03', 'nutrient-plover-island-01', '1774687571073', 'plate-plover-island-02'] },
+            { name: '区間11', pins: ['plate-plover-island-02', 'timetrial-plover-island-01', '1774687602636', 'plate-plover-island-08', 'quest-plover-island-02', 'subquest-plover-island-01'] },
+            { name: '区間12', pins: ['subquest-plover-island-01', 'mainquest-plover-island-17'] },
+            { name: '区間13', pins: ['cave-caves-08', 'mainquest-gulf-01', 'quest-gulf-01', 'mainquest-gulf-02', 'mainquest-sapphire-bay-01'] },
+            { name: '区間14', pins: ['mainquest-sapphire-bay-01', 'subquest-sapphire-bay-01', 'timetrial-sapphire-bay-01', 'mainquest-sapphire-bay-02', '1774687783113', 'cave-caves-07'] },
+            { name: '区間15', pins: ['cave-caves-07', 'quest-sapphire-bay-01', 'mainquest-sapphire-bay-03', 'timetrial-sapphire-bay-02', '1774687915243', 'manhunt-sapphire-bay-01', 'cave-caves-07'] },
+            { name: '区間16', pins: ['cave-caves-07', 'manhunt-sapphire-bay-02', 'mainquest-sapphire-bay-04'] },
+            { name: '区間17', pins: ['mainquest-sapphire-bay-04', 'cave-caves-05'] },
+            { name: '区間18', pins: ['cave-caves-05', 'mainquest-golden-shores-01', 'mainquest-golden-shores-02', 'mainquest-golden-shores-03', 'manhunt-golden-shores-02'] },
+            { name: '区間19', pins: ['cave-caves-05', 'subquest-golden-shores-02', 'timetrial-golden-shores-02', '1774688198210', 'timetrial-golden-shores-01'] },
+            { name: '区間20', pins: ['timetrial-golden-shores-01', 'subquest-golden-shores-01', '1774688244619', 'manhunt-golden-shores-01', 'quest-golden-shores-01'] },
+            { name: '区間21', pins: ['quest-golden-shores-01', 'mainquest-dead-horse-lake-01', 'mainquest-dead-horse-lake-02', 'mainquest-dead-horse-lake-03', 'subquest-dead-horse-lake-01', 'manhunt-dead-horse-lake-02', 'timetrial-dead-horse-lake-01', '1774688537850'] },
+            { name: '区間22', pins: ['1774688537850', 'mainquest-caviar-key-02', 'quest-caviar-key-01', 'mainquest-caviar-key-03', 'manhunt-prosperity-sands-02', 'quest-prosperity-sands-01', 'timetrial-prosperity-sands-01'] },
+            { name: '区間23', pins: ['timetrial-prosperity-sands-01', 'mainquest-prosperity-sands-01', '1774688641629', 'subquest-prosperity-sands-02', 'timetrial-prosperity-sands-02', '1774688766419', 'cave-caves-06', 'manhunt-prosperity-sands-01', 'subquest-prosperity-sands-01', 'cave-caves-06'] },
+            { name: '区間24', pins: ['cave-caves-06', 'cave-caves-04'] },
+            { name: '区間25', pins: ['cave-caves-04', 'timetrial-dead-horse-lake-02', '1774688957863', 'manhunt-dead-horse-lake-01', 'subquest-dead-horse-lake-02', 'cave-caves-04'] },
+            { name: '区間26', pins: ['cave-caves-04', 'quest-dead-horse-lake-01', 'cave-caves-04'] },
+            { name: '区間27', pins: ['cave-caves-04', 'cave-caves-01', 'quest-fawtick-bayou-01', 'cave-caves-01'] },
+            { name: '区間28', pins: ['cave-caves-01', 'cave-caves-07'] },
+            { name: '区間29', pins: ['cave-caves-07', 'subquest-sapphire-bay-02', 'cave-caves-07'] },
+            { name: '区間30', pins: ['cave-caves-07', 'cave-caves-08'] },
+            { name: '区間31', pins: ['cave-caves-08', 'mainquest-gulf-03', 'mainquest-gulf-04'] }
+        ],
+        customPins: [
+            { id: '1774603005698', lat: 841.0389381882437, lng: 198.73797028254876, map: 'dlc', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-27T09:16:45.698Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774687227858', lat: 211.12225753728217, lng: 565.8887231876761, map: 'dlc', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T08:40:27.858Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774687517302', lat: 351.0663623960932, lng: 897.2343945495047, map: 'dlc', name: 'DLC悪名ランク4+ゲージいっぱいまで', type: 'infamy-1', title: 'DLC悪名ランク4+ゲージいっぱいまで', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T08:45:17.302Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774687571073', lat: 526.0665717411913, lng: 435.83523022134057, map: 'dlc', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T08:46:11.073Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774687602636', lat: 280.11807063532046, lng: 530.8080546502075, map: 'dlc', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T08:46:42.636Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774687783113', lat: 225.0161195725526, lng: 257.4642426695617, map: 'base', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T08:49:43.113Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774687915243', lat: 338.74230656764536, lng: 286.4559469689, map: 'base', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T08:51:55.243Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774688198210', lat: 558.5110952901985, lng: 328.93013017632364, map: 'base', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T08:56:38.210Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774688244619', lat: 592.7734466509855, lng: 202.96510084549226, map: 'base', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T08:57:24.619Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774688537850', lat: 715.5196261029455, lng: 587.439784655542, map: 'base', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T09:02:17.850Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774688641629', lat: 464.8214390147217, lng: 633.6767689872624, map: 'base', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T09:04:01.629Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774688766419', lat: 409.77606346471174, lng: 513.4682474905708, map: 'base', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T09:06:06.419Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true },
+            { id: '1774688957863', lat: 809.0211438549068, lng: 433.24041703544253, map: 'base', name: 'TA終点', type: 'time-trial', title: 'TA終点', detail: '', userId: null, obtained: false, createdAt: '2026-03-28T09:09:17.863Z', updatedAt: '2026-03-28T15:08:21.817Z', visibility: true }
+        ]
+    },
 ];
 
 // ID 割り当てと統合
