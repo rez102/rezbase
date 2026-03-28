@@ -4203,8 +4203,14 @@ function setupEventListeners() {
         resetAllPinsBtn.addEventListener('click', () => {
             if (confirm('全てのピンを未取得の状態に戻しますか？\nこの操作は取り消せません。')) {
                 obtainedPins.clear();
+                setCustomPinObtainedSet(new Set());
+                syncAllCustomPinRecords();
                 saveObtained();
+                saveCustomPins();
+                saveCustomPinObtained();
                 markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
+                customPins.forEach(pin => updateCustomPinObtainedAppearance(pin.id));
+                renderCustomPinList();
                 refreshMapDisplay();
                 alert('全てのピンをリセットしました。');
             }
