@@ -352,6 +352,7 @@
             const filterPopover = document.getElementById('filter-popover');
             const sidebarBackdrop = document.getElementById('sidebar-backdrop');
             const sidebarCloseInner = document.querySelector('.main-sidebar-close-inner');
+            const isMobileLayout = () => window.innerWidth <= 900;
 
             const applySidebarMode = () => {
                 if (window.innerWidth <= 900) {
@@ -392,11 +393,20 @@
 
             if (filterToggleBtn && filterPopover) {
                 filterToggleBtn.addEventListener('click', (e) => {
+                    if (!isMobileLayout()) return;
                     e.stopPropagation();
                     filterPopover.classList.toggle('hidden');
                 });
                 document.addEventListener('click', (e) => {
+                    if (!isMobileLayout()) return;
                     if (!filterPopover.contains(e.target) && e.target !== filterToggleBtn) {
+                        filterPopover.classList.add('hidden');
+                    }
+                });
+                window.addEventListener('resize', () => {
+                    if (!isMobileLayout()) {
+                        filterPopover.classList.remove('hidden');
+                    } else {
                         filterPopover.classList.add('hidden');
                     }
                 });

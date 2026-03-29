@@ -272,6 +272,34 @@ body {
     display: none;
 }
 
+@media (min-width: 901px) {
+    .filter-toggle-btn {
+        display: none;
+    }
+
+    .filter-popover,
+    .filter-popover.hidden {
+        position: static;
+        top: auto;
+        right: auto;
+        width: auto;
+        display: block;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+        z-index: auto;
+    }
+
+    #filters {
+        width: fit-content;
+        max-width: 100%;
+        padding: 12px;
+        margin-bottom: 32px;
+    }
+}
+
 .filter-btn {
     width: 48px;
     height: 48px;
@@ -557,6 +585,14 @@ body {
 @media (max-width: 900px) {
     .main {
         padding: 28px;
+    }
+
+    #filters {
+        margin-bottom: 0;
+        padding: 0;
+        background: transparent;
+        border: none;
+        border-radius: 0;
     }
 
     .equipment-top {

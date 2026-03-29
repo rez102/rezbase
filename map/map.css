@@ -268,7 +268,7 @@ body.mobile-filter-open .sidebar-backdrop {
     left: 0;
     width: var(--sidebar-width);
     height: 100%;
-    background: #1a1c24; /* 原神風の少し明るいダーク */
+    background: #1a1c24; /* 少し明るめのダーク */
     border-right: 1px solid rgba(255,255,255,0.05);
     z-index: 1000;
     display: flex;
@@ -1131,7 +1131,7 @@ body.mobile-filter-open .sidebar-backdrop {
 }
 
 input:checked + .switch-slider {
-    background-color: #ffd37a; /* 原神ゴールド */
+    background-color: #ffd37a; /* 明るいゴールド */
 }
 
 input:checked + .switch-slider:before {
