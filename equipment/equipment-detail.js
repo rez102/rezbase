@@ -1,9 +1,46 @@
 // URLからidを取得
 const params = new URLSearchParams(window.location.search);
-const id = params.get('id');
+const rawId = params.get('id');
+const id = typeof rawId === 'string' ? rawId.trim() : '';
+
+function appendHighlightedText(target, text) {
+  if (!target) return;
+  const value = text == null ? '' : String(text);
+  const parts = value.split(/([+-]?\d+(?:\.\d+)?%?)/g);
+
+  parts.forEach(part => {
+    if (!part) return;
+    if (/^[+-]?\d+(?:\.\d+)?%?$/.test(part)) {
+      const span = document.createElement('span');
+      span.className = 'highlight';
+      span.textContent = part;
+      target.appendChild(span);
+      return;
+    }
+    target.appendChild(document.createTextNode(part));
+  });
+}
+
+function renderLineBreakText(target, lines, { highlightNumbers = false } = {}) {
+  if (!target) return;
+  target.replaceChildren();
+
+  (lines || []).forEach((line, index) => {
+    if (index > 0) {
+      target.appendChild(document.createElement('br'));
+    }
+    if (highlightNumbers) {
+      appendHighlightedText(target, line);
+      return;
+    }
+    target.appendChild(document.createTextNode(line == null ? '' : String(line)));
+  });
+}
 
 // データを画面に表示
-const data = equipmentData[id];
+const data = id && Object.prototype.hasOwnProperty.call(equipmentData, id)
+  ? equipmentData[id]
+  : null;
 
 if (data) {
   document.getElementById('detail-name').textContent = data.name;
@@ -74,31 +111,24 @@ if (data) {
     document.getElementById('total-mat-fat').style.display = totalFat > 0 ? 'flex' : 'none';
     document.getElementById('total-mat-mutagen').style.display = totalMutagen > 0 ? 'flex' : 'none';
 
-    // テキスト内の数値をハイライトする関数（例: "+10%", "20ダメージ" の数値をオレンジにする）
-    function formatText(text) {
-      if (!text) return '';
-      // +数値、-数値、数値のみなどをマッチしてspanで囲む
-      return text.replace(/([+-]?\d+(?:\.\d+)?%?)/g, '<span class="highlight">$1</span>');
-    }
-
     // パッシブと特殊能力
     if (data.passive) {
-      document.getElementById('detail-passive').innerHTML = t.passive.map(formatText).join('<br>');
+      renderLineBreakText(document.getElementById('detail-passive'), t.passive, { highlightNumbers: true });
       document.getElementById('section-passive').style.display = 'block';
     } else {
       document.getElementById('section-passive').style.display = 'none';
     }
 
     if (data.special) {
-      document.getElementById('detail-special').innerHTML = t.special.map(formatText).join('<br>');
+      renderLineBreakText(document.getElementById('detail-special'), t.special, { highlightNumbers: true });
       document.getElementById('section-special').style.display = 'block';
     } else {
       document.getElementById('section-special').style.display = 'none';
     }
 
     if (data.ability) {
-      document.getElementById('detail-ability-desc').innerHTML = data.abilityDesc.join('<br>');
-      document.getElementById('detail-ability-effect').innerHTML = t.abilityEffect.map(formatText).join('<br>');
+      renderLineBreakText(document.getElementById('detail-ability-desc'), data.abilityDesc);
+      renderLineBreakText(document.getElementById('detail-ability-effect'), t.abilityEffect, { highlightNumbers: true });
       document.getElementById('section-ability').style.display = 'block';
     } else {
       document.getElementById('section-ability').style.display = 'none';

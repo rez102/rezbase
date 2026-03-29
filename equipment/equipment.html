@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://ddieubjzcwfrwsleyrkk.supabase.co wss://ddieubjzcwfrwsleyrkk.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
     <title>装備詳細</title>
     <link rel="stylesheet" href="../fonts.css">
     <link rel="stylesheet" href="equipment.css">
@@ -118,51 +119,7 @@
 
         <script src="equipment-data.js"></script>
         <script src="equipment-detail.js"></script>
-        <script>
-            const body = document.body;
-            const sidebar = document.querySelector('.sidebar');
-            const openSidebarBtn = document.getElementById('main-sidebar-open');
-            const closeSidebarBtn = document.getElementById('main-sidebar-close');
-            const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-            const sidebarCloseInner = document.querySelector('.main-sidebar-close-inner');
-
-            const applySidebarMode = () => {
-                if (window.innerWidth <= 900) {
-                    body.classList.add('sidebar-collapsed');
-                    if (sidebar) sidebar.classList.add('collapsed');
-                    if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
-                } else {
-                    body.classList.remove('sidebar-collapsed');
-                    if (sidebar) sidebar.classList.remove('collapsed');
-                    if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
-                }
-            };
-
-            applySidebarMode();
-            window.addEventListener('resize', applySidebarMode);
-
-            const openSidebar = () => {
-                body.classList.remove('sidebar-collapsed');
-                if (sidebar) sidebar.classList.remove('collapsed');
-                if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
-            };
-            const closeSidebar = () => {
-                body.classList.add('sidebar-collapsed');
-                if (sidebar) sidebar.classList.add('collapsed');
-                if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
-            };
-
-            if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
-            if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
-            if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
-            if (sidebarCloseInner) {
-                sidebarCloseInner.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    closeSidebar();
-                });
-            }
-        </script>
+        <script src="equipment-layout.js"></script>
         <footer class="site-footer">
             <p>当サイトは個人が運営する非公式ファンサイトであり、使用されているテキスト・画像等の著作権は Tripwire Interactive および関連する権利者に帰属します。</p>
             <p>掲載内容に問題がある場合は、お手数ですがご連絡ください。迅速に対応いたします。</p>

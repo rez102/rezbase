@@ -6,6 +6,35 @@ const map = L.map('map', {
     doubleClickZoom: false // 連打時のズーム/移動を防止
 });
 
+function createImageNode(src, alt = '') {
+    const image = document.createElement('img');
+    image.src = src || '';
+    image.alt = alt;
+    return image;
+}
+
+function createSvgNode(attributes, paths = [], circles = []) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    Object.entries(attributes).forEach(([key, value]) => {
+        svg.setAttribute(key, value);
+    });
+    paths.forEach((pathData) => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        Object.entries(pathData).forEach(([key, value]) => {
+            path.setAttribute(key, value);
+        });
+        svg.appendChild(path);
+    });
+    circles.forEach((circleData) => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        Object.entries(circleData).forEach(([key, value]) => {
+            circle.setAttribute(key, value);
+        });
+        svg.appendChild(circle);
+    });
+    return svg;
+}
+
 // ズームコントロールは非表示
 
 // カスタムピン作成ボタン
@@ -15,7 +44,7 @@ customPinControl.onAdd = function() {
     const btn = L.DomUtil.create('button', 'custom-pin-btn', container);
     btn.type = 'button';
     btn.title = 'カスタムピン作成';
-    btn.innerHTML = '<img src="../images/map/新規マップピン.png" alt="">';
+    btn.appendChild(createImageNode('../images/map/新規マップピン.png'));
     L.DomEvent.disableClickPropagation(container);
     L.DomEvent.on(btn, 'click', (e) => {
         L.DomEvent.stop(e);
@@ -32,7 +61,7 @@ pinBulkControl.onAdd = function() {
     const btn = L.DomUtil.create('button', 'custom-pin-btn', container);
     btn.type = 'button';
     btn.title = '標記したマップピン';
-    btn.innerHTML = '<img src="../images/map/砂時計.png" alt="">';
+    btn.appendChild(createImageNode('../images/map/砂時計.png'));
     L.DomEvent.disableClickPropagation(container);
     L.DomEvent.on(btn, 'click', (e) => {
         L.DomEvent.stop(e);
@@ -1022,6 +1051,15 @@ function showToast(message, type = 'info') {
     }, 3200);
 }
 
+function sanitizeUrlMessage(value, maxLength = 300) {
+    if (typeof value !== 'string') return '';
+    return value
+        .replace(/[\u0000-\u001F\u007F]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, maxLength);
+}
+
 function validateCustomPinInput({ title, detail }) {
     if (customPins.length >= LIMITS.customPins) {
         return 'カスタムピンは100個までです';
@@ -1226,12 +1264,12 @@ function markMigrationChecked(user) {
 function showAuthCallbackErrorIfNeeded() {
     const searchParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    const message = searchParams.get('error_description')
+    const message = sanitizeUrlMessage(searchParams.get('error_description')
         || hashParams.get('error_description')
         || searchParams.get('error')
-        || hashParams.get('error');
+        || hashParams.get('error'));
     if (message) {
-        showToast(decodeURIComponent(message), 'error');
+        showToast(message, 'error');
     }
 }
 
@@ -2625,7 +2663,10 @@ function renderRouteList() {
         const meta = document.createElement('div');
         meta.className = 'route-meta';
         const totalSpan = document.createElement('span');
-        totalSpan.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>';
+        totalSpan.appendChild(createSvgNode(
+            { width: '14', height: '14', viewBox: '0 0 24 24', fill: 'currentColor' },
+            [{ d: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z' }]
+        ));
         totalSpan.append(document.createTextNode(`${totalPins}`));
         const descSpan = document.createElement('span');
         descSpan.innerText = r.description || '';
@@ -2645,7 +2686,10 @@ function renderRouteList() {
         pinButton.type = 'button';
         pinButton.className = `route-pin-btn ${pinnedRoutes.has(r.id) ? 'pinned' : ''}`.trim();
         pinButton.title = '固定';
-        pinButton.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" /></svg>';
+        pinButton.appendChild(createSvgNode(
+            { viewBox: '0 0 24 24', fill: 'currentColor' },
+            [{ d: 'M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z' }]
+        ));
         pinButton.addEventListener('click', (event) => {
             event.stopPropagation();
             togglePinRoute(r.id);
@@ -2657,7 +2701,10 @@ function renderRouteList() {
             deleteButton.type = 'button';
             deleteButton.className = 'route-delete-btn';
             deleteButton.title = '削除';
-            deleteButton.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+            deleteButton.appendChild(createSvgNode(
+                { viewBox: '0 0 24 24', fill: 'currentColor' },
+                [{ d: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' }]
+            ));
             deleteButton.addEventListener('click', (event) => {
                 event.stopPropagation();
                 deleteMyRoute(r.id);
@@ -2898,13 +2945,25 @@ function showRouteDetail(route) {
     });
     const summaryItems = document.getElementById('detail-summary-items');
     if (summaryItems) {
-        const summaryHtml = Object.entries(summaryCounts).map(([type, count]) => {
+        summaryItems.replaceChildren();
+        Object.entries(summaryCounts).forEach(([type, count]) => {
             const iconUrl = (icons[type] && icons[type].options && icons[type].options.iconUrl)
                 ? icons[type].options.iconUrl
                 : '../images/map/新規マップピン.png';
-            return `<span class="detail-summary-item"><img src="${iconUrl}" alt=""><strong>x${count}</strong></span>`;
-        }).join('');
-        summaryItems.innerHTML = summaryHtml || '<span class="detail-summary-empty">ピンなし</span>';
+            const item = document.createElement('span');
+            item.className = 'detail-summary-item';
+            item.appendChild(createImageNode(iconUrl));
+            const countStrong = document.createElement('strong');
+            countStrong.textContent = `x${count}`;
+            item.appendChild(countStrong);
+            summaryItems.appendChild(item);
+        });
+        if (summaryItems.childElementCount === 0) {
+            const empty = document.createElement('span');
+            empty.className = 'detail-summary-empty';
+            empty.textContent = 'ピンなし';
+            summaryItems.appendChild(empty);
+        }
     }
 
     route.sections.forEach((section, idx) => {
@@ -3577,7 +3636,18 @@ function updateCreationUI() {
         dragHandle.className = 'section-drag-handle';
         dragHandle.draggable = true;
         dragHandle.title = 'ドラッグして区間の順番を入れ替える';
-        dragHandle.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>';
+        dragHandle.appendChild(createSvgNode(
+            { width: '16', height: '16', viewBox: '0 0 24 24', fill: 'currentColor' },
+            [],
+            [
+                { cx: '9', cy: '6', r: '1.5' },
+                { cx: '15', cy: '6', r: '1.5' },
+                { cx: '9', cy: '12', r: '1.5' },
+                { cx: '15', cy: '12', r: '1.5' },
+                { cx: '9', cy: '18', r: '1.5' },
+                { cx: '15', cy: '18', r: '1.5' }
+            ]
+        ));
         dragHandle.addEventListener('click', (event) => event.stopPropagation());
         dragHandle.addEventListener('dragstart', (event) => {
             draggedSectionIndex = sIdx;
@@ -3618,7 +3688,13 @@ function updateCreationUI() {
         const collapseBtn = document.createElement('button');
         collapseBtn.type = 'button';
         collapseBtn.className = 'collapse-btn';
-        collapseBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="transform: rotate(${isCollapsed ? '-90deg' : '0deg'}); transition: transform 0.2s;"><path d="M7 10l5 5 5-5z"/></svg>`;
+        const collapseIcon = createSvgNode(
+            { width: '14', height: '14', viewBox: '0 0 24 24', fill: 'currentColor' },
+            [{ d: 'M7 10l5 5 5-5z' }]
+        );
+        collapseIcon.style.transform = `rotate(${isCollapsed ? '-90deg' : '0deg'})`;
+        collapseIcon.style.transition = 'transform 0.2s';
+        collapseBtn.appendChild(collapseIcon);
         collapseBtn.addEventListener('click', (event) => {
             event.stopPropagation();
             toggleSectionCollapse(sIdx);
@@ -3650,7 +3726,10 @@ function updateCreationUI() {
             const deleteSectionBtn = document.createElement('button');
             deleteSectionBtn.type = 'button';
             deleteSectionBtn.className = 'delete-section-btn';
-            deleteSectionBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+            deleteSectionBtn.appendChild(createSvgNode(
+                { width: '16', height: '16', viewBox: '0 0 24 24', fill: 'currentColor' },
+                [{ d: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' }]
+            ));
             deleteSectionBtn.addEventListener('click', (event) => {
                 event.stopPropagation();
                 removeSection(sIdx);
@@ -3760,7 +3839,9 @@ function updateCreationUI() {
     const addCard = document.createElement('button');
     addCard.type = 'button';
     addCard.className = 'section-add-card';
-    addCard.innerHTML = '<span>＋ 区間を追加</span>';
+    const addCardLabel = document.createElement('span');
+    addCardLabel.textContent = '＋ 区間を追加';
+    addCard.appendChild(addCardLabel);
     addCard.addEventListener('click', (event) => {
         event.stopPropagation();
         addSection({ position: 'end' });
@@ -4888,7 +4969,10 @@ function renderPinBulkList() {
             : (icons[item.type]?.options?.iconUrl);
         const info = document.createElement('div');
         info.className = 'pin-bulk-info';
-        info.innerHTML = `<img src="${iconUrl || ''}" alt=""><span>${item.label}</span>`;
+        info.appendChild(createImageNode(iconUrl || ''));
+        const label = document.createElement('span');
+        label.textContent = item.label;
+        info.appendChild(label);
 
         const btn = document.createElement('button');
         btn.className = 'pin-bulk-more';
@@ -5173,7 +5257,7 @@ function updateQuickView(visibleTypes) {
         const btn = document.createElement('button');
         btn.className = 'quickview-icon';
         btn.dataset.type = type;
-        btn.innerHTML = `<img src="${iconUrl}" alt="">`;
+        btn.appendChild(createImageNode(iconUrl));
         btn.addEventListener('click', () => {
             toggleTypeFilter(type);
             refreshMapDisplay({ syncButtons: true });

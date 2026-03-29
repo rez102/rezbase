@@ -7,6 +7,15 @@
     const detailElement = global.document.getElementById('callback-detail');
     const REDIRECT_DELAY_MS = 1600;
 
+    function sanitizeUrlMessage(value, maxLength = 300) {
+        if (typeof value !== 'string') return '';
+        return value
+            .replace(/[\u0000-\u001F\u007F]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, maxLength);
+    }
+
     function setStatus(message, detail = '') {
         if (statusElement) {
             statusElement.textContent = message;
@@ -85,11 +94,11 @@
     function getCallbackErrorMessage() {
         const searchParams = new URLSearchParams(global.location.search);
         const hashParams = new URLSearchParams(global.location.hash.replace(/^#/, ''));
-        return searchParams.get('error_description')
+        return sanitizeUrlMessage(searchParams.get('error_description')
             || hashParams.get('error_description')
             || searchParams.get('error')
             || hashParams.get('error')
-            || '';
+            || '');
     }
 
     async function handleAuthCallback() {
@@ -120,9 +129,9 @@
             redirectToMap();
         } catch (error) {
             cleanupCallbackUrl();
-            const message = error && error.message
+            const message = sanitizeUrlMessage(error && error.message
                 ? error.message
-                : '認証の処理に失敗しました。';
+                : '認証の処理に失敗しました。');
             setStatus('認証に失敗しました', message);
             redirectToMap({ error_description: message }, REDIRECT_DELAY_MS);
         }
