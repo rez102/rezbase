@@ -11,28 +11,9 @@
     <link rel="stylesheet" href="history.css">
 </head>
 
-<body>
+<body data-site-root-prefix=".." data-site-active-page="history">
     <div class="layout">
-        <aside class="sidebar">
-            <button class="main-sidebar-close-inner" type="button" title="メニューを閉じる">×</button>
-            <a href="../index.html" class="logo">
-                <span>Maneater Wiki</span>
-            </a>
-            <nav class="menu">
-                <a href="../maneater.html" class="menu-item">
-                    <img src="../images/進化1.png" alt="装備">
-                    <span>装備</span>
-                </a>
-                <a href="../map/map.html" class="menu-item">
-                    <img src="../images/map1.png" alt="マップ">
-                    <span>マップ</span>
-                </a>
-                <a href="history.html" class="menu-item active">
-                    <span>更新履歴</span>
-                </a>
-            </nav>
-        </aside>
-        <div id="sidebar-backdrop" class="sidebar-backdrop hidden"></div>
+        <div data-site-shell="sidebar"></div>
         <main class="main">
             <button id="main-sidebar-open" class="main-sidebar-toggle" title="メニューを開く">≡</button>
             <button id="main-sidebar-close" class="main-sidebar-close" title="メニューを閉じる">‹</button>
@@ -53,13 +34,11 @@
                     </div>
                 </section>
                 <div id="history-list" class="history-timeline"></div>
-                <footer class="site-footer">
-                    <p>当サイトは個人が運営する非公式ファンサイトであり、使用されているテキスト・画像等の著作権は Tripwire Interactive および関連する権利者に帰属します。</p>
-                    <p>掲載内容に問題がある場合は、お手数ですがご連絡ください。迅速に対応いたします。</p>
-                </footer>
+                <div data-site-shell="footer"></div>
             </div>
         </main>
     </div>
+    <script src="../shared/site-shell.js"></script>
     <script src="history.js" defer></script>
 </body>
 

@@ -35,18 +35,16 @@ function createSvgNode(attributes, paths = [], circles = []) {
     return svg;
 }
 
-// ズームコントロールは非表示
-
-// カスタムピン作成ボタン
+// UI コントロール
 const customPinControl = L.control({ position: 'topright' });
 customPinControl.onAdd = function() {
     const container = L.DomUtil.create('div', 'leaflet-control custom-pin-control');
-    const btn = L.DomUtil.create('button', 'custom-pin-btn', container);
-    btn.type = 'button';
-    btn.title = 'カスタムピン作成';
-    btn.appendChild(createImageNode('../images/map/新規マップピン.png'));
+    const button = L.DomUtil.create('button', 'custom-pin-btn', container);
+    button.type = 'button';
+    button.title = 'カスタムピン作成';
+    button.appendChild(createImageNode('../images/map/新規マップピン.png'));
     L.DomEvent.disableClickPropagation(container);
-    L.DomEvent.on(btn, 'click', (e) => {
+    L.DomEvent.on(button, 'click', (e) => {
         L.DomEvent.stop(e);
         toggleCustomPinSidebar();
     });
@@ -54,16 +52,15 @@ customPinControl.onAdd = function() {
 };
 customPinControl.addTo(map);
 
-// ピン一括管理ボタン
 const pinBulkControl = L.control({ position: 'topright' });
 pinBulkControl.onAdd = function() {
     const container = L.DomUtil.create('div', 'leaflet-control pin-bulk-control');
-    const btn = L.DomUtil.create('button', 'custom-pin-btn', container);
-    btn.type = 'button';
-    btn.title = '標記したマップピン';
-    btn.appendChild(createImageNode('../images/map/砂時計.png'));
+    const button = L.DomUtil.create('button', 'custom-pin-btn', container);
+    button.type = 'button';
+    button.title = '標記したマップピン';
+    button.appendChild(createImageNode('../images/map/砂時計.png'));
     L.DomEvent.disableClickPropagation(container);
-    L.DomEvent.on(btn, 'click', (e) => {
+    L.DomEvent.on(button, 'click', (e) => {
         L.DomEvent.stop(e);
         togglePinBulkSidebar();
     });
@@ -266,6 +263,38 @@ function createDefaultRoute() {
     };
 }
 
+function validateCustomPinInput({ title, detail }) {
+    if (customPins.length >= LIMITS.customPins) {
+        return 'カスタムピンは100個までです';
+    }
+    if (!title) {
+        return 'ピン名称を入力してください。';
+    }
+    if (title.length > LIMITS.customPinTitle) {
+        return 'カスタムピンタイトルは30文字以内で入力してください';
+    }
+    if (detail.length > LIMITS.customPinDetail) {
+        return 'カスタムピン説明は300文字以内で入力してください';
+    }
+    return null;
+}
+
+function validateRouteInput({ name, description, isNewRoute }) {
+    if (!name) {
+        return 'ルート名を入力してください';
+    }
+    if (isNewRoute && myRoutes.length >= LIMITS.myRoutes) {
+        return 'ルートは50本まで保存できます';
+    }
+    if (name.length > LIMITS.routeName) {
+        return 'ルート名は50文字以内で入力してください';
+    }
+    if (description.length > LIMITS.routeDescription) {
+        return 'ルート説明は500文字以内で入力してください';
+    }
+    return null;
+}
+
 const w = 1120;
 const h = 1120;
 const bounds = [[0, 0], [h, w]];
@@ -417,7 +446,7 @@ let currentMapOverlay = L.imageOverlay(mapOverlayPaths[state.overlay], bounds).a
 
 map.fitBounds(bounds, { paddingTopLeft: [320, 0] });
 
-// デバッグ用：クリックした座標と洞窟当たり判定を表示
+// マップ上クリックの補助動作
 map.on('click', function(e) {
     if (customPinMode) {
         if (mobileCustomPinPlacementMode) return;
@@ -426,12 +455,9 @@ map.on('click', function(e) {
     }
     const hitCave = collectibles.find(c => c.type === 'cave' && Math.hypot(c.lat - e.latlng.lat, c.lng - e.latlng.lng) <= CAVE_HIT_RADIUS);
     if (hitCave) {
-        console.log(`[洞窟ヒット] ${hitCave.area} (${hitCave.id})`);
-
         if (currentRouteView === 'create' && !batchMode) {
-            // ルート作成モードでは詳細ポップアップは出さない（他のピンと同じ動作）
+            // ルート作成中は通常ピンと同じく追加動作を優先する
             addPinToRoute(hitCave.id);
-            console.log(`ルート作成中：洞窟ピンを追加 ${hitCave.id}`);
             return;
         }
 
@@ -444,14 +470,12 @@ map.on('click', function(e) {
     if (currentRouteView === 'create') {
         return;
     }
-
-    console.log(`lat: ${e.latlng.lat.toFixed(2)}, lng: ${e.latlng.lng.toFixed(2)}`);
 });
 
-// 収集物データ
+// アプリ状態
 let rawCollectibles = [];
 
-// --- ルートシステムの状態管理 ---
+// ルート状態
 let myRoutes = [];
 let creatingRoute = createDefaultRoute();
 let activeSectionIndex = 0;
@@ -471,12 +495,12 @@ let sectionAutoScrollFrame = null;
 let sectionAutoScrollDirection = 0;
 let sectionAutoScrollContainer = null;
 
-// 洞窟ゾーン（当たり判定用）
+// 洞窟ヒット判定用レイヤー
 const caveCircleLayers = [];
 const CAVE_HIT_RADIUS = 10; // ピクセル相当として扱う（小さめ）
 const CAVE_DISPLAY_RADIUS = 10;
 
-// --- カスタムピン ---
+// カスタムピン状態
 let customPins = [];
 let customPinMarkers = new Map();
 let customPinMode = false;
@@ -502,10 +526,11 @@ let isAppReady = false;
 let currentAuthUser = null;
 let latestUserDataSnapshot = null;
 let pendingCollectibleIdMigrationSave = false;
+let lastQuickViewTypesKey = '';
 
-// トレンドルート（作者作成）のサンプルデータ
+// トレンドルート定義
 const trendRoutes = [
-    // 開発者用トレンドルート追加テンプレ:
+    // 開発用テンプレート
     // {
     //     id: 'trend-dev-001',
     //     name: 'ルート名',
@@ -776,7 +801,7 @@ const trendRoutes = [
     },
 ];
 
-// ID 割り当てと統合
+// 収集物データ整形
 const collectibles = [];
 const collectibleById = new Map();
 const collectibleLegacyIdMap = new Map();
@@ -944,9 +969,10 @@ function getRouteScopedCustomPin(pinId, route) {
 function isPersistedCustomPinVisible(pinId) {
     const pin = customPinById.get(pinId);
     if (!pin) return false;
+    const routeFocusOk = !focusedRoutePins || focusedRoutePins.has(pinId);
     const mapOk = !pin.map || pin.map === mapOverlayMode;
     const obtainedOk = showObtained || !customPinObtained.has(pinId);
-    return showCustomPins && customPinVisibility.has(pinId) && mapOk && obtainedOk;
+    return showCustomPins && customPinVisibility.has(pinId) && routeFocusOk && mapOk && obtainedOk;
 }
 
 function syncCustomPinRecord(pinId) {
@@ -965,487 +991,6 @@ function syncAllCustomPinRecords() {
     customPins.forEach(pin => syncCustomPinRecord(pin.id));
 }
 
-function createUserDataSnapshot() {
-    syncAllCustomPinRecords();
-    return {
-        [USER_DATA_KEYS.obtainedPins]: [...state.obtainedPins],
-        [USER_DATA_KEYS.customPins]: customPins.map(pin => ({
-            id: pin.id,
-            type: pin.type,
-            title: getCustomPinTitle(pin),
-            detail: pin.detail || '',
-            lat: pin.lat,
-            lng: pin.lng,
-            map: pin.map || 'base',
-            createdAt: pin.createdAt || new Date().toISOString(),
-            updatedAt: pin.updatedAt || pin.createdAt || new Date().toISOString(),
-            visibility: customPinVisibility.has(pin.id),
-            obtained: customPinObtained.has(pin.id),
-            userId: pin.userId ?? null
-        })),
-        [USER_DATA_KEYS.customPinObtained]: [...state.customPinObtained],
-        [USER_DATA_KEYS.routes]: myRoutes,
-        [USER_DATA_KEYS.pinnedRoutes]: [...pinnedRoutes],
-        [USER_DATA_KEYS.preferences]: {
-            overlay: state.overlay,
-            activeSources: [...state.activeSources],
-            activeAreas: [...state.activeAreas],
-            activeBaseTypes: [...state.activeBaseTypes],
-            activeDlcTypes: [...state.activeDlcTypes],
-            showObtained: state.showObtained,
-            showCustomPins: state.showCustomPins,
-            customPinVisibility: [...state.customPinVisibility],
-            customPinSortMode,
-            sidebar: { ...state.sidebar },
-            route: {
-                view: state.route.view,
-                activeTab: state.route.activeTab,
-                currentId: state.route.current ? state.route.current.id : null
-            }
-        }
-    };
-}
-
-function createSharedDataSnapshot() {
-    return {
-        areas: AREA_META,
-        pins: PIN_META,
-        collectibles
-    };
-}
-
-function getBulkManageablePinTypes() {
-    const mapped = Object.entries(PIN_META)
-        .filter(([, meta]) => meta.hiddenInBulk !== true)
-        .sort((a, b) => a[1].order - b[1].order)
-        .map(([type, meta]) => ({ type, label: meta.label }));
-    mapped.push({ type: 'custom', label: '新規マップピン' });
-    return mapped;
-}
-
-function syncRouteMirrorState() {
-    routes = JSON.parse(JSON.stringify(myRoutes));
-}
-
-function getNormalizedUserData(input = {}) {
-    if (storageController && typeof storageController.normalizeUserMapData === 'function') {
-        return storageController.normalizeUserMapData(input);
-    }
-    return input;
-}
-
-function showToast(message, type = 'info') {
-    const container = document.getElementById('map-toast-container');
-    if (!container || !message) return;
-
-    const toast = document.createElement('div');
-    toast.className = `map-toast toast-${type}`.trim();
-    toast.innerText = message;
-    container.appendChild(toast);
-
-    requestAnimationFrame(() => toast.classList.add('visible'));
-
-    window.setTimeout(() => {
-        toast.classList.remove('visible');
-        window.setTimeout(() => toast.remove(), 220);
-    }, 3200);
-}
-
-function sanitizeUrlMessage(value, maxLength = 300) {
-    if (typeof value !== 'string') return '';
-    return value
-        .replace(/[\u0000-\u001F\u007F]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .slice(0, maxLength);
-}
-
-function validateCustomPinInput({ title, detail }) {
-    if (customPins.length >= LIMITS.customPins) {
-        return 'カスタムピンは100個までです';
-    }
-    if (!title) {
-        return 'ピン名称を入力してください。';
-    }
-    if (title.length > LIMITS.customPinTitle) {
-        return 'カスタムピンタイトルは30文字以内で入力してください';
-    }
-    if (detail.length > LIMITS.customPinDetail) {
-        return 'カスタムピン説明は300文字以内で入力してください';
-    }
-    return null;
-}
-
-function validateRouteInput({ name, description, isNewRoute }) {
-    if (!name) {
-        return 'ルート名を入力してください';
-    }
-    if (isNewRoute && myRoutes.length >= LIMITS.myRoutes) {
-        return 'ルートは50本まで保存できます';
-    }
-    if (name.length > LIMITS.routeName) {
-        return 'ルート名は50文字以内で入力してください';
-    }
-    if (description.length > LIMITS.routeDescription) {
-        return 'ルート説明は500文字以内で入力してください';
-    }
-    return null;
-}
-
-function handleCloudSaveError(error) {
-    console.error('[cloud-save]', error);
-    showToast('クラウド保存に失敗しました', 'error');
-}
-
-function queueUserDataSave({ immediate = false } = {}) {
-    if (suppressPersistence || !storageController) {
-        return Promise.resolve();
-    }
-
-    latestUserDataSnapshot = createUserDataSnapshot();
-    storageController.saveLocalShadow(latestUserDataSnapshot).catch(error => {
-        console.error('[save-local-shadow]', error);
-    });
-
-    if (pendingSaveTimer) {
-        clearTimeout(pendingSaveTimer);
-        pendingSaveTimer = null;
-    }
-
-    if (immediate) {
-        return flushUserDataSave();
-    }
-
-    return new Promise(resolve => {
-        pendingSaveTimer = window.setTimeout(() => {
-            flushUserDataSave().finally(resolve);
-        }, SAVE_DEBOUNCE_MS);
-    });
-}
-
-function flushUserDataSave() {
-    if (pendingSaveTimer) {
-        clearTimeout(pendingSaveTimer);
-        pendingSaveTimer = null;
-    }
-
-    if (suppressPersistence || !storageController) {
-        return Promise.resolve();
-    }
-
-    const snapshot = latestUserDataSnapshot || createUserDataSnapshot();
-    pendingSavePromise = pendingSavePromise.then(async () => {
-        try {
-            syncRouteMirrorState();
-            await storageController.saveUserMapData(snapshot);
-        } catch (error) {
-            console.error('[save-user-data]', error);
-        }
-    });
-    return pendingSavePromise;
-}
-
-function savePinnedRoutes() {
-    return queueUserDataSave();
-}
-
-function saveMyRoutes() {
-    syncRouteMirrorState();
-    return queueUserDataSave();
-}
-
-function savePreferences() {
-    return queueUserDataSave();
-}
-
-function updateAuthUi(user = currentAuthUser) {
-    const badge = document.getElementById('auth-status-badge');
-    const caption = document.getElementById('auth-sync-caption');
-    const googleBtn = document.getElementById('auth-google-btn');
-    const signOutBtn = document.getElementById('auth-signout-btn');
-    if (!badge || !caption || !googleBtn || !signOutBtn) return;
-
-    badge.classList.remove('auth-status-local', 'auth-status-google');
-
-    if (!authManager || !authManager.isConfigured) {
-        badge.classList.add('auth-status-local');
-        badge.innerText = '未ログイン';
-        caption.innerText = 'Supabase 未設定のため、この端末だけに保存されます';
-        googleBtn.classList.remove('hidden');
-        googleBtn.disabled = true;
-        signOutBtn.classList.add('hidden');
-        return;
-    }
-
-    googleBtn.disabled = false;
-
-    if (!user) {
-        badge.classList.add('auth-status-local');
-        badge.innerText = '未ログイン';
-        caption.innerText = 'この端末だけに保存されます';
-        googleBtn.classList.remove('hidden');
-        signOutBtn.classList.add('hidden');
-        return;
-    }
-
-    googleBtn.classList.add('hidden');
-    signOutBtn.classList.remove('hidden');
-
-    badge.classList.add('auth-status-google');
-    badge.innerText = 'Googleログイン中';
-    caption.innerText = '同期中: Google アカウントでクラウド保存されています';
-}
-
-function showCloudMigrationModal() {
-    const modal = document.getElementById('cloud-migration-modal');
-    const keepBtn = document.getElementById('migration-keep-local-btn');
-    const migrateBtn = document.getElementById('migration-to-cloud-btn');
-    if (!modal || !keepBtn || !migrateBtn) {
-        return Promise.resolve(false);
-    }
-
-    modal.classList.remove('hidden');
-
-    return new Promise(resolve => {
-        const cleanup = (result) => {
-            modal.classList.add('hidden');
-            keepBtn.replaceWith(keepBtn.cloneNode(true));
-            migrateBtn.replaceWith(migrateBtn.cloneNode(true));
-            resolve(result);
-        };
-
-        keepBtn.addEventListener('click', () => cleanup(false), { once: true });
-        migrateBtn.addEventListener('click', () => cleanup(true), { once: true });
-    });
-}
-
-function clearAuthCallbackQuery() {
-    if (!window.history || !window.history.replaceState) return;
-    const url = new URL(window.location.href);
-    ['code', 'error', 'error_description', 'provider_token', 'refresh_token'].forEach(key => {
-        url.searchParams.delete(key);
-    });
-    if (url.hash && /error=|access_token=|refresh_token=|type=/.test(url.hash)) {
-        url.hash = '';
-    }
-    window.history.replaceState({}, document.title, url.toString());
-}
-
-function getMigrationCheckKey(user) {
-    return user && user.id ? `maneater_migration_checked_${user.id}` : null;
-}
-
-function hasMigrationBeenChecked(user) {
-    const key = getMigrationCheckKey(user);
-    if (!key) {
-        return false;
-    }
-
-    try {
-        return window.localStorage.getItem(key) === '1';
-    } catch (error) {
-        return false;
-    }
-}
-
-function markMigrationChecked(user) {
-    const key = getMigrationCheckKey(user);
-    if (!key) {
-        return;
-    }
-
-    try {
-        window.localStorage.setItem(key, '1');
-    } catch (error) {
-        // Ignore storage write failures and allow the prompt to reappear later.
-    }
-}
-
-function showAuthCallbackErrorIfNeeded() {
-    const searchParams = new URLSearchParams(window.location.search);
-    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    const message = sanitizeUrlMessage(searchParams.get('error_description')
-        || hashParams.get('error_description')
-        || searchParams.get('error')
-        || hashParams.get('error'));
-    if (message) {
-        showToast(message, 'error');
-    }
-}
-
-function applyLoadedUserData(data) {
-    const normalized = getNormalizedUserData(data || {});
-    const migrated = migrateCollectibleReferencesInUserData(normalized);
-    const normalizedData = migrated.data;
-    pendingCollectibleIdMigrationSave = migrated.changed;
-    const preferences = normalizedData.preferences || {};
-    const activeSources = preferences.activeSources && preferences.activeSources.length
-        ? preferences.activeSources
-        : ['base', 'dlc'];
-    const activeAreas = preferences.activeAreas && preferences.activeAreas.length
-        ? preferences.activeAreas
-        : ['all'];
-    const baseTypes = preferences.activeBaseTypes && preferences.activeBaseTypes.length
-        ? preferences.activeBaseTypes
-        : DEFAULT_BASE_TYPES;
-    const dlcTypes = preferences.activeDlcTypes && preferences.activeDlcTypes.length
-        ? preferences.activeDlcTypes
-        : DEFAULT_DLC_TYPES;
-
-    suppressPersistence = true;
-    try {
-        setOverlay(normalizeOverlayMode(preferences.overlay || 'base'));
-        setSources(activeSources);
-        setActiveAreas(new Set(activeAreas));
-        setActiveBaseTypes(new Set(baseTypes));
-        setActiveDlcTypes(new Set(dlcTypes));
-        setShowObtained(preferences.showObtained !== false);
-        setShowCustomPins(preferences.showCustomPins !== false);
-        setObtainedPinSet(new Set(normalizedData.obtainedPins || []));
-        customPins = Array.isArray(normalizedData.customPins) ? JSON.parse(JSON.stringify(normalizedData.customPins)) : [];
-        myRoutes = Array.isArray(normalizedData.routes) ? JSON.parse(JSON.stringify(normalizedData.routes)) : [];
-        syncRouteMirrorState();
-        pinnedRoutes = new Set(normalizedData.pinnedRoutes || []);
-        setCustomPinObtainedSet(new Set(normalizedData.customPinObtained || []));
-        const storedVisibility = preferences.customPinVisibility && preferences.customPinVisibility.length
-            ? preferences.customPinVisibility
-            : customPins.filter(pin => pin.visibility !== false).map(pin => pin.id);
-        setCustomPinVisibilitySet(new Set(storedVisibility));
-        customPinSortMode = preferences.customPinSortMode === 'name' ? 'name' : 'created';
-
-        setSidebarCurrent(preferences.sidebar && preferences.sidebar.current ? preferences.sidebar.current : 'main');
-        setSidebarLast(preferences.sidebar && preferences.sidebar.last ? preferences.sidebar.last : 'main');
-        setRouteTab(preferences.route && preferences.route.activeTab === 'my' ? 'my' : 'trend');
-        setRouteView('browse');
-        setCurrentRoute(null);
-        latestUserDataSnapshot = createUserDataSnapshot();
-    } finally {
-        suppressPersistence = false;
-    }
-}
-
-async function persistCollectibleIdMigrationIfNeeded() {
-    if (!pendingCollectibleIdMigrationSave || !storageController) {
-        return;
-    }
-
-    pendingCollectibleIdMigrationSave = false;
-
-    try {
-        await queueUserDataSave({ immediate: true });
-        showToast('旧ピンIDを固定IDへ移行しました', 'info');
-    } catch (error) {
-        console.error('[collectible-id-migration]', error);
-    }
-}
-
-function syncUiFromLoadedData() {
-    const customPinSortBtn = document.getElementById('custom-pin-sort-btn');
-    const showObtainedCheck = document.getElementById('show-obtained-check');
-    if (customPinSortBtn) {
-        customPinSortBtn.innerText = customPinSortMode === 'created' ? '作成順' : '名前順';
-    }
-    if (showObtainedCheck) {
-        showObtainedCheck.checked = showObtained;
-    }
-    document.querySelectorAll('.route-tab').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === activeRouteTab);
-    });
-
-    suppressPersistence = true;
-    try {
-        setMapOverlay(state.overlay);
-        loadCustomPins();
-        renderMarkers();
-        renderCustomPins();
-        updateCustomPinCount();
-        renderRouteList();
-        syncAreaSelectionUi(getCurrentAreaId());
-        refreshMapDisplay({ syncButtons: true, skipPersistence: true });
-        updateAuthUi();
-    } finally {
-        suppressPersistence = false;
-    }
-}
-
-async function initializePersistence() {
-    authManager = window.createMapAuthManager(window.MANEATER_MAP_CONFIG || {});
-    storageController = window.createMapStorageController({
-        authManager,
-        storageKeys: STORAGE_KEYS,
-        onCloudError: handleCloudSaveError
-    });
-
-    await storageController.init();
-    currentAuthUser = await authManager.getUser().catch(() => null);
-    updateAuthUi(currentAuthUser);
-
-    let loadedData = await storageController.loadUserMapData();
-    if (currentAuthUser && !hasMigrationBeenChecked(currentAuthUser)) {
-        const migrationResult = await storageController.migrateLocalToCloudIfNeeded({
-            confirmOverwrite: showCloudMigrationModal
-        });
-        if (migrationResult.data) {
-            loadedData = migrationResult.data;
-        }
-        if (migrationResult.status === 'migrated' || migrationResult.status === 'overwritten') {
-            showToast('ローカルデータをクラウドへ反映しました', 'success');
-        }
-        markMigrationChecked(currentAuthUser);
-    }
-
-    applyLoadedUserData(loadedData);
-    await persistCollectibleIdMigrationIfNeeded();
-    showAuthCallbackErrorIfNeeded();
-    clearAuthCallbackQuery();
-
-    const subscriptionResult = authManager.onAuthStateChange((event, session) => {
-        handleAuthStateChange(event, session);
-    });
-    authSubscription = subscriptionResult && subscriptionResult.data ? subscriptionResult.data.subscription : null;
-}
-
-async function handleAuthStateChange(event, session) {
-    const nextUser = session ? session.user : await authManager.getUser().catch(() => null);
-    const previousUserId = currentAuthUser ? currentAuthUser.id : null;
-    const nextUserId = nextUser ? nextUser.id : null;
-
-    if (previousUserId === nextUserId && event !== 'SIGNED_OUT') {
-        updateAuthUi(nextUser);
-        return;
-    }
-
-    currentAuthUser = nextUser;
-    updateAuthUi(nextUser);
-
-    try {
-        await storageController.refreshAdapter();
-        let loadedData = await storageController.loadUserMapData();
-
-        if (nextUser && previousUserId !== nextUserId && !hasMigrationBeenChecked(nextUser)) {
-            const migrationResult = await storageController.migrateLocalToCloudIfNeeded({
-                confirmOverwrite: showCloudMigrationModal
-            });
-            if (migrationResult.data) {
-                loadedData = migrationResult.data;
-            }
-            if (migrationResult.status === 'migrated' || migrationResult.status === 'overwritten') {
-                showToast('ローカルデータをクラウドへ反映しました', 'success');
-            }
-            markMigrationChecked(nextUser);
-        }
-
-        applyLoadedUserData(loadedData);
-        await persistCollectibleIdMigrationIfNeeded();
-        if (isAppReady) {
-            syncUiFromLoadedData();
-        }
-    } catch (error) {
-        console.error('[auth-state-change]', error);
-        showToast(error && error.message ? error.message : '認証状態の反映に失敗しました', 'error');
-    }
-}
-
 function normalizeCollectible(rawItem, index) {
     const areaMeta = getAreaMeta(rawItem.areaId || rawItem.area || 'all');
     const pinMeta = getPinMeta(rawItem.type);
@@ -1456,8 +1001,7 @@ function normalizeCollectible(rawItem, index) {
     const fallbackId = rawItem.legacyId || `${rawItem.type}-${index}`;
     let resolvedId = rawItem.id;
     if (!resolvedId) {
-        // All collectibles should define a fixed id in collectibles.json.
-        // This fallback only exists for backward compatibility with old data.
+        // collectibles.json の固定 id を優先し、旧データだけ互換 fallback を使う
         resolvedId = fallbackId;
         console.warn('[collectibles] Missing fixed id. Fallback id was used:', resolvedId, rawItem);
     }
@@ -1478,22 +1022,31 @@ function buildCollectibles(raw) {
     collectibles.length = 0;
     collectibleById.clear();
     collectibleLegacyIdMap.clear();
-    raw.forEach((item, index) => {
-        const normalized = normalizeCollectible(item, index);
-        collectibles.push(normalized);
+    raw.forEach((rawCollectible, index) => {
+        const normalizedCollectible = normalizeCollectible(rawCollectible, index);
+        collectibles.push(normalizedCollectible);
 
-        if (collectibleById.has(normalized.id)) {
-            console.warn('[collectibles] Duplicate fixed id detected:', normalized.id, normalized);
+        if (collectibleById.has(normalizedCollectible.id)) {
+            console.warn('[collectibles] Duplicate fixed id detected:', normalizedCollectible.id, normalizedCollectible);
         }
-        collectibleById.set(normalized.id, normalized);
+        collectibleById.set(normalizedCollectible.id, normalizedCollectible);
 
-        if (normalized.legacyId && normalized.legacyId !== normalized.id) {
-            if (collectibleLegacyIdMap.has(normalized.legacyId)) {
-                console.warn('[collectibles] Duplicate legacy id detected:', normalized.legacyId, normalized);
+        if (normalizedCollectible.legacyId && normalizedCollectible.legacyId !== normalizedCollectible.id) {
+            if (collectibleLegacyIdMap.has(normalizedCollectible.legacyId)) {
+                console.warn('[collectibles] Duplicate legacy id detected:', normalizedCollectible.legacyId, normalizedCollectible);
             }
-            collectibleLegacyIdMap.set(normalized.legacyId, normalized.id);
+            collectibleLegacyIdMap.set(normalizedCollectible.legacyId, normalizedCollectible.id);
         }
     });
+}
+
+function getBulkManageablePinTypes() {
+    const mapped = Object.entries(PIN_META)
+        .filter(([, meta]) => meta.hiddenInBulk !== true)
+        .sort((a, b) => a[1].order - b[1].order)
+        .map(([type, meta]) => ({ type, label: meta.label }));
+    mapped.push({ type: 'custom', label: '新規マップピン' });
+    return mapped;
 }
 
 let savedActiveTypes = null;
@@ -1510,42 +1063,34 @@ let currentPolyline = null;
 const markers = [];
 
 async function loadCollectibles() {
-    const res = await fetch('collectibles.json', { cache: 'no-store' });
-    if (!res.ok) {
+    const response = await fetch('collectibles.json', { cache: 'no-store' });
+    if (!response.ok) {
         throw new Error('collectibles.json の読み込みに失敗しました');
     }
-    return await res.json();
+    return await response.json();
 }
 
-// 初期化
-async function init() {
-    try {
-        rawCollectibles = await loadCollectibles();
-        buildCollectibles(rawCollectibles);
-    } catch (err) {
-        console.error(err);
+function syncInitialUiState() {
+    const customPinSortButton = document.getElementById('custom-pin-sort-btn');
+    if (customPinSortButton) {
+        customPinSortButton.innerText = customPinSortMode === 'created' ? '作成順' : '名前順';
     }
-    try {
-        await initializePersistence();
-    } catch (error) {
-        console.error('[initializePersistence]', error);
-        showToast('保存設定の初期化に失敗しました', 'error');
-    }
-    renderStaticUi();
-    const customPinSortBtn = document.getElementById('custom-pin-sort-btn');
-    if (customPinSortBtn) {
-        customPinSortBtn.innerText = customPinSortMode === 'created' ? '作成順' : '名前順';
-    }
-    document.querySelectorAll('.route-tab').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === activeRouteTab);
+
+    document.querySelectorAll('.route-tab').forEach(routeTabButton => {
+        routeTabButton.classList.toggle('active', routeTabButton.dataset.tab === activeRouteTab);
     });
+}
+
+function renderInitialMapContent() {
     renderMarkers();
     loadCustomPins();
     renderCustomPins();
     updateCustomPinCount();
-    setupEventListeners();
     renderRouteList();
     refreshMapDisplay({ syncButtons: true, skipPersistence: true });
+}
+
+function finalizeAppInitialization() {
     updateAuthUi();
     isAppReady = true;
     setTimeout(() => {
@@ -1553,14 +1098,47 @@ async function init() {
     }, 400);
 }
 
+// 初期化
+async function init() {
+    // 1. 収集物データを読み込む
+    try {
+        rawCollectibles = await loadCollectibles();
+        buildCollectibles(rawCollectibles);
+    } catch (err) {
+        console.error(err);
+    }
+
+    // 2. 保存設定と認証まわりを初期化する
+    try {
+        await initializePersistence();
+    } catch (error) {
+        console.error('[initializePersistence]', error);
+        showToast('保存設定の初期化に失敗しました', 'error');
+    }
+
+    // 3. DOM ベースの初期 UI をそろえる
+    renderStaticUi();
+    syncInitialUiState();
+
+    // 4. マップ表示とリスト類を初期描画する
+    renderInitialMapContent();
+
+    // 5. 入力イベントを有効化する
+    setupEventListeners();
+
+    // 6. 認証表示とチュートリアルを仕上げる
+    finalizeAppInitialization();
+}
+
+// 初期 UI 描画
 function createFilterButton(type, source, context) {
     const pinMeta = getPinMeta(type);
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'filter-type-btn active';
-    btn.dataset.type = type;
-    btn.dataset.filterContext = context;
-    if (source) btn.dataset.source = source;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'filter-type-btn active';
+    button.dataset.type = type;
+    button.dataset.filterContext = context;
+    if (source) button.dataset.source = source;
 
     const iconWrap = document.createElement('div');
     iconWrap.className = 'icon-wrap';
@@ -1575,17 +1153,17 @@ function createFilterButton(type, source, context) {
     const label = document.createElement('span');
     label.innerText = pinMeta.shortLabel;
 
-    btn.append(iconWrap, label);
-    return btn;
+    button.append(iconWrap, label);
+    return button;
 }
 
 function renderFilterButtons() {
     FILTER_SECTION_META.forEach(section => {
-        const group = document.querySelector(`[data-section-group="${section.id}"]`);
-        if (!group) return;
-        group.innerHTML = '';
+        const sectionGroup = document.querySelector(`[data-section-group="${section.id}"]`);
+        if (!sectionGroup) return;
+        sectionGroup.innerHTML = '';
         section.types.forEach(type => {
-            group.appendChild(createFilterButton(type, section.source, section.context));
+            sectionGroup.appendChild(createFilterButton(type, section.source, section.context));
         });
     });
 }
@@ -1689,81 +1267,8 @@ function renderStaticUi() {
     renderCustomPinTypeButtons();
 }
 
-function createPopupActionButton(label, className, handler) {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = `popup-btn ${className}`.trim();
-    button.innerText = label;
-    button.addEventListener('click', handler);
-    return button;
-}
-
-function buildCollectiblePopup(item, isObtained) {
-    const popupContent = document.createElement('div');
-    popupContent.className = 'custom-popup';
-
-    const title = document.createElement('div');
-    title.style.fontWeight = 'bold';
-    title.style.marginBottom = '5px';
-    title.innerText = item.name;
-
-    const area = document.createElement('div');
-    area.style.fontSize = '0.8rem';
-    area.style.color = '#aaa';
-    area.style.marginBottom = '10px';
-    area.innerText = item.areaLabel;
-
-    const actions = document.createElement('div');
-    actions.className = 'popup-buttons';
-
-    const obtainedBtn = createPopupActionButton(
-        isObtained ? '✓ 取得済み' : '取得済みにする',
-        isObtained ? 'obtained-toggle active' : 'obtained-toggle',
-        () => toggleObtainedFromPopup(item.id)
-    );
-    const batchBtn = createPopupActionButton('一括表記', '', () => startBatchFromPopup());
-    actions.append(obtainedBtn, batchBtn);
-    popupContent.append(title, area, actions);
-    return popupContent;
-}
-
-function buildCustomPinPopup(pin) {
-    const popup = document.createElement('div');
-    popup.className = 'custom-popup';
-
-    const title = document.createElement('div');
-    title.style.fontWeight = 'bold';
-    title.style.marginBottom = '5px';
-    title.innerText = getCustomPinTitle(pin);
-    popup.appendChild(title);
-
-    if (pin.detail) {
-        const detail = document.createElement('div');
-        detail.style.fontSize = '0.85rem';
-        detail.style.color = '#ddd';
-        detail.style.marginBottom = '6px';
-        detail.innerText = pin.detail;
-        popup.appendChild(detail);
-    }
-
-    const actions = document.createElement('div');
-    actions.className = 'popup-buttons';
-    const obtained = customPinObtained.has(pin.id);
-    const obtainedBtn = createPopupActionButton(
-        obtained ? '✓ 取得済み' : '取得済みにする',
-        obtained ? 'obtained-toggle active' : 'obtained-toggle',
-        () => toggleCustomPinObtained(pin.id)
-    );
-    const batchBtn = createPopupActionButton('一括表記', '', () => startBatchFromPopup());
-    const deleteBtn = createPopupActionButton('削除', '', () => deleteCustomPin(pin.id));
-    actions.append(obtainedBtn, batchBtn, deleteBtn);
-    popup.appendChild(actions);
-
-    return popup;
-}
-
 function renderMarkers() {
-    // 既存のマーカーを削除
+    // 再描画前に既存マーカーを外す
     markers.forEach(m => m.marker.remove());
     markers.length = 0;
 
@@ -1795,7 +1300,7 @@ function renderMarkers() {
             }
         });
 
-        // ポップアップ内容
+        // 通常表示用ポップアップ
         const popupContent = buildCollectiblePopup(item, isObtained);
         marker.bindPopup(popupContent, { autoPan: false });
 
@@ -1808,7 +1313,7 @@ function renderMarkers() {
 }
 
 function renderCaveZones() {
-    // 既存の洞窟円をいったん消去
+    // 既存の洞窟判定円を外す
     caveCircleLayers.forEach(entry => entry.circle.remove());
     caveCircleLayers.length = 0;
 
@@ -1826,7 +1331,7 @@ function renderCaveZones() {
             caveCircleLayers.push({ circle, item });
         });
 
-    // 表示切り替えは applyFilter() に任せる
+    // 実際の表示制御は applyFilter() に集約する
 }
 
 function updateMarkerAppearance(marker, id) {
@@ -1836,7 +1341,7 @@ function updateMarkerAppearance(marker, id) {
         return;
     }
 
-    // バッチモード中は一時的な状態を使用
+    // バッチ編集中は仮状態を優先する
     const isObtained = batchMode ? batchObtainedPins.has(id) : obtainedPins.has(id);
 
     if (isObtained) {
@@ -1846,7 +1351,7 @@ function updateMarkerAppearance(marker, id) {
     }
 }
 
-// --- カスタムピン ---
+// カスタムピン
 function loadCustomPins() {
     try {
         const rawPins = Array.isArray(customPins) ? customPins : [];
@@ -2022,10 +1527,11 @@ function applyCustomPinVisibility() {
     customPinMarkers.forEach(marker => {
         const id = marker.options && marker.options.customId;
         const pinData = id ? customPinById.get(id) : null;
+        const routeFocusOk = !id || !focusedRoutePins || focusedRoutePins.has(id);
         const mapValue = pinData ? pinData.map : (marker.options && marker.options.customMap);
         const mapOk = !mapValue || mapValue === mapOverlayMode;
         const obtainedOk = !id || showObtained || !customPinObtained.has(id);
-        const pinVisible = showCustomPins && (!id || customPinVisibility.has(id)) && mapOk && obtainedOk;
+        const pinVisible = showCustomPins && (!id || customPinVisibility.has(id)) && routeFocusOk && mapOk && obtainedOk;
         if (pinVisible) {
             if (!map.hasLayer(marker)) marker.addTo(map);
         } else if (map.hasLayer(marker)) {
@@ -2080,34 +1586,6 @@ function getRoutePinMeta(pinId, route = null) {
 function getRoutePinSummaryType(meta) {
     if (!meta || !meta.type) return null;
     return meta.isCustom ? 'custom' : meta.type;
-}
-
-function buildRouteScopedCustomPinPopup(pin) {
-    const popup = document.createElement('div');
-    popup.className = 'custom-popup';
-
-    const title = document.createElement('div');
-    title.style.fontWeight = 'bold';
-    title.style.marginBottom = '5px';
-    title.innerText = getCustomPinTitle(pin);
-    popup.appendChild(title);
-
-    if (pin.detail) {
-        const detail = document.createElement('div');
-        detail.style.fontSize = '0.85rem';
-        detail.style.color = '#ddd';
-        detail.style.marginBottom = '6px';
-        detail.innerText = pin.detail;
-        popup.appendChild(detail);
-    }
-
-    const note = document.createElement('div');
-    note.style.fontSize = '0.75rem';
-    note.style.color = '#9fb0c9';
-    note.innerText = 'このピンはルート閲覧中のみ表示されます';
-    popup.appendChild(note);
-
-    return popup;
 }
 
 function renderRouteScopedCustomPins(route) {
@@ -2408,6 +1886,35 @@ function updateFilterSummary() {
     summary.innerText = `表示条件: ${currentAreaMeta.label} / ${overlayLabel} / ${sourceLabel} / ${hiddenObtainedLabel}`;
 }
 
+function collectVisiblePinStats() {
+    const baseTotals = {};
+    const baseObtainedTotals = {};
+    const dlcTotals = {};
+    const dlcObtainedTotals = {};
+
+    collectibles.forEach(item => {
+        const mapOk = item.map === mapOverlayMode;
+        const areaOk = matchesSelectedArea(item);
+        const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
+        if (!mapOk || !areaOk || !sourceOk) return;
+
+        if (item.source === 'dlc') {
+            dlcTotals[item.type] = (dlcTotals[item.type] || 0) + 1;
+            if (obtainedPins.has(item.id)) {
+                dlcObtainedTotals[item.type] = (dlcObtainedTotals[item.type] || 0) + 1;
+            }
+            return;
+        }
+
+        baseTotals[item.type] = (baseTotals[item.type] || 0) + 1;
+        if (obtainedPins.has(item.id)) {
+            baseObtainedTotals[item.type] = (baseObtainedTotals[item.type] || 0) + 1;
+        }
+    });
+
+    return { baseTotals, baseObtainedTotals, dlcTotals, dlcObtainedTotals };
+}
+
 function refreshMapDisplay(options = {}) {
     const { syncButtons = false, updateCounts = true, skipPersistence = false } = options;
     ensureValidFilters();
@@ -2415,8 +1922,9 @@ function refreshMapDisplay(options = {}) {
     applyFilter();
     syncActiveRouteScopedCustomPins();
     if (updateCounts) {
-        updatePinCounts();
-        updateRouteFilterPanelCounts();
+        const visiblePinStats = collectVisiblePinStats();
+        updatePinCounts(visiblePinStats);
+        updateRouteFilterPanelCounts(visiblePinStats);
         updateFilterSummary();
     }
     updateSectionMasterToggles();
@@ -2442,7 +1950,7 @@ function applyFilter() {
         }
     });
 
-    // 洞窟当たり判定円の表示制御
+    // 洞窟判定円も同じ表示条件にそろえる
     caveCircleLayers.forEach(({ circle, item }) => {
         const isVisibleCave = shouldDisplayCollectible(item);
 
@@ -2457,13 +1965,13 @@ function applyFilter() {
         }
     });
 
-    // ソースボタン状態を視覚更新
+    // 関連 UI も最新状態へそろえる
     updateSourceButtonState();
     updateQuickView(visibleTypes);
     applyCustomPinVisibility();
 }
 
-// 取得済み切り替え
+// 取得状態
 window.toggleObtainedFromPopup = function(id) {
     const resolvedId = resolveCollectibleReferenceId(id, { logLegacyUse: true });
     if (obtainedPins.has(resolvedId)) {
@@ -2565,7 +2073,7 @@ function updateBatchCount() {
     document.getElementById('selected-count').innerText = changed;
 }
 
-// --- ルートサイドバーの基本操作 ---
+// ルート一覧・詳細
 function toggleRouteSidebar(show = null, showMainOnClose = true) {
     const mainSidebar = document.getElementById('map-sidebar');
     const routeSidebar = document.getElementById('route-sidebar');
@@ -2584,7 +2092,7 @@ function toggleRouteSidebar(show = null, showMainOnClose = true) {
         if (closeLeftBtn) closeLeftBtn.classList.remove('hidden');
         mainSidebar.classList.add('hidden');
         routeSidebar.classList.remove('hidden');
-        areaOverlay.classList.add('hidden'); // エリア選択が出ていれば隠す
+        areaOverlay.classList.add('hidden'); // エリア選択オーバーレイは閉じる
         setRouteView('browse');
         setCurrentRoute(null);
         renderRouteList();
@@ -2606,8 +2114,8 @@ function toggleRouteSidebar(show = null, showMainOnClose = true) {
             if (closeLeftBtn) closeLeftBtn.classList.add('hidden');
         }
         routeSidebar.classList.add('hidden');
-        exitCreateMode(); // 作成中なら抜ける
-        backToBrowse(); // 詳細表示リセット（指摘のバグ修正）
+        exitCreateMode(); // 作成中なら終了
+        backToBrowse(); // 詳細表示は一覧へ戻す
     }
 }
 
@@ -2734,134 +2242,6 @@ function deleteMyRoute(id) {
     renderRouteList();
 }
 
-function renderRouteOnMap(route, highlightIndex = -1, disableAutoZoom = false) {
-    if (!route || !route.sections) return;
-    console.log("[renderRoute] Start rendering. Sections:", route.sections.length);
-    clearRouteVisuals();
-    
-    for (let i = 0; i < route.sections.length; i++) {
-        if (highlightIndex !== -1 && highlightIndex !== i) continue;
-
-        const section = route.sections[i];
-        const sectionMapMode = getSectionMapMode(section, route);
-        if (sectionMapMode && sectionMapMode !== mapOverlayMode) {
-            continue;
-        }
-        const color = getSectionColor(i);
-        const pts = [];
-
-        if (section.pins && Array.isArray(section.pins)) {
-            section.pins.forEach(pid => {
-                const meta = getRoutePinMeta(pid, route);
-                if (meta && meta.latlng) {
-                    const latlng = meta.latlng;
-                    if (pts.length === 0 || !pts[pts.length - 1].equals(latlng)) {
-                        pts.push(latlng);
-                    }
-                }
-            });
-        }
-
-        console.log("[renderRoute] Section", i, ": Points=", pts.length);
-
-        if (pts.length >= 2) {
-            try {
-                const poly = L.polyline(pts, { color: color, weight: 4, opacity: 0.8 }).addTo(map);
-                routePolylines.push(poly);
-
-                if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
-                    const decorator = L.polylineDecorator(poly, {
-                        patterns: [
-                            { offset: '30%', repeat: '120px', symbol: L.Symbol.arrowHead({ pixelSize: 10, polygon: true, pathOptions: { color: color, fillColor: color, weight: 1, opacity: 1, fillOpacity: 1 } }) }
-                        ]
-                    }).addTo(map);
-                    routeDecorators.push(decorator);
-                } else {
-                    console.warn('[renderRoute] polyline decorator is not available. experienced arrow display is disabled.');
-                }
-            } catch (err) {
-                console.error("[renderRoute] Error drawing section", i, err);
-            }
-        }
-    }
-
-    renderRouteScopedCustomPins(route);
-
-    if (routePolylines.length > 0 && !disableAutoZoom) {
-        const group = new L.featureGroup(routePolylines);
-        map.fitBounds(group.getBounds().pad(0.2), getRouteZoomOptions());
-    }
-}
-
-function getSectionMapMode(section, route = null) {
-    if (!section || !section.pins || !Array.isArray(section.pins)) return mapOverlayMode;
-    for (const pid of section.pins) {
-        const meta = getRoutePinMeta(pid, route);
-        if (meta && meta.map) return meta.map;
-    }
-    return 'base';
-}
-
-// --- ルート表示ロジック ---
-function showRoutePreview(route) {
-    if (!route || !route.sections) {
-        console.error("[Preview] Invalid route data:", route);
-        return;
-    }
-    console.log(`[Preview] Start rendering route. Sections: ${route.sections.length}`);
-    clearRouteVisuals();
-
-    for (let i = 0; i < route.sections.length; i++) {
-        const section = route.sections[i];
-        const sectionMapMode = getSectionMapMode(section, route);
-        if (sectionMapMode && sectionMapMode !== mapOverlayMode) {
-            continue;
-        }
-        const sectionPoints = [];
-        const color = getSectionColor(i);
-        
-        if (section.pins && Array.isArray(section.pins)) {
-            section.pins.forEach(pinId => {
-                const meta = getRoutePinMeta(pinId, route);
-                if (meta && meta.latlng) {
-                    const latlng = meta.latlng;
-                    // 連続する同一座標を排除（矢印描画ライブラリのエラー防止）
-                    if (sectionPoints.length === 0 || !sectionPoints[sectionPoints.length - 1].equals(latlng)) {
-                        sectionPoints.push(latlng);
-                    }
-                }
-            });
-        }
-
-        console.log(`[Preview] Section ${i} (${section.name}): Points=${sectionPoints.length}, Color=${color}, PinsCount=${section.pins ? section.pins.length : 0}`);
-
-        if (sectionPoints.length >= 2) {
-            try {
-                const polyline = L.polyline(sectionPoints, { color: color, weight: 4, opacity: 0.8 }).addTo(map);
-                routePolylines.push(polyline);
-                
-                // 矢印（デコレータ）の追加
-                if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
-                    const decorator = L.polylineDecorator(polyline, {
-                        patterns: [
-                            { offset: '30%', repeat: '120px', symbol: L.Symbol.arrowHead({ pixelSize: 10, polygon: true, pathOptions: { color: color, fillColor: color, weight: 1, opacity: 1, fillOpacity: 1 } }) }
-                        ]
-                    }).addTo(map);
-                    routeDecorators.push(decorator);
-                } else {
-                    console.warn('[Preview] polyline decorator is not available. arrow display suppressed.');
-                }
-            } catch (err) {
-                console.error(`[Preview] CRITICAL ERROR drawing section ${i}:`, err);
-            }
-        } else {
-            console.log(`[Preview] Section ${i} skipped: not enough points to draw a line.`);
-        }
-    }
-
-    renderRouteScopedCustomPins(route);
-}
-
 function clearRouteVisuals() {
     routePolylines.forEach(p => p.remove());
     routePreviewMarkers.forEach(m => m.remove());
@@ -2895,12 +2275,12 @@ function showRoutePinHighlights(pinIds) {
     });
 }
 
-// --- ルート作成モード ---
+// ルート作成・編集
 function showRouteDetail(route) {
     setRouteView('detail');
     setCurrentRoute(route);
 
-    // ルート閲覧中はエリア制限を解除して正しく表示
+    // ルート閲覧中は全エリア表示に寄せる
     setActiveAreas(new Set(['all']));
     syncAreaSelectionUi('all');
     setSources(['base', 'dlc']);
@@ -2917,7 +2297,7 @@ function showRouteDetail(route) {
     const routeSidebarEl = document.getElementById('route-sidebar');
     if (routeSidebarEl) routeSidebarEl.classList.toggle('mobile-detail-mode', window.innerWidth <= 900);
     
-    // マイルートの場合のみ編集ボタンを表示
+    // 編集はマイルートのみ
     const editBtn = document.getElementById('edit-route-btn');
     if (editBtn) {
         editBtn.classList.toggle('hidden', activeRouteTab !== 'my');
@@ -2970,7 +2350,7 @@ function showRouteDetail(route) {
         const card = document.createElement('div');
         card.className = 'detail-section-card';
         
-        // ピンの種類別にカウント
+        // セクション内ピンの内訳を集計
         const counts = {};
         section.pins.forEach(pid => {
             const meta = getRoutePinMeta(pid, route);
@@ -3050,16 +2430,16 @@ function showRouteDetail(route) {
                 c.style.backgroundColor = ''; // CSSがない場合のフォールバック用リセット
             });
 
-            // ルート内の全ピンのみ表示
+            // 詳細表示中はルート内ピンにフォーカスする
             focusedRoutePins = allRoutePins;
             refreshMapDisplay();
             
             if (wasActive) {
-                // Toggled off: 全ての線を表示し、ズームはそのまま
+                // 選択解除時はルート全体表示へ戻す
                 renderRouteOnMap(route, -1, true);
                 showRoutePinHighlights([]);
             } else {
-                // Toggled on: 選択区間の線だけを表示
+                // 選択区間だけを強調表示する
                 card.classList.add('active-highlight');
                 card.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; // 簡易ハイライト
                 const targetMode = getSectionMapMode(section, route);
@@ -3069,7 +2449,7 @@ function showRouteDetail(route) {
                 renderRouteOnMap(route, idx, true);
                 showRoutePinHighlights(section.pins);
 
-                // 該当区間へズーム
+                // 区間に収まるようズームする
                 const latlngs = [];
                 section.pins.forEach(pid => {
                     const meta = getRoutePinMeta(pid, route);
@@ -3082,10 +2462,10 @@ function showRouteDetail(route) {
             }
         };
 
-        // ドロップダウンの切り替え
+        // セクション単位の一括操作メニュー
         dropdownBtn.onclick = (e) => {
             e.stopPropagation();
-            // 他の開いているドロップダウンを閉じる
+            // 他セクションのメニューは閉じる
             document.querySelectorAll('.batch-dropdown-content').forEach(el => {
                 if (el !== dropdownContent) el.classList.add('hidden');
             });
@@ -3095,7 +2475,7 @@ function showRouteDetail(route) {
         list.appendChild(card);
     });
 
-    // 画面外クリックでドロップダウンを閉じる
+    // 画面外クリックで一括操作メニューを閉じる
     const closeDropdowns = (e) => {
         if (!e.target.closest('.batch-dropdown')) {
             document.querySelectorAll('.batch-dropdown-content').forEach(el => el.classList.add('hidden'));
@@ -3104,7 +2484,7 @@ function showRouteDetail(route) {
     };
     document.addEventListener('click', closeDropdowns, { once: true });
 
-    // ビジュアル表示（ライン描画）
+    // 詳細画面表示に合わせてラインも更新
     renderRouteOnMap(route);
     showRoutePinHighlights([]);
 }
@@ -3128,7 +2508,7 @@ function batchMarkSection(pinIds, status, route = currentDetailedRoute) {
     saveCustomPins();
     saveObtained();
     saveCustomPinObtained();
-    // 全体を再描画せず、外観のみ更新
+    // 全体再構築は避けて見た目だけ同期する
     markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
     customPins.forEach(pin => updateCustomPinObtainedAppearance(pin.id));
     renderCustomPinList();
@@ -3138,7 +2518,7 @@ function batchMarkSection(pinIds, status, route = currentDetailedRoute) {
 function backToBrowse() {
     setRouteView('browse');
     setCurrentRoute(null);
-    focusedRoutePins = null; // フォーカス解除
+    focusedRoutePins = null; // ルート絞り込みを解除
     refreshMapDisplay();
     const routeSidebarEl = document.getElementById('route-sidebar');
     if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
@@ -3203,7 +2583,7 @@ function enterCreateMode() {
     const mapActions = document.querySelector('.map-actions');
     if (mapActions) mapActions.classList.add('hidden');
 
-    // ルート作成中はソース制限も解除
+    // 作成中はソース制限を外して全体を見せる
     setSources(['base', 'dlc']);
     updateSourceButtonState();
 
@@ -3214,14 +2594,14 @@ function enterCreateMode() {
     setShowCustomPins(true);
     setCustomPinVisibilitySet(new Set(customPins.map(p => p.id)));
 
-    // ルート作成中はエリア制限を解除して全ピン表示
+    // 作成中はエリア制限も解除する
     setActiveAreas(new Set(['all']));
     syncAreaSelectionUi('all');
     refreshMapDisplay({ syncButtons: true });
     
     document.getElementById('route-name-input').value = '';
     
-    // 初期化（新規作成時は区間を折りたたみ状態でスタート）
+    // 新規作成は折りたたみ状態から始める
     creatingRoute = createDefaultRoute();
     activeSectionIndex = 0;
     routePinInsertIndex = null;
@@ -3231,7 +2611,7 @@ function enterCreateMode() {
 
     clearRouteVisuals();
 
-    // マーカーのクリック挙動を作成用に変更
+    // 作成中はポップアップよりピン追加を優先する
     markers.forEach(({ marker }) => {
         if (marker.getPopup()) {
             marker._tempPopup = marker.getPopup();
@@ -3267,7 +2647,7 @@ function startEditingRoute() {
         customPins: JSON.parse(JSON.stringify(currentDetailedRoute.customPins || []))
     };
 
-    // 編集モード開始時も全て折りたたみ状態にする（直前の状態維持ではなく固定挙動）
+    // 編集開始時も区間一覧は折りたたみでそろえる
     creatingRoute.sections.forEach(section => section.collapsed = true);
 
     activeSectionIndex = 0;
@@ -3329,7 +2709,7 @@ function exitCreateMode() {
     clearOpenPinActionMenu();
     clearRouteVisuals();
 
-    // マーカーのクリック挙動を戻す
+    // 通常表示用のポップアップを戻す
     markers.forEach(({ marker }) => {
         if (marker._tempPopup) {
             marker.bindPopup(marker._tempPopup, { autoPan: false });
@@ -4035,10 +3415,10 @@ function saveMyRoute() {
     const usedCustomPins = [...usedCustomPinIds].map(id => customPinsById.get(id));
 
     if (creatingRoute.id) {
-        // 既存ルートの更新
+        // 既存ルートを更新
         const idx = myRoutes.findIndex(r => r.id === creatingRoute.id);
         if (idx !== -1) {
-            // 保存前に折り畳まれてるフラグなどを消したクリーンな状態で保存
+            // UI 専用フラグは保存前に落とす
             const cleanSections = creatingRoute.sections.map(s => {
                 const { collapsed, ...rest } = s;
                 return rest;
@@ -4052,7 +3432,7 @@ function saveMyRoute() {
             };
         }
     } else {
-        // 新規作成
+        // 新規ルートを追加
         const cleanSections = creatingRoute.sections.map(s => {
             const { collapsed, ...rest } = s;
             return rest;
@@ -4072,812 +3452,6 @@ function saveMyRoute() {
     exitCreateMode();
 
     renderRouteList();
-}
-
-function promptUnsavedChanges(onConfirm) {
-    if (currentRouteView !== 'create' || !routeIsModified) {
-        onConfirm();
-        return;
-    }
-    
-    const modal = document.getElementById('route-exit-alert-modal');
-    if (!modal) {
-        onConfirm();
-        return;
-    }
-    modal.classList.remove('hidden');
-
-    const okBtn = document.getElementById('alert-ok-btn');
-    const cancelBtn = document.getElementById('alert-cancel-btn');
-
-    const newOk = okBtn.cloneNode(true);
-    const newCancel = cancelBtn.cloneNode(true);
-    okBtn.parentNode.replaceChild(newOk, okBtn);
-    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
-
-    newOk.addEventListener('click', () => {
-        modal.classList.add('hidden');
-        onConfirm();
-    });
-
-    newCancel.addEventListener('click', () => {
-        modal.classList.add('hidden');
-    });
-}
-
-function confirmLeaveIfUnsaved(targetHref) {
-    if (currentRouteView !== 'create' || !routeIsModified) {
-        window.location.href = targetHref;
-        return;
-    }
-    promptUnsavedChanges(() => {
-        window.location.href = targetHref;
-    });
-}
-
-function setupEventListeners() {
-    const mapSidebar = document.getElementById('map-sidebar');
-    const routeFilterPanelRoot = document.getElementById('route-filter-panel');
-    const areaOverlay = document.getElementById('area-overlay');
-    const routeAreaTree = document.getElementById('route-area-tree');
-    const customPinIconGrid = document.getElementById('custom-pin-icon-grid');
-
-    const handleFilterButtonClick = (event) => {
-        const button = event.target.closest('.filter-type-btn[data-type]');
-        if (!button) return;
-        toggleTypeFilter(button.dataset.type, button.dataset.source || null);
-        refreshMapDisplay({ syncButtons: true });
-    };
-
-    if (mapSidebar) {
-        mapSidebar.addEventListener('click', (event) => {
-            const areaCard = event.target.closest('.area-card[data-area-id]');
-            if (areaCard) {
-                selectArea(areaCard.dataset.areaId);
-                if (areaOverlay) areaOverlay.classList.add('hidden');
-                if (window.innerWidth <= 900) {
-                    closeMobileFilterPanel();
-                }
-                return;
-            }
-
-            const filterButton = event.target.closest('.filter-type-btn[data-type]');
-            if (filterButton) {
-                handleFilterButtonClick(event);
-            }
-        });
-    }
-
-    if (routeFilterPanelRoot) {
-        routeFilterPanelRoot.addEventListener('click', handleFilterButtonClick);
-    }
-
-    if (routeAreaTree) {
-        routeAreaTree.addEventListener('click', (event) => {
-            const areaButton = event.target.closest('.route-area-item[data-area-id]');
-            if (!areaButton) return;
-            selectArea(areaButton.dataset.areaId);
-            closeRouteCreatePanels();
-        });
-    }
-
-    if (customPinIconGrid) {
-        customPinIconGrid.addEventListener('click', (event) => {
-            const iconButton = event.target.closest('.custom-pin-icon-btn[data-icon-type]');
-            if (!iconButton) return;
-            setCustomPinIconSelection(iconButton.dataset.iconType);
-        });
-    }
-
-    // --- セクション一括トグル ---
-    document.querySelectorAll('.section-master-toggle').forEach(master => {
-        master.addEventListener('change', () => {
-            const section = master.dataset.section;
-            if (section === 'custom-pins') {
-                setShowCustomPins(master.checked);
-                setCustomPinVisibilitySet(master.checked ? new Set(customPins.map(p => p.id)) : new Set());
-                renderCustomPinList();
-                refreshMapDisplay();
-                return;
-            }
-            const group = document.querySelector(`[data-section-group="${section}"]`);
-            if (!group) return;
-            const buttons = [...group.querySelectorAll('.filter-type-btn')];
-            buttons.forEach(btn => {
-                const t = btn.dataset.type;
-                const source = btn.dataset.source;
-                setTypeActiveState(t, source || 'base', master.checked);
-                if (!source) {
-                    const pinMeta = getPinMeta(t);
-                    (pinMeta.sources || ['base']).forEach(src => setTypeActiveState(t, src, master.checked));
-                }
-            });
-            refreshMapDisplay({ syncButtons: true });
-        });
-    });
-
-    // --- カスタムピン ---
-    const customPinSaveBtn = document.getElementById('custom-pin-save-btn');
-    const customPinCancelBtn = document.getElementById('custom-pin-cancel-btn');
-    const customPinCloseBtn = document.getElementById('custom-pin-close-btn');
-    const mobilePinPlaceOkBtn = document.getElementById('mobile-pin-place-ok');
-    const mobilePinPlaceCloseBtn = document.getElementById('mobile-pin-place-close');
-    const mobilePinPlaceLayer = document.getElementById('mobile-pin-place-layer');
-
-    if (customPinSaveBtn) {
-        customPinSaveBtn.addEventListener('click', () => {
-            const nameInput = document.getElementById('custom-pin-name');
-            const name = nameInput ? nameInput.value.trim() : '';
-            const detailInput = document.getElementById('custom-pin-detail');
-            const detail = detailInput ? detailInput.value.trim() : '';
-            if (!customPinDraft) {
-                showToast('マップ上をクリックして座標を選んでください。', 'error');
-                return;
-            }
-            const customPinValidationError = validateCustomPinInput({
-                title: name,
-                detail
-            });
-            if (customPinValidationError) {
-                showToast(customPinValidationError, 'error');
-                return;
-            }
-            const now = new Date().toISOString();
-            const newPin = {
-                id: Date.now().toString(),
-                name,
-                title: name,
-                lat: customPinDraft.lat,
-                lng: customPinDraft.lng,
-                type: customPinSelectedType,
-                map: mapOverlayMode,
-                createdAt: now,
-                updatedAt: now,
-                visibility: true,
-                obtained: false,
-                userId: null,
-                detail
-            };
-            customPins.push(newPin);
-            customPinById.set(newPin.id, newPin);
-            customPinVisibility.add(newPin.id);
-            saveCustomPins();
-            if (customPinDraftMarker) {
-                customPinDraftMarker.remove();
-                customPinDraftMarker = null;
-            }
-            addCustomPinMarker(newPin);
-            updateCustomPinCount();
-            renderCustomPinList();
-            toggleCustomPinSidebar(false);
-            refreshMapDisplay();
-        });
-    }
-
-    if (customPinCancelBtn) {
-        customPinCancelBtn.addEventListener('click', () => {
-            toggleCustomPinSidebar(false);
-        });
-    }
-
-    if (customPinCloseBtn) {
-        customPinCloseBtn.addEventListener('click', () => {
-            toggleCustomPinSidebar(false);
-        });
-    }
-
-    if (mobilePinPlaceOkBtn) {
-        mobilePinPlaceOkBtn.addEventListener('click', () => {
-            const center = map.getCenter();
-            setCustomPinDraft(center);
-            mobileCustomPinPlacementMode = false;
-            customPinMode = false;
-            if (mobilePinPlaceLayer) mobilePinPlaceLayer.classList.add('hidden');
-            toggleCustomPinSidebar(true);
-        });
-    }
-
-    if (mobilePinPlaceCloseBtn) {
-        mobilePinPlaceCloseBtn.addEventListener('click', () => {
-            mobileCustomPinPlacementMode = false;
-            customPinMode = false;
-            customPinDraft = null;
-            if (mobilePinPlaceLayer) mobilePinPlaceLayer.classList.add('hidden');
-        });
-    }
-
-    const pinBulkCloseBtn = document.getElementById('pin-bulk-close-btn');
-    if (pinBulkCloseBtn) {
-        pinBulkCloseBtn.addEventListener('click', () => {
-            togglePinBulkSidebar(false);
-        });
-    }
-
-    const customPinDetailInput = document.getElementById('custom-pin-detail');
-    if (customPinDetailInput) {
-        customPinDetailInput.addEventListener('input', () => {
-            const count = document.getElementById('custom-pin-detail-count');
-            if (count) count.innerText = customPinDetailInput.value.length;
-        });
-    }
-
-    const areaHeaderBtn = document.getElementById('area-header-btn');
-    const closeAreaBtn = document.getElementById('close-area-overlay');
-
-    if (areaHeaderBtn) {
-        areaHeaderBtn.addEventListener('click', () => {
-            areaOverlay.classList.remove('hidden');
-        });
-    }
-
-    if (closeAreaBtn) {
-        closeAreaBtn.addEventListener('click', () => {
-            areaOverlay.classList.add('hidden');
-            if (window.innerWidth <= 900) {
-                closeMobileFilterPanel();
-            }
-        });
-    }
-
-    const resetBtn = document.getElementById('reset-filters-btn');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-            setActiveBaseTypes(new Set(DEFAULT_BASE_TYPES));
-            setActiveDlcTypes(new Set(DEFAULT_DLC_TYPES));
-            setShowCustomPins(true);
-            setCustomPinVisibilitySet(new Set(customPins.map(p => p.id)));
-            setSources(['base', 'dlc']);
-            selectArea('all');
-            refreshMapDisplay({ syncButtons: true });
-        });
-    }
-
-    const resetAllPinsBtn = document.getElementById('reset-all-pins-btn');
-    if (resetAllPinsBtn) {
-        resetAllPinsBtn.addEventListener('click', () => {
-            if (confirm('全てのピンを未取得の状態に戻しますか？\nこの操作は取り消せません。')) {
-                obtainedPins.clear();
-                setCustomPinObtainedSet(new Set());
-                syncAllCustomPinRecords();
-                saveObtained();
-                saveCustomPins();
-                saveCustomPinObtained();
-                markers.forEach(m => updateMarkerAppearance(m.marker, m.item.id));
-                customPins.forEach(pin => updateCustomPinObtainedAppearance(pin.id));
-                renderCustomPinList();
-                refreshMapDisplay();
-                alert('全てのピンをリセットしました。');
-            }
-        });
-    }
-
-    // --- ルートサイドバー操作 ---
-    const routeIconBtn = document.getElementById('route-mode-btn');
-    if (routeIconBtn) {
-        routeIconBtn.addEventListener('click', () => {
-            if (currentSidebar === 'route' && currentRouteView === 'create') {
-                // ルート作成中にもう一度ボタン押下：マップサイドバー（ピンON/OFF）に戻す
-                promptUnsavedChanges(() => toggleRouteSidebar(false, true));
-            } else if (currentSidebar === 'route') {
-                // ルート閲覧モードから戻る: ルートサイドバー閉じ、メイン表示
-                toggleRouteSidebar(false, true);
-            } else {
-                toggleRouteSidebar(true);
-            }
-        });
-    }
-
-    const closeRouteSidebarBtn = document.getElementById('close-route-sidebar-btn');
-    if (closeRouteSidebarBtn) {
-        closeRouteSidebarBtn.addEventListener('click', () => {
-            promptUnsavedChanges(() => toggleRouteSidebar(false));
-        });
-    }
-
-    document.querySelectorAll('.route-tab').forEach(btn => {
-        btn.addEventListener('click', () => switchRouteTab(btn.dataset.tab));
-    });
-
-    const backBtn = document.getElementById('back-to-browse-btn');
-    if (backBtn) {
-        backBtn.addEventListener('click', backToBrowse);
-    }
-    
-    const backFromCreateBtn = document.getElementById('back-from-create-btn');
-    if (backFromCreateBtn) {
-        backFromCreateBtn.addEventListener('click', () => {
-            promptUnsavedChanges(() => exitCreateMode());
-        });
-    }
-
-    // --- ルート作成用 右側パネル ---
-    const routeFilterBtn = document.getElementById('route-filter-btn');
-    const routeAreaBtn = document.getElementById('route-area-btn');
-    const routeFilterPanel = document.getElementById('route-filter-panel');
-    const routeAreaPanel = document.getElementById('route-area-panel');
-    const quickviewToggle = document.getElementById('route-quickview-toggle');
-    const quickviewWrap = document.getElementById('route-quickview');
-    const quickviewAllBtn = document.getElementById('route-quickview-all');
-
-    if (routeFilterBtn && routeFilterPanel) {
-        routeFilterBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const willOpen = routeFilterPanel.classList.contains('hidden');
-            closeRouteCreatePanels();
-            if (willOpen) {
-                routeFilterPanel.classList.remove('hidden');
-                routeFilterPanel.classList.add('active');
-                routeFilterBtn.classList.add('active');
-                updateRouteFilterPanelCounts();
-            }
-        });
-    }
-
-    if (routeAreaBtn && routeAreaPanel) {
-        routeAreaBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const willOpen = routeAreaPanel.classList.contains('hidden');
-            closeRouteCreatePanels();
-            if (willOpen) {
-                routeAreaPanel.classList.remove('hidden');
-                routeAreaPanel.classList.add('active');
-                routeAreaBtn.classList.add('active');
-            }
-        });
-    }
-
-    if (quickviewToggle && quickviewWrap) {
-        quickviewToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            quickviewWrap.classList.toggle('collapsed');
-        });
-    }
-
-    if (quickviewAllBtn) {
-        quickviewAllBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            setActiveBaseTypes(new Set(DEFAULT_BASE_TYPES));
-            setActiveDlcTypes(new Set(DEFAULT_DLC_TYPES));
-            refreshMapDisplay({ syncButtons: true });
-        });
-    }
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('#route-create-actions')) {
-            closeRouteCreatePanels();
-        }
-    });
-
-    // --- ナビゲーション離脱時の警告 ---
-    document.querySelectorAll('.sidebar a[href]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            const href = link.getAttribute('href');
-            if (!href) return;
-            if (currentRouteView === 'create' && routeIsModified) {
-                e.preventDefault();
-                confirmLeaveIfUnsaved(href);
-            }
-        });
-    });
-
-    const routeSearchInput = document.getElementById('route-search-input');
-    if (routeSearchInput) {
-        routeSearchInput.addEventListener('input', () => renderRouteList());
-    }
-
-    const startCreateBtn = document.getElementById('start-create-route-btn');
-    if (startCreateBtn) {
-        startCreateBtn.addEventListener('click', () => enterCreateMode());
-    }
-
-    const editRouteBtn = document.getElementById('edit-route-btn');
-    if (editRouteBtn) {
-        editRouteBtn.addEventListener('click', () => startEditingRoute());
-    }
-
-    const addSectionBtn = document.getElementById('add-section-btn');
-    if (addSectionBtn) {
-        addSectionBtn.addEventListener('click', () => addSection());
-    }
-
-    const saveRouteBtn = document.getElementById('save-route-btn');
-    if (saveRouteBtn) {
-        saveRouteBtn.addEventListener('click', () => saveMyRoute());
-    }
-
-    const routeNameInput = document.getElementById('route-name-input');
-    if (routeNameInput) {
-        routeNameInput.addEventListener('input', () => {
-            creatingRoute.name = routeNameInput.value;
-            routeIsModified = true;
-        });
-    }
-
-    const routeDescInput = document.getElementById('route-desc-input');
-    if (routeDescInput) {
-        routeDescInput.addEventListener('input', () => {
-            creatingRoute.description = routeDescInput.value;
-            routeIsModified = true;
-            document.getElementById('current-char-count').innerText = routeDescInput.value.length;
-        });
-    }
-
-    // --- その他設定・一括 ---
-    const settingsBtn = document.getElementById('toggle-settings-btn');
-    const settingsPopover = document.getElementById('settings-popover');
-    const settingsPopoverCloseBtn = document.getElementById('settings-popover-close');
-    const showObtainedCheck = document.getElementById('show-obtained-check');
-    const showBaseCheck = document.getElementById('show-base-check');
-    const showDlcCheck = document.getElementById('show-dlc-check');
-    const showBaseOnlyBtn = document.getElementById('show-base-only-btn');
-    const showDlcOnlyBtn = document.getElementById('show-dlc-only-btn');
-    const showAllSourcesBtn = document.getElementById('show-all-sources-btn');
-
-    if (settingsBtn) {
-        settingsBtn.addEventListener('click', (e) => {
-            settingsPopover.classList.toggle('hidden');
-            settingsBtn.classList.toggle('active');
-            e.stopPropagation();
-        });
-    }
-
-    if (settingsPopoverCloseBtn) {
-        settingsPopoverCloseBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (settingsPopover) settingsPopover.classList.add('hidden');
-            if (settingsBtn) settingsBtn.classList.remove('active');
-        });
-    }
-
-    document.addEventListener('click', (e) => {
-        if (settingsPopover && !settingsPopover.contains(e.target) && e.target !== settingsBtn) {
-            settingsPopover.classList.add('hidden');
-            if (settingsBtn) settingsBtn.classList.remove('active');
-        }
-    });
-
-    if (showObtainedCheck) {
-        showObtainedCheck.checked = showObtained;
-        showObtainedCheck.addEventListener('change', () => {
-            setShowObtained(showObtainedCheck.checked);
-            refreshMapDisplay();
-        });
-    }
-
-    if (showBaseCheck) {
-        showBaseCheck.checked = activeSources.has('base');
-        showBaseCheck.addEventListener('change', () => {
-            if (showBaseCheck.checked) activeSources.add('base');
-            else activeSources.delete('base');
-            refreshMapDisplay();
-        });
-    }
-
-    if (showDlcCheck) {
-        showDlcCheck.checked = activeSources.has('dlc');
-        showDlcCheck.addEventListener('change', () => {
-            if (showDlcCheck.checked) activeSources.add('dlc');
-            else activeSources.delete('dlc');
-            refreshMapDisplay();
-        });
-    }
-
-    if (showBaseOnlyBtn) {
-        showBaseOnlyBtn.addEventListener('click', () => {
-            setSources(['base']);
-            if (showBaseCheck) showBaseCheck.checked = true;
-            if (showDlcCheck) showDlcCheck.checked = false;
-            refreshMapDisplay();
-        });
-    }
-
-    if (showDlcOnlyBtn) {
-        showDlcOnlyBtn.addEventListener('click', () => {
-            setSources(['dlc']);
-            if (showBaseCheck) showBaseCheck.checked = false;
-            if (showDlcCheck) showDlcCheck.checked = true;
-            refreshMapDisplay();
-        });
-    }
-
-    if (showAllSourcesBtn) {
-        showAllSourcesBtn.addEventListener('click', () => {
-            setSources(['base', 'dlc']);
-            if (showBaseCheck) showBaseCheck.checked = true;
-            if (showDlcCheck) showDlcCheck.checked = true;
-            refreshMapDisplay();
-        });
-    }
-
-    const mapOverlayBaseBtn = document.getElementById('map-overlay-base-btn');
-    const mapOverlayDlcBtn = document.getElementById('map-overlay-dlc-btn');
-    const routeMapBaseBtn = document.getElementById('route-map-base-btn');
-    const routeMapDlcBtn = document.getElementById('route-map-dlc-btn');
-    if (mapOverlayBaseBtn) {
-        mapOverlayBaseBtn.addEventListener('click', () => {
-            setActiveAreas(new Set(['all']));
-            syncAreaSelectionUi('all');
-            setMapOverlay('base');
-        });
-    }
-
-    const detailUnmarkAllBtn = document.getElementById('detail-unmark-all-btn');
-    if (detailUnmarkAllBtn) {
-        detailUnmarkAllBtn.addEventListener('click', () => {
-            if (!currentDetailedRoute) return;
-            const pinIds = [];
-            currentDetailedRoute.sections.forEach(section => {
-                if (section && Array.isArray(section.pins)) pinIds.push(...section.pins);
-            });
-            if (pinIds.length === 0) return;
-            batchMarkSection(pinIds, false, currentDetailedRoute);
-        });
-    }
-
-    const detailMarkAllBtn = document.getElementById('detail-mark-all-btn');
-    if (detailMarkAllBtn) {
-        detailMarkAllBtn.addEventListener('click', () => {
-            if (!currentDetailedRoute) return;
-            const pinIds = [];
-            currentDetailedRoute.sections.forEach(section => {
-                if (section && Array.isArray(section.pins)) pinIds.push(...section.pins);
-            });
-            if (pinIds.length === 0) return;
-            batchMarkSection(pinIds, true, currentDetailedRoute);
-        });
-    }
-    if (mapOverlayDlcBtn) {
-        mapOverlayDlcBtn.addEventListener('click', () => {
-            setActiveAreas(new Set(['plover-island']));
-            syncAreaSelectionUi('plover-island');
-            setMapOverlay('dlc');
-        });
-    }
-    if (routeMapBaseBtn) {
-        routeMapBaseBtn.addEventListener('click', () => {
-            setMapOverlay('base');
-        });
-    }
-    if (routeMapDlcBtn) {
-        routeMapDlcBtn.addEventListener('click', () => {
-            setMapOverlay('dlc');
-        });
-    }
-
-    // 初期状態の反映
-    setMapOverlay(mapOverlayMode);
-
-    const batchCancelBtn = document.getElementById('batch-cancel-btn');
-    if (batchCancelBtn) batchCancelBtn.addEventListener('click', () => setBatchMode(false));
-    
-    const batchOkBtn = document.getElementById('batch-ok-btn');
-    if (batchOkBtn) {
-        batchOkBtn.addEventListener('click', () => {
-            setObtainedPinSet(new Set(batchObtainedPins));
-            saveObtained();
-            setCustomPinObtainedSet(new Set(batchCustomObtained));
-            saveCustomPinObtained();
-            setBatchMode(false);
-            renderCustomPinList();
-            refreshMapDisplay();
-        });
-    }
-
-    const leftToggleBtn = document.getElementById('toggle-left-sidebar-btn');
-    const closeLeftBtn = document.getElementById('close-left-sidebar-btn');
-    if (leftToggleBtn) {
-        leftToggleBtn.addEventListener('click', () => {
-            const mainSidebar = document.getElementById('map-sidebar');
-            const routeSidebar = document.getElementById('route-sidebar');
-            leftToggleBtn.classList.add('hidden');
-            if (closeLeftBtn) closeLeftBtn.classList.remove('hidden');
-            if (lastSidebar === 'route') {
-                setSidebarCurrent('route');
-                routeSidebar.classList.remove('hidden');
-                mainSidebar.classList.add('hidden');
-            } else {
-                setSidebarCurrent('main');
-                mainSidebar.classList.remove('hidden');
-                routeSidebar.classList.add('hidden');
-            }
-        });
-    }
-    if (closeLeftBtn) {
-        closeLeftBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const mainSidebar = document.getElementById('map-sidebar');
-            const routeSidebar = document.getElementById('route-sidebar');
-            if (currentSidebar === 'route') {
-                setSidebarLast('route');
-                routeSidebar.classList.add('hidden');
-            } else {
-                setSidebarLast('main');
-                mainSidebar.classList.add('hidden');
-            }
-            setSidebarCurrent('none');
-            if (leftToggleBtn) leftToggleBtn.classList.remove('hidden');
-            closeLeftBtn.classList.add('hidden');
-        });
-    }
-
-    const mobileAreaSwitch = document.getElementById('mobile-area-switch');
-    const mobileAreaName = document.getElementById('mobile-current-area');
-    const areaHeaderBtn2 = document.getElementById('area-header-btn');
-    const mobileFilterOpen = document.getElementById('mobile-filter-open');
-    const mobileCustomPinOpen = document.getElementById('mobile-custom-pin-open');
-    const mobileFilterClose = document.getElementById('mobile-filter-close');
-    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-    const openMobileFilterPanel = () => {
-        document.body.classList.add('mobile-filter-open');
-        if (sidebarBackdrop && document.body.classList.contains('sidebar-collapsed')) {
-            sidebarBackdrop.classList.remove('hidden');
-        }
-    };
-    const closeMobileFilterPanel = () => {
-        document.body.classList.remove('mobile-filter-open');
-        if (sidebarBackdrop && document.body.classList.contains('sidebar-collapsed')) {
-            sidebarBackdrop.classList.add('hidden');
-        }
-    };
-
-    if (mobileAreaSwitch && areaHeaderBtn2) {
-        mobileAreaSwitch.addEventListener('click', () => {
-            if (window.innerWidth <= 900) {
-                // スマホでは全画面パネルを開いてからエリア選択オーバーレイを表示
-                openMobileFilterPanel();
-                if (areaOverlay) {
-                    areaOverlay.classList.remove('hidden');
-                }
-                return;
-            }
-            areaHeaderBtn2.click();
-        });
-    }
-
-    if (mobileAreaName) {
-        const desktopAreaName = document.getElementById('current-area-name');
-        if (desktopAreaName) mobileAreaName.innerText = desktopAreaName.innerText;
-    }
-
-    if (mobileFilterOpen) {
-        mobileFilterOpen.addEventListener('click', () => {
-            if (document.body.classList.contains('mobile-filter-open')) {
-                closeMobileFilterPanel();
-            } else {
-                openMobileFilterPanel();
-            }
-        });
-    }
-
-    if (mobileCustomPinOpen) {
-        mobileCustomPinOpen.addEventListener('click', () => {
-            closeMobileFilterPanel();
-            toggleCustomPinSidebar(true);
-        });
-    }
-
-    if (mobileFilterClose) {
-        mobileFilterClose.addEventListener('click', () => {
-            closeMobileFilterPanel();
-        });
-    }
-
-    if (sidebarBackdrop) {
-        sidebarBackdrop.addEventListener('click', () => {
-            closeMobileFilterPanel();
-        });
-    }
-
-    document.addEventListener('click', (e) => {
-        if (!document.body.classList.contains('mobile-filter-open')) return;
-        const sidebar = document.getElementById('map-sidebar');
-        const clickedMobileAreaBar = !!e.target.closest('#mobile-area-bar');
-        const clickedMobileFilterBar = !!e.target.closest('#mobile-filter-bar');
-        if (
-            sidebar &&
-            !sidebar.contains(e.target) &&
-            e.target !== mobileFilterOpen &&
-            !clickedMobileAreaBar &&
-            !clickedMobileFilterBar
-        ) {
-            closeMobileFilterPanel();
-        }
-    });
-
-    const mainSidebar = document.querySelector('.sidebar');
-    const mainOpenBtn = document.getElementById('main-sidebar-open');
-    const mainCloseBtn = document.getElementById('main-sidebar-close');
-    const mainCloseInner = document.querySelector('.main-sidebar-close-inner');
-    const mainBackdrop = document.getElementById('sidebar-backdrop');
-    const applySidebarMode = () => {
-        if (window.innerWidth <= 900) {
-            document.body.classList.add('sidebar-collapsed');
-            if (mainSidebar) mainSidebar.classList.add('collapsed');
-            if (mainBackdrop) mainBackdrop.classList.add('hidden');
-        } else {
-            document.body.classList.remove('sidebar-collapsed');
-            document.body.classList.remove('mobile-filter-open');
-            if (mainSidebar) mainSidebar.classList.remove('collapsed');
-            if (mainBackdrop) mainBackdrop.classList.add('hidden');
-        }
-    };
-    applySidebarMode();
-    window.addEventListener('resize', applySidebarMode);
-    const openMainSidebar = () => {
-        document.body.classList.remove('sidebar-collapsed');
-        if (mainSidebar) mainSidebar.classList.remove('collapsed');
-        if (mainBackdrop) mainBackdrop.classList.remove('hidden');
-    };
-    const closeMainSidebar = () => {
-        document.body.classList.add('sidebar-collapsed');
-        document.body.classList.remove('mobile-filter-open');
-        if (mainSidebar) mainSidebar.classList.add('collapsed');
-        if (mainBackdrop) mainBackdrop.classList.add('hidden');
-    };
-    if (mainOpenBtn) mainOpenBtn.addEventListener('click', openMainSidebar);
-    if (mainCloseBtn) mainCloseBtn.addEventListener('click', closeMainSidebar);
-    if (mainCloseInner) {
-        mainCloseInner.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeMainSidebar();
-        });
-    }
-    if (mainBackdrop) {
-        mainBackdrop.addEventListener('click', closeMainSidebar);
-    }
-
-    const customPinSortBtn = document.getElementById('custom-pin-sort-btn');
-    if (customPinSortBtn) {
-        customPinSortBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            customPinSortMode = customPinSortMode === 'created' ? 'name' : 'created';
-            customPinSortBtn.innerText = customPinSortMode === 'created' ? '作成順' : '名前順';
-            renderCustomPinList();
-            savePreferences();
-        });
-    }
-
-    const authGoogleBtn = document.getElementById('auth-google-btn');
-    const authSignOutBtn = document.getElementById('auth-signout-btn');
-
-    if (authGoogleBtn) {
-        authGoogleBtn.addEventListener('click', async () => {
-            if (!authManager || !authManager.isConfigured) {
-                showToast('Supabase の設定が未完了です', 'error');
-                return;
-            }
-            try {
-                await flushUserDataSave();
-                await authManager.signInWithGoogle();
-            } catch (error) {
-                console.error('[signInWithGoogle]', error);
-                showToast(error && error.message ? error.message : 'Google ログインに失敗しました', 'error');
-            }
-        });
-    }
-
-    if (authSignOutBtn) {
-        authSignOutBtn.addEventListener('click', async () => {
-            if (!authManager) return;
-            try {
-                await flushUserDataSave();
-                await authManager.signOut();
-                showToast('ログアウトしました', 'success');
-            } catch (error) {
-                console.error('[signOut]', error);
-                showToast(error && error.message ? error.message : 'ログアウトに失敗しました', 'error');
-            }
-        });
-    }
-
-    // --- ページ離脱（閉じる/リロード）時の警告 ---
-    window.addEventListener('beforeunload', (e) => {
-        if (currentRouteView === 'create' && routeIsModified) {
-            e.preventDefault();
-            e.returnValue = '';
-        }
-    });
 }
 
 function updateSourceButtonState() {
@@ -4935,7 +3509,7 @@ function togglePinBulkSidebar(forceOpen = null) {
     const isHidden = sidebar.classList.contains('hidden');
     const willOpen = forceOpen === null ? isHidden : forceOpen;
     if (willOpen) {
-        // 他の右サイドバーを閉じる
+        // 右側 UI は同時に 1 つだけ開く
         toggleCustomPinSidebar(false);
         if (settingsPopover) settingsPopover.classList.add('hidden');
         if (settingsBtn) settingsBtn.classList.remove('active');
@@ -5137,46 +3711,22 @@ function selectArea(areaValue) {
     refreshMapDisplay();
 }
 
-function updatePinCounts() {
-    const totalCounts = {};
-    const obtainedCounts = {};
-    const totalCountsDlc = {};
-    const obtainedCountsDlc = {};
-
-    collectibles.forEach(item => {
-        const mapOk = item.map === mapOverlayMode;
-        const areaOk = matchesSelectedArea(item);
-        const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
-        if (!mapOk || !areaOk || !sourceOk) return;
-
-        if (item.source === 'dlc') {
-            totalCountsDlc[item.type] = (totalCountsDlc[item.type] || 0) + 1;
-            if (obtainedPins.has(item.id)) {
-                obtainedCountsDlc[item.type] = (obtainedCountsDlc[item.type] || 0) + 1;
-            }
-        } else {
-            totalCounts[item.type] = (totalCounts[item.type] || 0) + 1;
-            if (obtainedPins.has(item.id)) {
-                obtainedCounts[item.type] = (obtainedCounts[item.type] || 0) + 1;
-            }
-        }
-    });
-
+function updatePinCounts(stats = collectVisiblePinStats()) {
     document.querySelectorAll('.filter-type-btn[data-filter-context="main"]').forEach(btn => {
         const type = btn.dataset.type;
         const source = btn.dataset.source;
         const countSpan = btn.querySelector('.pin-count');
         if (countSpan) {
             const total = source === 'dlc'
-                ? (totalCountsDlc[type] || 0)
+                ? (stats.dlcTotals[type] || 0)
                 : source === 'base'
-                    ? (totalCounts[type] || 0)
-                    : (totalCounts[type] || 0) + (totalCountsDlc[type] || 0);
+                    ? (stats.baseTotals[type] || 0)
+                    : (stats.baseTotals[type] || 0) + (stats.dlcTotals[type] || 0);
             const obtained = source === 'dlc'
-                ? (obtainedCountsDlc[type] || 0)
+                ? (stats.dlcObtainedTotals[type] || 0)
                 : source === 'base'
-                    ? (obtainedCounts[type] || 0)
-                    : (obtainedCounts[type] || 0) + (obtainedCountsDlc[type] || 0);
+                    ? (stats.baseObtainedTotals[type] || 0)
+                    : (stats.baseObtainedTotals[type] || 0) + (stats.dlcObtainedTotals[type] || 0);
             countSpan.innerText = `${obtained}/${total}`;
         }
     });
@@ -5213,29 +3763,13 @@ function updateSectionMasterToggles() {
     });
 }
 
-function updateRouteFilterPanelCounts() {
-    const totalCounts = {};
-    const totalCountsDlc = {};
-
-    collectibles.forEach(item => {
-        const mapOk = item.map === mapOverlayMode;
-        const areaOk = matchesSelectedArea(item);
-        const sourceOk = activeSources.size === 0 || activeSources.has(item.source);
-        if (!mapOk || !areaOk || !sourceOk) return;
-
-        if (item.source === 'dlc') {
-            totalCountsDlc[item.type] = (totalCountsDlc[item.type] || 0) + 1;
-        } else {
-            totalCounts[item.type] = (totalCounts[item.type] || 0) + 1;
-        }
-    });
-
+function updateRouteFilterPanelCounts(stats = collectVisiblePinStats()) {
     document.querySelectorAll('#route-filter-panel .filter-type-btn').forEach(btn => {
         const t = btn.dataset.type;
         const source = btn.dataset.source;
         const countSpan = btn.querySelector('.route-filter-count');
         if (!countSpan) return;
-        const total = source === 'dlc' ? (totalCountsDlc[t] || 0) : (totalCounts[t] || 0);
+        const total = source === 'dlc' ? (stats.dlcTotals[t] || 0) : (stats.baseTotals[t] || 0);
         countSpan.innerText = `${total}`;
     });
 }
@@ -5244,11 +3778,19 @@ function updateQuickView(visibleTypes) {
     const container = document.getElementById('route-quickview-list');
     if (!container) return;
     if (currentRouteView !== 'create') {
-        container.innerHTML = '';
+        if (container.childElementCount > 0) {
+            container.innerHTML = '';
+        }
+        lastQuickViewTypesKey = '';
         return;
     }
 
     const types = [...visibleTypes];
+    const nextQuickViewTypesKey = types.join('|');
+    if (lastQuickViewTypesKey === nextQuickViewTypesKey) {
+        return;
+    }
+    lastQuickViewTypesKey = nextQuickViewTypesKey;
     container.innerHTML = '';
 
     types.forEach(type => {
