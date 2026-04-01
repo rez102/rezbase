@@ -22,6 +22,7 @@
             <nav class="menu">
                 ${createMenuItemMarkup('equipment', `${rootPrefix}/maneater.html`, '装備', `${rootPrefix}/images/進化1.png`)}
                 ${createMenuItemMarkup('map', `${rootPrefix}/map/map.html`, 'マップ', `${rootPrefix}/images/map1.png`)}
+                ${createMenuItemMarkup('hunters', `${rootPrefix}/hunters/hunters.html`, 'ハンター', `${rootPrefix}/images/map/悪名ランク1.png`)}
                 ${createMenuItemMarkup('history', `${rootPrefix}/history/history.html`, '更新履歴')}
             </nav>
         </aside>
