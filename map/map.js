@@ -1,7 +1,7 @@
 const map = L.map('map', {
     crs: L.CRS.Simple,
     minZoom: -2,
-    maxZoom: 2,
+    maxZoom: 4,
     zoomControl: false,
     doubleClickZoom: false // 連打時のズーム/移動を防止
 });
@@ -490,6 +490,8 @@ let focusedRoutePins = null;
 let routePinHighlights = [];
 let routeHoverLine = null;
 let routeHoverDecorator = null;
+let expandedRouteDetailSections = new Set();
+let activeRouteDetailSectionIndex = -1;
 let draggedSectionIndex = null;
 let sectionAutoScrollFrame = null;
 let sectionAutoScrollDirection = 0;
@@ -600,7 +602,7 @@ const trendRoutes = [
         description: '',
         sections: [
             { name: '区間1', pins: ['mainquest-crawfish-bay-02', 'mainquest-crawfish-bay-01'] },
-            { name: '区間2', pins: ['mainquest-fawtick-bayou-01', 'mainquest-fawtick-bayou-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
+            { name: '区間2', pins: ['mainquest-fawtick-bayou-01', 'cave-caves-02', 'mainquest-fawtick-bayou-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
             { name: '区間3', pins: ['cave-caves-01', 'landmark-fawtick-bayou-02', 'nutrient-fawtick-bayou-02', 'mainquest-fawtick-bayou-04', 'nutrient-fawtick-bayou-03', 'nutrient-fawtick-bayou-04', 'landmark-fawtick-bayou-03', 'nutrient-fawtick-bayou-05', 'landmark-fawtick-bayou-04', 'nutrient-fawtick-bayou-06', 'landmark-fawtick-bayou-05', 'nutrient-fawtick-bayou-08', 'landmark-fawtick-bayou-06', 'nutrient-fawtick-bayou-09', 'landmark-fawtick-bayou-07', 'nutrient-fawtick-bayou-10', 'landmark-fawtick-bayou-08', 'landmark-fawtick-bayou-09', 'plate-fawtick-bayou-03', 'cave-caves-01'] },
             { name: '区間4', pins: ['cave-caves-01', 'plate-fawtick-bayou-04', 'mainquest-fawtick-bayou-03', 'nutrient-fawtick-bayou-11', 'plate-fawtick-bayou-05', 'plate-fawtick-bayou-06', 'landmark-fawtick-bayou-10', 'floodgate-floodgates-03','landmark-caviar-key-03', 'mainquest-caviar-key-05'] },
             { name: '区間5', pins: ['cave-caves-03', 'nutrient-caviar-key-02', 'plate-caviar-key-10', 'nutrient-caviar-key-01', 'grate-caviar-key-02', 'nutrient-caviar-key-04', 'grate-caviar-key-01', 'landmark-prosperity-sands-07', 'landmark-prosperity-sands-06', 'plate-prosperity-sands-03', 'nutrient-prosperity-sands-01', 'mainquest-prosperity-sands-04'] },
@@ -662,7 +664,7 @@ const trendRoutes = [
         description: '',
         sections: [
             { name: '区間1', pins: ['mainquest-crawfish-bay-02', 'mainquest-crawfish-bay-01'] },
-            { name: '区間2', pins: ['mainquest-fawtick-bayou-01', 'mainquest-fawtick-bayou-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
+            { name: '区間2', pins: ['mainquest-fawtick-bayou-01', 'cave-caves-02', 'mainquest-fawtick-bayou-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
             { name: '区間3', pins: ['cave-caves-01', 'landmark-fawtick-bayou-02', 'nutrient-fawtick-bayou-02', 'mainquest-fawtick-bayou-04', 'nutrient-fawtick-bayou-03', 'nutrient-fawtick-bayou-04', 'landmark-fawtick-bayou-03', 'nutrient-fawtick-bayou-05', 'landmark-fawtick-bayou-04', 'nutrient-fawtick-bayou-06', 'landmark-fawtick-bayou-05', 'nutrient-fawtick-bayou-08', 'landmark-fawtick-bayou-06', 'nutrient-fawtick-bayou-09', 'landmark-fawtick-bayou-07', 'nutrient-fawtick-bayou-10', 'landmark-fawtick-bayou-08', 'landmark-fawtick-bayou-09', 'plate-fawtick-bayou-03', 'cave-caves-01'] },
             { name: '区間4', pins: ['cave-caves-01', 'plate-fawtick-bayou-04', 'mainquest-fawtick-bayou-03', 'nutrient-fawtick-bayou-11', 'plate-fawtick-bayou-05', 'plate-fawtick-bayou-06', 'landmark-fawtick-bayou-10', 'floodgate-floodgates-03', 'landmark-caviar-key-03', 'mainquest-caviar-key-05'] },
             { name: '区間5', pins: ['cave-caves-03', 'nutrient-caviar-key-02', 'plate-caviar-key-10', 'nutrient-caviar-key-01', 'grate-caviar-key-02', 'nutrient-caviar-key-04', 'grate-caviar-key-01', 'landmark-prosperity-sands-07', 'landmark-prosperity-sands-06', 'plate-prosperity-sands-03', 'nutrient-prosperity-sands-01', 'mainquest-prosperity-sands-04'] },
@@ -2275,10 +2277,214 @@ function showRoutePinHighlights(pinIds) {
     });
 }
 
+function getRouteDetailAllPins(route) {
+    const allRoutePins = new Set();
+    if (!route || !Array.isArray(route.sections)) return allRoutePins;
+
+    route.sections.forEach(section => {
+        if (!section || !Array.isArray(section.pins)) return;
+        section.pins.forEach(pinId => allRoutePins.add(resolveCollectibleReferenceId(pinId)));
+    });
+
+    return allRoutePins;
+}
+
+function setActiveRouteDetailSection(route, sectionIndex, allRoutePins = getRouteDetailAllPins(route)) {
+    if (!route || !Array.isArray(route.sections)) return;
+
+    const nextIndex = activeRouteDetailSectionIndex === sectionIndex ? -1 : sectionIndex;
+    activeRouteDetailSectionIndex = nextIndex;
+
+    focusedRoutePins = allRoutePins;
+    refreshMapDisplay();
+
+    if (nextIndex === -1) {
+        renderRouteOnMap(route, -1, true);
+        showRoutePinHighlights([]);
+        return;
+    }
+
+    const section = route.sections[nextIndex];
+    const targetMode = getSectionMapMode(section, route);
+    if (targetMode && targetMode !== mapOverlayMode) {
+        setMapOverlay(targetMode);
+    }
+
+    renderRouteOnMap(route, nextIndex, true);
+    showRoutePinHighlights(section.pins);
+
+    const latlngs = [];
+    section.pins.forEach(pinId => {
+        const meta = getRoutePinMeta(pinId, route);
+        if (meta && meta.latlng) latlngs.push(meta.latlng);
+    });
+    if (latlngs.length > 0) {
+        const bounds = L.latLngBounds(latlngs);
+        map.fitBounds(bounds.pad(0.2), getRouteZoomOptions());
+    }
+}
+
+function renderRouteDetailSections(route, allRoutePins = getRouteDetailAllPins(route)) {
+    const list = document.getElementById('detail-sections-list');
+    if (!list) return;
+
+    list.innerHTML = '';
+
+    route.sections.forEach((section, idx) => {
+        const card = document.createElement('div');
+        const isExpanded = expandedRouteDetailSections.has(idx);
+        const isActive = activeRouteDetailSectionIndex === idx;
+        card.className = `detail-section-card ${isExpanded ? 'expanded' : ''} ${isActive ? 'active-highlight' : ''}`.trim();
+
+        const counts = {};
+        section.pins.forEach(pinId => {
+            const meta = getRoutePinMeta(pinId, route);
+            const summaryType = getRoutePinSummaryType(meta);
+            if (summaryType) counts[summaryType] = (counts[summaryType] || 0) + 1;
+        });
+
+        const head = document.createElement('div');
+        head.className = 'detail-section-head';
+        const dot = document.createElement('span');
+        dot.className = 'detail-dot';
+        dot.style.background = getSectionColor(idx);
+        const name = document.createElement('span');
+        name.className = 'detail-name';
+        name.innerText = section.name;
+
+        const controls = document.createElement('div');
+        controls.className = 'detail-section-controls';
+
+        const expandBtn = document.createElement('button');
+        expandBtn.type = 'button';
+        expandBtn.className = 'detail-expand-btn';
+        expandBtn.title = isExpanded ? '区間を閉じる' : '区間を開く';
+        const expandIcon = createSvgNode(
+            { width: '14', height: '14', viewBox: '0 0 24 24', fill: 'currentColor' },
+            [{ d: 'M7 10l5 5 5-5z' }]
+        );
+        expandIcon.style.transform = `rotate(${isExpanded ? '0deg' : '-90deg'})`;
+        expandIcon.style.transition = 'transform 0.2s';
+        expandBtn.appendChild(expandIcon);
+        expandBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (expandedRouteDetailSections.has(idx)) expandedRouteDetailSections.delete(idx);
+            else expandedRouteDetailSections.add(idx);
+            renderRouteDetailSections(route, allRoutePins);
+        });
+
+        const dropdown = document.createElement('div');
+        dropdown.className = 'batch-dropdown';
+        const dropdownBtn = document.createElement('button');
+        dropdownBtn.type = 'button';
+        dropdownBtn.className = 'batch-link';
+        dropdownBtn.innerText = '一括表記 ▾';
+        const dropdownContent = document.createElement('div');
+        dropdownContent.className = 'batch-dropdown-content hidden';
+        const markAllBtn = document.createElement('button');
+        markAllBtn.type = 'button';
+        markAllBtn.className = 'batch-action-item';
+        markAllBtn.innerText = 'すべてを表記';
+        markAllBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            batchMarkSection(section.pins, true, route);
+        });
+        const unmarkAllBtn = document.createElement('button');
+        unmarkAllBtn.type = 'button';
+        unmarkAllBtn.className = 'batch-action-item';
+        unmarkAllBtn.innerText = 'すべての表記を取り消す';
+        unmarkAllBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            batchMarkSection(section.pins, false, route);
+        });
+        dropdownContent.append(markAllBtn, unmarkAllBtn);
+        dropdown.append(dropdownBtn, dropdownContent);
+
+        controls.append(expandBtn, dropdown);
+        head.append(dot, name, controls);
+        card.appendChild(head);
+
+        const body = document.createElement('div');
+        body.className = 'detail-section-body';
+
+        const summary = document.createElement('div');
+        summary.className = 'detail-section-summary';
+        const entries = Object.entries(counts);
+        if (entries.length === 0) {
+            const empty = document.createElement('span');
+            empty.className = 'detail-section-empty';
+            empty.innerText = 'ピンがありません';
+            summary.appendChild(empty);
+        } else {
+            entries.forEach(([type, count]) => {
+                const item = document.createElement('div');
+                item.className = 'detail-item-count';
+                const icon = document.createElement('img');
+                icon.src = (icons[type] && icons[type].options && icons[type].options.iconUrl)
+                    ? icons[type].options.iconUrl
+                    : ((customPinIcon.options && customPinIcon.options.iconUrl) || '');
+                icon.alt = '';
+                const countText = document.createElement('span');
+                countText.innerText = `x${count}`;
+                item.append(icon, countText);
+                summary.appendChild(item);
+            });
+        }
+        body.appendChild(summary);
+
+        if (isExpanded && section.pins.length > 0) {
+            const pinOrderList = document.createElement('div');
+            pinOrderList.className = 'detail-pin-order-list';
+            section.pins.forEach((pinId, pinIndex) => {
+                const meta = getRoutePinMeta(pinId, route);
+                const pinRow = document.createElement('div');
+                pinRow.className = 'detail-pin-order-item';
+
+                const order = document.createElement('span');
+                order.className = 'detail-pin-order-number';
+                order.innerText = `${pinIndex + 1}`;
+
+                const icon = document.createElement('img');
+                icon.className = 'detail-pin-order-icon';
+                icon.src = meta ? meta.iconUrl : '';
+                icon.alt = '';
+
+                const pinName = document.createElement('span');
+                pinName.className = 'detail-pin-order-name';
+                pinName.innerText = meta ? meta.name : '不明なピン';
+
+                pinRow.append(order, icon, pinName);
+                pinOrderList.appendChild(pinRow);
+            });
+            body.appendChild(pinOrderList);
+        }
+
+        card.appendChild(body);
+
+        card.addEventListener('click', (event) => {
+            if (event.target.closest('.batch-dropdown') || event.target.closest('.detail-expand-btn')) return;
+            setActiveRouteDetailSection(route, idx, allRoutePins);
+            renderRouteDetailSections(route, allRoutePins);
+        });
+
+        dropdownBtn.onclick = (event) => {
+            event.stopPropagation();
+            document.querySelectorAll('.batch-dropdown-content').forEach(element => {
+                if (element !== dropdownContent) element.classList.add('hidden');
+            });
+            dropdownContent.classList.toggle('hidden');
+        };
+
+        list.appendChild(card);
+    });
+}
+
 // ルート作成・編集
 function showRouteDetail(route) {
     setRouteView('detail');
     setCurrentRoute(route);
+    expandedRouteDetailSections = new Set();
+    activeRouteDetailSectionIndex = -1;
 
     // ルート閲覧中は全エリア表示に寄せる
     setActiveAreas(new Set(['all']));
@@ -2307,11 +2513,7 @@ function showRouteDetail(route) {
     document.getElementById('detail-desc').innerText = route.description || '紹介文はありません';
     document.getElementById('detail-section-count').innerText = `このルートには ${route.sections.length} 個の区間が含まれています`;
 
-    const list = document.getElementById('detail-sections-list');
-    list.innerHTML = '';
-
-    const allRoutePins = new Set();
-    route.sections.forEach(s => s.pins.forEach(pid => allRoutePins.add(resolveCollectibleReferenceId(pid))));
+    const allRoutePins = getRouteDetailAllPins(route);
     const allPinIds = [...allRoutePins];
     focusedRoutePins = allRoutePins;
     refreshMapDisplay();
@@ -2346,134 +2548,7 @@ function showRouteDetail(route) {
         }
     }
 
-    route.sections.forEach((section, idx) => {
-        const card = document.createElement('div');
-        card.className = 'detail-section-card';
-        
-        // セクション内ピンの内訳を集計
-        const counts = {};
-        section.pins.forEach(pid => {
-            const meta = getRoutePinMeta(pid, route);
-            const summaryType = getRoutePinSummaryType(meta);
-            if (summaryType) counts[summaryType] = (counts[summaryType] || 0) + 1;
-        });
-
-        const head = document.createElement('div');
-        head.className = 'detail-section-head';
-        const dot = document.createElement('span');
-        dot.className = 'detail-dot';
-        dot.style.background = getSectionColor(idx);
-        const name = document.createElement('span');
-        name.className = 'detail-name';
-        name.innerText = section.name;
-        const dropdown = document.createElement('div');
-        dropdown.className = 'batch-dropdown';
-        const dropdownBtn = document.createElement('button');
-        dropdownBtn.type = 'button';
-        dropdownBtn.className = 'batch-link';
-        dropdownBtn.innerText = '一括表記 ▾';
-        const dropdownContent = document.createElement('div');
-        dropdownContent.className = 'batch-dropdown-content hidden';
-        const markAllBtn = document.createElement('button');
-        markAllBtn.type = 'button';
-        markAllBtn.className = 'batch-action-item';
-        markAllBtn.innerText = 'すべてを表記';
-        markAllBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            batchMarkSection(section.pins, true, route);
-        });
-        const unmarkAllBtn = document.createElement('button');
-        unmarkAllBtn.type = 'button';
-        unmarkAllBtn.className = 'batch-action-item';
-        unmarkAllBtn.innerText = 'すべての表記を取り消す';
-        unmarkAllBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            batchMarkSection(section.pins, false, route);
-        });
-        dropdownContent.append(markAllBtn, unmarkAllBtn);
-        dropdown.append(dropdownBtn, dropdownContent);
-        head.append(dot, name, dropdown);
-
-        const body = document.createElement('div');
-        body.className = 'detail-section-body';
-        const entries = Object.entries(counts);
-        if (entries.length === 0) {
-            const empty = document.createElement('span');
-            empty.style.color = '#666';
-            empty.style.fontSize = '0.8rem';
-            empty.innerText = 'ピンがありません';
-            body.appendChild(empty);
-        } else {
-            entries.forEach(([type, count]) => {
-                const item = document.createElement('div');
-                item.className = 'detail-item-count';
-                const icon = document.createElement('img');
-                icon.src = (icons[type] && icons[type].options && icons[type].options.iconUrl)
-                    ? icons[type].options.iconUrl
-                    : ((customPinIcon.options && customPinIcon.options.iconUrl) || '');
-                icon.alt = '';
-                const countText = document.createElement('span');
-                countText.innerText = `x${count}`;
-                item.append(icon, countText);
-                body.appendChild(item);
-            });
-        }
-
-        card.append(head, body);
-
-        card.onclick = (e) => {
-            if (e.target.closest('.batch-dropdown')) return;
-            
-            const wasActive = card.classList.contains('active-highlight');
-            document.querySelectorAll('.detail-section-card').forEach(c => {
-                c.classList.remove('active-highlight');
-                c.style.backgroundColor = ''; // CSSがない場合のフォールバック用リセット
-            });
-
-            // 詳細表示中はルート内ピンにフォーカスする
-            focusedRoutePins = allRoutePins;
-            refreshMapDisplay();
-            
-            if (wasActive) {
-                // 選択解除時はルート全体表示へ戻す
-                renderRouteOnMap(route, -1, true);
-                showRoutePinHighlights([]);
-            } else {
-                // 選択区間だけを強調表示する
-                card.classList.add('active-highlight');
-                card.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; // 簡易ハイライト
-                const targetMode = getSectionMapMode(section, route);
-                if (targetMode && targetMode !== mapOverlayMode) {
-                    setMapOverlay(targetMode);
-                }
-                renderRouteOnMap(route, idx, true);
-                showRoutePinHighlights(section.pins);
-
-                // 区間に収まるようズームする
-                const latlngs = [];
-                section.pins.forEach(pid => {
-                    const meta = getRoutePinMeta(pid, route);
-                    if (meta && meta.latlng) latlngs.push(meta.latlng);
-                });
-                if (latlngs.length > 0) {
-                    const bounds = L.latLngBounds(latlngs);
-                    map.fitBounds(bounds.pad(0.2), getRouteZoomOptions());
-                }
-            }
-        };
-
-        // セクション単位の一括操作メニュー
-        dropdownBtn.onclick = (e) => {
-            e.stopPropagation();
-            // 他セクションのメニューは閉じる
-            document.querySelectorAll('.batch-dropdown-content').forEach(el => {
-                if (el !== dropdownContent) el.classList.add('hidden');
-            });
-            dropdownContent.classList.toggle('hidden');
-        };
-
-        list.appendChild(card);
-    });
+    renderRouteDetailSections(route, allRoutePins);
 
     // 画面外クリックで一括操作メニューを閉じる
     const closeDropdowns = (e) => {
@@ -2519,6 +2594,8 @@ function backToBrowse() {
     setRouteView('browse');
     setCurrentRoute(null);
     focusedRoutePins = null; // ルート絞り込みを解除
+    expandedRouteDetailSections = new Set();
+    activeRouteDetailSectionIndex = -1;
     refreshMapDisplay();
     const routeSidebarEl = document.getElementById('route-sidebar');
     if (routeSidebarEl) routeSidebarEl.classList.remove('mobile-detail-mode');
@@ -2546,6 +2623,7 @@ function getRouteZoomOptions() {
         return {
             paddingTopLeft: [320, 0],
             paddingBottomRight: [50, 50],
+            maxZoom: 4,
             animate: true,
             duration: 0.8
         };
@@ -2560,6 +2638,7 @@ function getRouteZoomOptions() {
     return {
         paddingTopLeft: [16, 12],
         paddingBottomRight: [16, bottomPad],
+        maxZoom: 4,
         animate: true,
         duration: 0.8
     };
@@ -3000,6 +3079,7 @@ function updateCreationUI() {
             routePinInsertIndex = null;
             clearOpenPinActionMenu();
             updateCreationUI();
+            updateCreationVisuals();
         });
 
         const header = document.createElement('div');

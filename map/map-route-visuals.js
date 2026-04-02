@@ -19,23 +19,35 @@ function buildSectionRoutePoints(section, route) {
     return points;
 }
 
-function drawRouteSection(points, color, contextLabel) {
+function drawRouteSection(points, color, contextLabel, styleOverrides = {}) {
     if (points.length < 2) {
         return;
     }
 
     try {
-        const polyline = L.polyline(points, { color, weight: 4, opacity: 0.8 }).addTo(map);
+        const lineOptions = {
+            color,
+            weight: 4,
+            opacity: 0.8,
+            ...styleOverrides
+        };
+        const polyline = L.polyline(points, lineOptions).addTo(map);
         routePolylines.push(polyline);
+        if (typeof styleOverrides.onClick === 'function') {
+            polyline.on('click', styleOverrides.onClick);
+        }
 
         if (L.polylineDecorator && L.Symbol && typeof L.Symbol.arrowHead === 'function') {
+            const arrowPixelSize = styleOverrides.arrowPixelSize || 10;
+            const arrowRepeat = styleOverrides.arrowRepeat || '120px';
+            const arrowOffset = styleOverrides.arrowOffset || '30%';
             const decorator = L.polylineDecorator(polyline, {
                 patterns: [
                     {
-                        offset: '30%',
-                        repeat: '120px',
+                        offset: arrowOffset,
+                        repeat: arrowRepeat,
                         symbol: L.Symbol.arrowHead({
-                            pixelSize: 10,
+                            pixelSize: arrowPixelSize,
                             polygon: true,
                             pathOptions: { color, fillColor: color, weight: 1, opacity: 1, fillOpacity: 1 }
                         })
@@ -65,7 +77,16 @@ function renderRouteSections(route, { highlightIndex = -1 } = {}) {
         }
 
         const sectionPoints = buildSectionRoutePoints(section, route);
-        drawRouteSection(sectionPoints, getSectionColor(sectionIndex), 'route-visuals');
+        const sectionOptions = {};
+        if (currentRouteView === 'create') {
+            sectionOptions.onClick = () => {
+                const sectionName = section && typeof section.name === 'string' && section.name.trim()
+                    ? section.name.trim()
+                    : `区間${sectionIndex + 1}`;
+                showToast(sectionName, 'info');
+            };
+        }
+        drawRouteSection(sectionPoints, getSectionColor(sectionIndex), 'route-visuals', sectionOptions);
     });
 
     renderRouteScopedCustomPins(route);
