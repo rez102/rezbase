@@ -558,7 +558,7 @@ const trendRoutes = [
         description: '',
         sections: [
             { name: 'チュートリアル', pins: ['mainquest-crawfish-bay-02', 'mainquest-crawfish-bay-01'] },
-            { name: '洞窟まで', pins: ['mainquest-fawtick-bayou-01', 'mainquest-fawtick-bayou-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
+            { name: '洞窟まで', pins: ['mainquest-fawtick-bayou-01', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
             { name: 'フォーティック・バイユー北部', pins: ['cave-caves-01', 'landmark-fawtick-bayou-02', 'nutrient-fawtick-bayou-02', 'mainquest-fawtick-bayou-04', 'nutrient-fawtick-bayou-03', 'nutrient-fawtick-bayou-04', 'landmark-fawtick-bayou-03', 'nutrient-fawtick-bayou-05', 'landmark-fawtick-bayou-04', 'nutrient-fawtick-bayou-06', 'landmark-fawtick-bayou-05', 'nutrient-fawtick-bayou-08', 'landmark-fawtick-bayou-06', 'nutrient-fawtick-bayou-09', 'landmark-fawtick-bayou-07', 'nutrient-fawtick-bayou-10', 'landmark-fawtick-bayou-08', 'landmark-fawtick-bayou-09', 'cave-caves-01'] },
             { name: 'フォーティックバイユー南部', pins: ['cave-caves-01', 'plate-fawtick-bayou-04', 'mainquest-fawtick-bayou-03', 'nutrient-fawtick-bayou-11', 'plate-fawtick-bayou-06', 'landmark-fawtick-bayou-10', 'floodgate-floodgates-03', 'mainquest-caviar-key-05'] },
             { name: 'エピソード3：プロスピリティーサンドの洞窟まで', pins: ['cave-caves-03', 'nutrient-caviar-key-02', 'plate-caviar-key-10', 'nutrient-caviar-key-01', 'grate-caviar-key-02', 'nutrient-caviar-key-04', 'grate-caviar-key-01', 'landmark-prosperity-sands-07', 'landmark-prosperity-sands-06', 'plate-prosperity-sands-03', 'nutrient-prosperity-sands-01', 'mainquest-prosperity-sands-04'] },
@@ -602,7 +602,7 @@ const trendRoutes = [
         description: '',
         sections: [
             { name: '区間1', pins: ['mainquest-crawfish-bay-02', 'mainquest-crawfish-bay-01'] },
-            { name: '区間2', pins: ['mainquest-fawtick-bayou-01', 'cave-caves-02', 'mainquest-fawtick-bayou-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
+            { name: '区間2', pins: ['mainquest-fawtick-bayou-01', 'cave-caves-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
             { name: '区間3', pins: ['cave-caves-01', 'landmark-fawtick-bayou-02', 'nutrient-fawtick-bayou-02', 'mainquest-fawtick-bayou-04', 'nutrient-fawtick-bayou-03', 'nutrient-fawtick-bayou-04', 'landmark-fawtick-bayou-03', 'nutrient-fawtick-bayou-05', 'landmark-fawtick-bayou-04', 'nutrient-fawtick-bayou-06', 'landmark-fawtick-bayou-05', 'nutrient-fawtick-bayou-08', 'landmark-fawtick-bayou-06', 'nutrient-fawtick-bayou-09', 'landmark-fawtick-bayou-07', 'nutrient-fawtick-bayou-10', 'landmark-fawtick-bayou-08', 'landmark-fawtick-bayou-09', 'plate-fawtick-bayou-03', 'cave-caves-01'] },
             { name: '区間4', pins: ['cave-caves-01', 'plate-fawtick-bayou-04', 'mainquest-fawtick-bayou-03', 'nutrient-fawtick-bayou-11', 'plate-fawtick-bayou-05', 'plate-fawtick-bayou-06', 'landmark-fawtick-bayou-10', 'floodgate-floodgates-03','landmark-caviar-key-03', 'mainquest-caviar-key-05'] },
             { name: '区間5', pins: ['cave-caves-03', 'nutrient-caviar-key-02', 'plate-caviar-key-10', 'nutrient-caviar-key-01', 'grate-caviar-key-02', 'nutrient-caviar-key-04', 'grate-caviar-key-01', 'landmark-prosperity-sands-07', 'landmark-prosperity-sands-06', 'plate-prosperity-sands-03', 'nutrient-prosperity-sands-01', 'mainquest-prosperity-sands-04'] },
@@ -664,7 +664,7 @@ const trendRoutes = [
         description: '',
         sections: [
             { name: '区間1', pins: ['mainquest-crawfish-bay-02', 'mainquest-crawfish-bay-01'] },
-            { name: '区間2', pins: ['mainquest-fawtick-bayou-01', 'cave-caves-02', 'mainquest-fawtick-bayou-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
+            { name: '区間2', pins: ['mainquest-fawtick-bayou-01', 'cave-caves-02', 'landmark-fawtick-bayou-01', 'nutrient-fawtick-bayou-01', 'mainquest-fawtick-bayou-08'] },
             { name: '区間3', pins: ['cave-caves-01', 'landmark-fawtick-bayou-02', 'nutrient-fawtick-bayou-02', 'mainquest-fawtick-bayou-04', 'nutrient-fawtick-bayou-03', 'nutrient-fawtick-bayou-04', 'landmark-fawtick-bayou-03', 'nutrient-fawtick-bayou-05', 'landmark-fawtick-bayou-04', 'nutrient-fawtick-bayou-06', 'landmark-fawtick-bayou-05', 'nutrient-fawtick-bayou-08', 'landmark-fawtick-bayou-06', 'nutrient-fawtick-bayou-09', 'landmark-fawtick-bayou-07', 'nutrient-fawtick-bayou-10', 'landmark-fawtick-bayou-08', 'landmark-fawtick-bayou-09', 'plate-fawtick-bayou-03', 'cave-caves-01'] },
             { name: '区間4', pins: ['cave-caves-01', 'plate-fawtick-bayou-04', 'mainquest-fawtick-bayou-03', 'nutrient-fawtick-bayou-11', 'plate-fawtick-bayou-05', 'plate-fawtick-bayou-06', 'landmark-fawtick-bayou-10', 'floodgate-floodgates-03', 'landmark-caviar-key-03', 'mainquest-caviar-key-05'] },
             { name: '区間5', pins: ['cave-caves-03', 'nutrient-caviar-key-02', 'plate-caviar-key-10', 'nutrient-caviar-key-01', 'grate-caviar-key-02', 'nutrient-caviar-key-04', 'grate-caviar-key-01', 'landmark-prosperity-sands-07', 'landmark-prosperity-sands-06', 'plate-prosperity-sands-03', 'nutrient-prosperity-sands-01', 'mainquest-prosperity-sands-04'] },

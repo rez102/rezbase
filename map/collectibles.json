@@ -3654,15 +3654,6 @@
     "type": "main-quest",
     "areaId": "fawtick-bayou",
     "areaLabel": "フォーティック・バイユー",
-    "lat": 694.52,
-    "lng": 919.88,
-    "id": "mainquest-fawtick-bayou-02",
-    "legacyId": "main-quest-381"
-  },
-  {
-    "type": "main-quest",
-    "areaId": "fawtick-bayou",
-    "areaLabel": "フォーティック・バイユー",
     "lat": 688.27,
     "lng": 839.12,
     "id": "mainquest-fawtick-bayou-03",
