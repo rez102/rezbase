@@ -77,7 +77,8 @@ const STORAGE_KEYS = {
     myRoutes: 'myRoutes',
     routes: 'maneater_routes',
     preferences: 'maneater_map_preferences',
-    tutorialDone: 'maneater_map_tutorial_done_v2'
+    tutorialDone: 'maneater_map_tutorial_done_v2',
+    routeTutorialDone: 'maneater_route_tutorial_done_v1'
 };
 
 const DEFAULT_BASE_TYPES = ['landmark', 'nutrient', 'plate', 'main-quest', 'sub-quest', 'manhunt', 'grate', 'floodgate', 'cave'];
@@ -516,6 +517,12 @@ let pinBulkSidebarOpen = false;
 let customPinSortMode = 'created';
 let tutorialStepIndex = 0;
 const tutorialStorageKey = STORAGE_KEYS.tutorialDone;
+let routeTutorialStepIndex = 0;
+let routeTutorialActive = false;
+let routeTutorialShowcaseVisible = false;
+let routeTutorialResizeHandler = null;
+let routeTutorialResolveStep = null;
+const routeTutorialStorageKey = STORAGE_KEYS.routeTutorialDone;
 const SAVE_DEBOUNCE_MS = 700;
 
 let authManager = null;
@@ -2098,7 +2105,9 @@ function toggleRouteSidebar(show = null, showMainOnClose = true) {
         setRouteView('browse');
         setCurrentRoute(null);
         renderRouteList();
+        setTimeout(() => initRouteTutorial(), 80);
     } else {
+        if (routeTutorialActive) finishRouteTutorial(false);
         if (showMainOnClose) {
             setSidebarCurrent('main');
             setSidebarLast('main');
@@ -2138,6 +2147,13 @@ function renderRouteList() {
     list.innerHTML = '';
     const filtered = data.filter(r => r.name.toLowerCase().includes(searchVal));
 
+    if (routeTutorialActive && routeTutorialShowcaseVisible && activeRouteTab === 'trend') {
+        const tutorialRoute = getRouteTutorialCardRoute();
+        if (tutorialRoute) {
+            filtered.unshift(tutorialRoute);
+        }
+    }
+
     filtered.sort((a, b) => {
         const pinA = pinnedRoutes.has(a.id) ? 1 : 0;
         const pinB = pinnedRoutes.has(b.id) ? 1 : 0;
@@ -2155,8 +2171,17 @@ function renderRouteList() {
     filtered.forEach(r => {
         const totalPins = r.sections.reduce((sum, s) => sum + s.pins.length, 0);
         const card = document.createElement('div');
-        card.className = 'route-card';
-        card.addEventListener('click', () => showRouteDetail(r));
+        card.className = `route-card ${r.__isTutorialRoute ? 'route-tutorial-card' : ''}`.trim();
+        if (r.__isTutorialRoute) {
+            card.dataset.routeTutorialCard = 'true';
+        }
+        card.addEventListener('click', () => {
+            if (r.__isTutorialRoute) {
+                handleRouteTutorialCardClick();
+                return;
+            }
+            showRouteDetail(r);
+        });
 
         const thumb = document.createElement('div');
         thumb.className = 'route-thumb';
@@ -2170,6 +2195,12 @@ function renderRouteList() {
         const title = document.createElement('div');
         title.className = 'route-title';
         title.innerText = r.name;
+        if (r.__isTutorialRoute) {
+            const badge = document.createElement('span');
+            badge.className = 'route-tutorial-list-badge';
+            badge.innerText = 'Tutorial';
+            title.appendChild(badge);
+        }
         const meta = document.createElement('div');
         meta.className = 'route-meta';
         const totalSpan = document.createElement('span');
@@ -2192,21 +2223,23 @@ function renderRouteList() {
         actions.style.gap = '5px';
         actions.style.zIndex = '10';
 
-        const pinButton = document.createElement('button');
-        pinButton.type = 'button';
-        pinButton.className = `route-pin-btn ${pinnedRoutes.has(r.id) ? 'pinned' : ''}`.trim();
-        pinButton.title = '固定';
-        pinButton.appendChild(createSvgNode(
-            { viewBox: '0 0 24 24', fill: 'currentColor' },
-            [{ d: 'M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z' }]
-        ));
-        pinButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            togglePinRoute(r.id);
-        });
-        actions.appendChild(pinButton);
+        if (!r.__isTutorialRoute) {
+            const pinButton = document.createElement('button');
+            pinButton.type = 'button';
+            pinButton.className = `route-pin-btn ${pinnedRoutes.has(r.id) ? 'pinned' : ''}`.trim();
+            pinButton.title = '固定';
+            pinButton.appendChild(createSvgNode(
+                { viewBox: '0 0 24 24', fill: 'currentColor' },
+                [{ d: 'M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z' }]
+            ));
+            pinButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                togglePinRoute(r.id);
+            });
+            actions.appendChild(pinButton);
+        }
 
-        if (activeRouteTab === 'my') {
+        if (!r.__isTutorialRoute && activeRouteTab === 'my') {
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
             deleteButton.className = 'route-delete-btn';
@@ -2548,6 +2581,18 @@ function showRouteDetail(route) {
         }
     }
 
+    const hasInitialSection = Array.isArray(route.sections)
+        && route.sections.length > 0
+        && route.sections[0]
+        && Array.isArray(route.sections[0].pins);
+
+    if (hasInitialSection) {
+        setActiveRouteDetailSection(route, 0, allRoutePins);
+    } else {
+        renderRouteOnMap(route);
+        showRoutePinHighlights([]);
+    }
+
     renderRouteDetailSections(route, allRoutePins);
 
     // 画面外クリックで一括操作メニューを閉じる
@@ -2559,9 +2604,9 @@ function showRouteDetail(route) {
     };
     document.addEventListener('click', closeDropdowns, { once: true });
 
-    // 詳細画面表示に合わせてラインも更新
-    renderRouteOnMap(route);
-    showRoutePinHighlights([]);
+    if (!hasInitialSection) {
+        return;
+    }
 }
 
 function batchMarkSection(pinIds, status, route = currentDetailedRoute) {
@@ -3351,6 +3396,7 @@ function initTutorial() {
     const bubble = overlay.querySelector('.tutorial-bubble');
     const textEl = overlay.querySelector('.tutorial-text');
     const spotlight = overlay.querySelector('.tutorial-spotlight');
+    const blockers = ensureTutorialBlockers(overlay);
     const nextBtn = document.getElementById('tutorial-next-btn');
     const skipBtn = document.getElementById('tutorial-skip-btn');
     const actions = overlay.querySelector('.tutorial-actions');
@@ -3374,6 +3420,7 @@ function initTutorial() {
         spotlight.style.left = `${offsetLeft - 6}px`;
         spotlight.style.width = `${rect.width + 12}px`;
         spotlight.style.height = `${rect.height + 12}px`;
+        layoutTutorialBlockers(blockers, mapRect, rect);
 
         textEl.innerText = step.text && step.text.trim().length > 0
             ? step.text
@@ -3417,8 +3464,13 @@ function initTutorial() {
             actions.style.bottom = '';
             actions.classList.remove('top-aligned');
 
-            const bubbleTop = offsetTop + rect.height + 14;
             const bubbleLeft = Math.min(offsetLeft, mapRect.width - 380);
+            const bubbleHeight = bubble.offsetHeight || 0;
+            const actionsHeight = actions.offsetHeight || 56;
+            const belowTop = offsetTop + rect.height + 14;
+            const aboveTop = offsetTop - bubbleHeight - actionsHeight - 22;
+            const maxTop = Math.max(12, mapRect.height - bubbleHeight - actionsHeight - 20);
+            const bubbleTop = belowTop <= maxTop ? belowTop : Math.max(12, aboveTop);
             bubble.style.top = `${bubbleTop}px`;
             bubble.style.left = `${Math.max(12, bubbleLeft)}px`;
             actions.style.top = `${bubbleTop + bubble.offsetHeight + 8}px`;
@@ -3438,24 +3490,335 @@ function initTutorial() {
             window.removeEventListener('resize', tutorialResizeHandler);
             tutorialResizeHandler = null;
         }
+        clearTutorialBlockers(blockers);
         localStorage.setItem(tutorialStorageKey, '1');
     }
 
-    nextBtn.addEventListener('click', () => {
+    nextBtn.onclick = () => {
         tutorialStepIndex += 1;
         if (tutorialStepIndex >= steps.length) {
             finishTutorial();
         } else {
             applyStep();
         }
-    });
-    skipBtn.addEventListener('click', finishTutorial);
+    };
+    skipBtn.onclick = finishTutorial;
 
     overlay.classList.remove('hidden');
     overlay.classList.add('active');
     tutorialResizeHandler = () => applyStep();
     window.addEventListener('resize', tutorialResizeHandler);
     applyStep();
+}
+
+function ensureTutorialBlockers(overlay) {
+    const blockers = [];
+    for (let i = 0; i < 4; i += 1) {
+        let blocker = overlay.querySelector(`[data-tutorial-blocker="${i}"]`);
+        if (!blocker) {
+            blocker = document.createElement('div');
+            blocker.className = 'tutorial-blocker';
+            blocker.dataset.tutorialBlocker = `${i}`;
+            overlay.appendChild(blocker);
+        }
+        blockers.push(blocker);
+    }
+    return blockers;
+}
+
+function layoutTutorialBlockers(blockers, containerRect, targetRect) {
+    if (!Array.isArray(blockers) || blockers.length !== 4) return;
+
+    const top = Math.max(0, targetRect.top - containerRect.top - 6);
+    const left = Math.max(0, targetRect.left - containerRect.left - 6);
+    const width = Math.max(0, targetRect.width + 12);
+    const height = Math.max(0, targetRect.height + 12);
+    const containerWidth = Math.max(0, containerRect.width);
+    const containerHeight = Math.max(0, containerRect.height);
+    const right = Math.min(containerWidth, left + width);
+    const bottom = Math.min(containerHeight, top + height);
+
+    const frames = [
+        { top: 0, left: 0, width: containerWidth, height: top },
+        { top, left: 0, width: left, height: Math.max(0, bottom - top) },
+        { top, left: right, width: Math.max(0, containerWidth - right), height: Math.max(0, bottom - top) },
+        { top: bottom, left: 0, width: containerWidth, height: Math.max(0, containerHeight - bottom) }
+    ];
+
+    blockers.forEach((blocker, index) => {
+        const frame = frames[index];
+        blocker.style.top = `${frame.top}px`;
+        blocker.style.left = `${frame.left}px`;
+        blocker.style.width = `${frame.width}px`;
+        blocker.style.height = `${frame.height}px`;
+        blocker.classList.toggle('hidden', frame.width <= 0 || frame.height <= 0);
+    });
+}
+
+function clearTutorialBlockers(blockers) {
+    if (!Array.isArray(blockers)) return;
+    blockers.forEach(blocker => {
+        blocker.style.top = '0px';
+        blocker.style.left = '0px';
+        blocker.style.width = '0px';
+        blocker.style.height = '0px';
+        blocker.classList.add('hidden');
+    });
+}
+
+function getRouteTutorialTargetRoute() {
+    if (Array.isArray(trendRoutes) && trendRoutes.length > 0) return trendRoutes[0];
+    if (Array.isArray(myRoutes) && myRoutes.length > 0) return myRoutes[0];
+    return null;
+}
+
+function getRouteTutorialCardRoute() {
+    const baseRoute = getRouteTutorialTargetRoute();
+    if (!baseRoute) return null;
+    return {
+        ...baseRoute,
+        id: '__route_tutorial_card__',
+        name: 'チュートリアル用ルート',
+        description: 'このカードを押してルート詳細を開こう',
+        __isTutorialRoute: true
+    };
+}
+
+function prepareRouteTutorialBrowse(tab = 'trend', showTutorialRoute = false) {
+    routeTutorialShowcaseVisible = showTutorialRoute;
+    backToBrowse();
+    if (activeRouteTab !== tab) {
+        switchRouteTab(tab);
+    } else {
+        renderRouteList();
+    }
+}
+
+function handleRouteTutorialCardClick() {
+    const route = getRouteTutorialTargetRoute();
+    if (!route) return;
+    routeTutorialShowcaseVisible = false;
+    showRouteDetail(route);
+    if (routeTutorialActive) {
+        routeTutorialStepIndex = 2;
+        if (typeof routeTutorialResolveStep === 'function') {
+            routeTutorialResolveStep();
+        }
+    }
+}
+
+function prepareRouteTutorialSectionStep() {
+    const route = getRouteTutorialTargetRoute();
+    if (!route) return false;
+    routeTutorialShowcaseVisible = false;
+    if (currentDetailedRoute !== route || currentRouteView !== 'detail') {
+        showRouteDetail(route);
+    } else {
+        renderRouteDetailSections(route, getRouteDetailAllPins(route));
+    }
+    return true;
+}
+
+function finishRouteTutorial(markSeen = true) {
+    if (!routeTutorialActive) return;
+
+    const overlay = document.getElementById('map-tutorial');
+    const bubble = overlay ? overlay.querySelector('.tutorial-bubble') : null;
+    const actions = overlay ? overlay.querySelector('.tutorial-actions') : null;
+    const blockers = overlay ? ensureTutorialBlockers(overlay) : [];
+
+    routeTutorialActive = false;
+    routeTutorialStepIndex = 0;
+    routeTutorialShowcaseVisible = false;
+    routeTutorialResolveStep = null;
+
+    if (routeTutorialResizeHandler) {
+        window.removeEventListener('resize', routeTutorialResizeHandler);
+        routeTutorialResizeHandler = null;
+    }
+
+    if (currentDetailedRoute) {
+        renderRouteDetailSections(currentDetailedRoute, getRouteDetailAllPins(currentDetailedRoute));
+    }
+
+    if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('active');
+        overlay.classList.remove('tutorial-soft-focus');
+    }
+    if (bubble) bubble.classList.remove('mobile-layout');
+    if (actions) {
+        actions.classList.remove('mobile-layout');
+        actions.classList.remove('top-aligned');
+    }
+    clearTutorialBlockers(blockers);
+
+    if (markSeen) {
+        localStorage.setItem(routeTutorialStorageKey, '1');
+    }
+}
+
+function initRouteTutorial() {
+    const overlay = document.getElementById('map-tutorial');
+    const routeSidebar = document.getElementById('route-sidebar');
+    if (!overlay || !routeSidebar || routeSidebar.classList.contains('hidden')) return;
+    if (localStorage.getItem(routeTutorialStorageKey)) return;
+    if (routeTutorialActive) return;
+    if (overlay.classList.contains('active')) return;
+
+    const steps = [
+        {
+            selector: '.route-tabs',
+            prepare: () => prepareRouteTutorialBrowse('trend', false),
+            text: 'トレンドルートにはおすすめのルート、マイルートには自分で作ったルートが並ぶぞ!'
+        },
+        {
+            selector: '[data-route-tutorial-card=\"true\"]',
+            prepare: () => prepareRouteTutorialBrowse('trend', true),
+            text: 'チュートリアル中だけこのルートが表示されるぞ! 実際に押してルート詳細を開いてみよう!',
+            advanceOnTargetClick: true,
+            lightenBackground: true
+        },
+        {
+            selector: '#detail-sections-list',
+            prepare: () => prepareRouteTutorialSectionStep(),
+            text: 'ルートを開いたら区間を押してみよう! 押した区間の場所へマップがズームするぞ!',
+            lightenBackground: true
+        },
+        {
+            selector: '#start-create-route-btn',
+            prepare: () => prepareRouteTutorialBrowse('my', false),
+            text: 'ここを押すと新しいルートを作成できるぞ! 自分だけの周回ルートをまとめたい時に使ってくれ!'
+        }
+    ];
+
+    const bubble = overlay.querySelector('.tutorial-bubble');
+    const textEl = overlay.querySelector('.tutorial-text');
+    const spotlight = overlay.querySelector('.tutorial-spotlight');
+    const blockers = ensureTutorialBlockers(overlay);
+    const nextBtn = document.getElementById('tutorial-next-btn');
+    const skipBtn = document.getElementById('tutorial-skip-btn');
+    const actions = overlay.querySelector('.tutorial-actions');
+
+    function resolveRouteTutorialStep() {
+        while (routeTutorialStepIndex < steps.length) {
+            const step = steps[routeTutorialStepIndex];
+            const prepared = step.prepare ? step.prepare() : true;
+            if (prepared === false) {
+                routeTutorialStepIndex += 1;
+                continue;
+            }
+
+            overlay.classList.toggle('tutorial-soft-focus', !!step.lightenBackground);
+
+            const mapRect = document.querySelector('.map-container').getBoundingClientRect();
+            const isMobileLayout = window.innerWidth <= 768 || mapRect.width <= 768;
+            const target = document.querySelector(step.selector);
+            if (!target) {
+                routeTutorialStepIndex += 1;
+                continue;
+            }
+
+            const rect = target.getBoundingClientRect();
+            const offsetTop = rect.top - mapRect.top;
+            const offsetLeft = rect.left - mapRect.left;
+
+            spotlight.style.top = `${offsetTop - 6}px`;
+            spotlight.style.left = `${offsetLeft - 6}px`;
+            spotlight.style.width = `${rect.width + 12}px`;
+            spotlight.style.height = `${rect.height + 12}px`;
+            layoutTutorialBlockers(blockers, mapRect, rect);
+
+            textEl.innerText = step.text;
+            bubble.classList.toggle('mobile-layout', isMobileLayout);
+            actions.classList.toggle('mobile-layout', isMobileLayout);
+
+            if (isMobileLayout) {
+                bubble.style.left = '12px';
+                bubble.style.right = '12px';
+                bubble.style.width = `${Math.max(0, mapRect.width - 24)}px`;
+                actions.classList.remove('top-aligned');
+
+                const actionsHeight = actions.offsetHeight || 56;
+                const mobileBottomUiOffset = 128;
+                const targetBottom = offsetTop + rect.height;
+                const shouldPlaceActionsTop = targetBottom >= mapRect.height - (actionsHeight + 32);
+                const bottomReserved = shouldPlaceActionsTop ? 16 : actionsHeight + mobileBottomUiOffset;
+                const bubbleHeight = bubble.offsetHeight || 0;
+                const belowTop = offsetTop + rect.height + 14;
+                const aboveTop = offsetTop - bubbleHeight - 14;
+                const maxTop = Math.max(12, mapRect.height - bubbleHeight - bottomReserved);
+                let bubbleTop = belowTop;
+
+                if (bubbleTop > maxTop) {
+                    bubbleTop = aboveTop >= 12 ? aboveTop : maxTop;
+                }
+
+                bubble.style.top = `${Math.max(12, Math.min(bubbleTop, maxTop))}px`;
+                actions.style.top = '';
+                actions.style.left = '';
+                actions.style.bottom = '';
+
+                if (shouldPlaceActionsTop) {
+                    actions.classList.add('top-aligned');
+                }
+            } else {
+                bubble.style.right = '';
+                bubble.style.width = '';
+                actions.style.bottom = '';
+                actions.classList.remove('top-aligned');
+
+                const bubbleLeft = Math.min(offsetLeft, mapRect.width - 380);
+                const bubbleHeight = bubble.offsetHeight || 0;
+                const actionsHeight = actions.offsetHeight || 56;
+                const belowTop = offsetTop + rect.height + 14;
+                const aboveTop = offsetTop - bubbleHeight - actionsHeight - 22;
+                const maxTop = Math.max(12, mapRect.height - bubbleHeight - actionsHeight - 20);
+                const bubbleTop = belowTop <= maxTop ? belowTop : Math.max(12, aboveTop);
+                bubble.style.top = `${bubbleTop}px`;
+                bubble.style.left = `${Math.max(12, bubbleLeft)}px`;
+                actions.style.top = `${bubbleTop + bubble.offsetHeight + 8}px`;
+                actions.style.left = `${Math.max(12, bubbleLeft)}px`;
+            }
+
+            if (step.advanceOnTargetClick) {
+                nextBtn.innerText = 'このルートを押す';
+            } else {
+                nextBtn.innerText = routeTutorialStepIndex === steps.length - 1 ? '完了' : '次へ';
+            }
+            return true;
+        }
+
+        finishRouteTutorial(true);
+        return false;
+    }
+
+    routeTutorialActive = true;
+    routeTutorialStepIndex = 0;
+    overlay.classList.remove('hidden');
+    overlay.classList.add('active');
+
+    const handleNext = () => {
+        const step = steps[routeTutorialStepIndex];
+        if (step && step.advanceOnTargetClick) {
+            return;
+        }
+        routeTutorialStepIndex += 1;
+        resolveRouteTutorialStep();
+    };
+    const handleSkip = () => finishRouteTutorial(true);
+
+    nextBtn.onclick = handleNext;
+    skipBtn.onclick = handleSkip;
+
+    routeTutorialResizeHandler = () => {
+        if (!routeTutorialActive) return;
+        resolveRouteTutorialStep();
+    };
+    window.addEventListener('resize', routeTutorialResizeHandler);
+    routeTutorialResolveStep = resolveRouteTutorialStep;
+
+    resolveRouteTutorialStep();
 }
 
 

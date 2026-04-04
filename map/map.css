@@ -1464,13 +1464,24 @@ input:checked + .switch-slider:before {
 }
 
 .tutorial-overlay.active {
-    pointer-events: auto;
+    pointer-events: none;
 }
 
 .tutorial-dim {
     position: absolute;
     inset: 0;
     background: rgba(0,0,0,0.55);
+    pointer-events: none;
+}
+
+.tutorial-overlay.tutorial-soft-focus .tutorial-dim {
+    background: rgba(0,0,0,0.24);
+}
+
+.tutorial-blocker {
+    position: absolute;
+    background: transparent;
+    pointer-events: auto;
 }
 
 .tutorial-spotlight {
@@ -1479,6 +1490,10 @@ input:checked + .switch-slider:before {
     border-radius: 12px;
     box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
     pointer-events: none;
+}
+
+.tutorial-overlay.tutorial-soft-focus .tutorial-spotlight {
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.2);
 }
 
 .tutorial-bubble {
@@ -1493,6 +1508,7 @@ input:checked + .switch-slider:before {
     gap: 12px;
     align-items: center;
     border: 1px solid rgba(255, 211, 122, 0.5);
+    pointer-events: auto;
 }
 
 .tutorial-text {
@@ -1504,6 +1520,10 @@ input:checked + .switch-slider:before {
     width: 54px;
     height: 54px;
     object-fit: contain;
+}
+
+.tutorial-actions {
+    pointer-events: auto;
 }
 
 .tutorial-actions {
@@ -3178,6 +3198,29 @@ body.sidebar-collapsed #toggle-left-sidebar-btn {
 .detail-section-card:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 211, 122, 0.5);
+}
+
+.route-tutorial-card {
+    border-color: rgba(255, 211, 122, 0.45);
+    background: linear-gradient(135deg, rgba(255, 211, 122, 0.14), rgba(255, 255, 255, 0.06));
+}
+
+.route-tutorial-card:hover {
+    background: linear-gradient(135deg, rgba(255, 211, 122, 0.2), rgba(255, 255, 255, 0.08));
+    border-color: rgba(255, 211, 122, 0.7);
+}
+
+.route-tutorial-list-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #1f1600;
+    background: #ffd37a;
+    border-radius: 999px;
+    padding: 4px 10px;
 }
 
 .detail-section-head {
